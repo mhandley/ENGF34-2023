@@ -8,7 +8,7 @@ If you've not used git before, please install it on your computer.  Then to clon
 
 git clone https://github.com/mhandley/ENGF34-2023.git
 
-This will make a copy of this repositoring in the ENGF34-2034folder on your computer.
+This will make a copy of this repository in the ENGF34-2023 folder on your computer.
 
 Later, when we add more material, go into that folder and:
 
