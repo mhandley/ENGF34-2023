@@ -1,0 +1,206 @@
+Transcript of CS Video 2
+
+Welcome back everybody!  In this video I'm going to talk just a little
+bit about algorithms. Now, what exactly is an algorithm?  An algorithm
+is a sequence of steps that you can take that lead to a solution of
+typically a computational problem.
+
+Whether you know it or not, you're already familiar with quite a
+number of algorithms from maths.  You know, for example, how to
+perform long multiplication and long division with a pencil and paper.
+That's an algorithm. You know how to find the roots of a quadratic
+equation of the form ax^2 + bx + c = 0.  That's an algorithm. You know
+how to expand brackets and things like that. Those are all algorithms
+that you would be used to applying from maths.
+
+Beyond maths, we find algorithms in all sorts of places in the wider
+world in form of information algorithms that solve more interesting
+tasks, like maybe rendering a 3d image in a computer game, or
+encryption of network communications, or building interactive social
+networks, or programming a car to drive autonomously.  So those are
+all examples of much more complicated algorithms than the ones you're
+probably used to.
+
+Today we're just going to look at one very simple algorithm, and so
+the problem that we have today is one that you're probably pretty
+familiar with.
+
+A building has a lift. Inside the lift there are buttons to choose the
+floors and outside the lift there are buttons to call the lift.  How
+should the lift choose which floor to go to next?  That's the
+algorithm that we're going to discuss. How does the lift choose which
+floor to move to next, given that people press buttons inside the lift
+and people press buttons outside the lift.  What's the right algorithm
+that the lift should use for this?
+
+Okay, so we find ourselves in the interesting position of being chief
+lift designer for the brand new UCL lift company, and one of the
+things we have to do is to figure out what algorithm should be used.
+
+Generally speaking, it's probably a good idea to start fairly simple,
+try something out, and see what goes wrong. Pretty reasonable
+strategy.  We make the observation that it takes longer to go between
+floors that are further apart than between floors that are close
+together and so that gives us an idea: a sensible optimization-type
+algorithm would be to simply go to the floor that's the nearest one
+selected to where the lift currently is.  That seems like a good
+algorithm to start with.
+
+So we sit down and we program up our lift algorithm. It's not a very
+complicated algorithm to use and we deploy it and we wait to see what
+happens.
+
+After a little while we get a bug
+report:
+
+[Bug report: Under certain workloads, people in the lift starve to
+death before they reach the destination floor]
+
+Hmm, that's probably not what we intended, so we need to figure out
+what went wrong.  After a little while we code up a lift simulator and
+we see so what actually happened when we run this algorithm, and this
+is what we find.
+
+[simulation runs]
+
+So what happened is that the first people to arrive all wanted to go
+to floors three and four which is fine, shouldn't be a problem with
+that, but right after that somebody arrived on floor one.  What we'll do
+is we'll go to the nearest floor that's selected by people that are in
+the lift, and only if nobody in the lift has pressed a button, then
+we'll go to the nearest floor that's selected by people outside the
+lift, the nearest one where a call button is pressed.  That should
+solve the problem: we're not going to have the people in the lift
+staff to death anymore.
+
+Okay, so we code that up and we run it in our lift simulator with this
+particular workload, and it works just fine. So we deploy it to our
+lift and see what happens. People are presumably going to be quite
+happy with it.
+
+Unfortunately the very next day we get another bug report:
+
+[Bug report: under certain workloads, people waiting for the lift
+starve to death]
+
+Hmm, that's probably not what we expected to happen.  We've clearly
+got another bug. We're going to take a little time in the lift
+simulator to figure out what precisely the workload is that causes
+this problem. After a while we figure that out, and here is what
+happens:
+
+[simulation runs]
+
+Okay so what's happening? Oh, the <bleep> users are messing up our
+algorithm!  The users on floor 4 want to go to floor 1 and the user on
+floor 1 want to go to floor 4 and that's fine, the lift does exactly
+what it's supposed to do, but unfortunately our user on floor 3 is
+getting ignored by this algorithm.
+
+Umm, okay, so we've still got a bug here.  A diagnosis though for this
+is pretty simple: the lift shouldn't go past a floor where someone
+wants to go in the same direction. If we do that, if we fix that, we
+ought to be able to fix this problem.
+
+So what are we going to do?  How about a new algorithm: we'll go to
+the nearest floor selected by somebody in the lift, but we won't go
+past a floor where someone wants to go in the same direction as the
+lift.  If no one selected a button in the lift at all, then we'll go
+to whatever the nearest floor is that's selected by someone outside
+the lift.  That surely should work. I mean this will definitely fix
+this problem, It will work won't it?
+
+So we try it out on this workload and it works fine on this workload
+and we deploy it to the real lift and another day later we got another
+bug report:
+
+[Bug report: under certain workloads, people waiting for the lift
+starve to death]
+
+What? That's that's the same bug report we had before, but we've fixed
+that problem. Well anyway, we go back to the lift simulator and let's
+see what's going on.
+
+[simulation runs]
+
+Okay so what's happening?  Oh it's those <bleep> users again they're
+they're messing up our algorithm again.  They just want to go from
+floor one to floor two and the lift algorithm does exactly that.
+Unfortunately it's not going as far as floor 4 where we've got a user,
+so we've obviously messed up again and this algorithm also doesn't
+work.
+
+So what's wrong? The diagnosis again is pretty simple: if the lift's
+heading towards someone it shouldn't turn around, and in this case the
+lift is turning around when it gets to floor two because there are
+more people waiting at floor one, but it should continue all the way
+up to floor four.
+
+Okay, so this is going to require a new algorithm again.  So what are
+we going to do? Well, to stop it turning around we're just going to
+make it go in one direction until there's nobody else left to service
+in that direction, then go back in the other direction.
+
+Here's our algorithm: we'll continue in one direction, stopping at
+floors where either people outside want to go in that direction, or
+people inside the lift want to stop at that floor.  We'll stop at
+either of those.  We'll change direction only when there are no
+more selected floors in the lift or no call buttons outside the lift
+that are pressed in that direction. Then we can turn around and go
+back in the other direction.
+
+So is that going to work?
+
+We tried it out in our lift simulator and it seems to work fine, and
+deployed in the real world and:
+
+NO BUG REPORTS FILED
+
+Now it turns out that this is the actual elevator algorithm or lift
+algorithm that's used in real lifts pretty much everywhere in the
+world.  The interesting thing about this algorithm is it's not really
+completely obvious that this is the right solution.  The main thing
+about this algorithm is it's really not very optimal in terms of the
+the actual median waiting time, but what it does is it guarantees that
+nobody waits forever, and that's really important for an algorithm
+like this.
+
+It also turns out this algorithm is what's used on computer hard disks
+for scheduling reads from different tracks on the disk. It will keep
+searching the disk head in one direction until it reaches the end of
+the disk and it will go back in the other direction and so on sweeping
+backwards and forwards across the disk and it turns out it actually
+produces not only no starvation but also pretty good mean access times
+for for data on disks, as well as for people in lifts.  So let's just
+watch it in action and see how it behaves.
+
+It's pretty good. I mean it's not necessarily always the optimum
+algorithm under every workload but actually the important thing with
+this particular algorithm is is not that it gives the the best median
+wait time, but that it actually is a fair algorithm.  Nobody ends up
+waiting for an excessive amount of time.
+
+Okay so that's a little bit of an introduction to algorithms. Yeah, I
+was taking a bit of fun by coming up with with dumb algorithms, but
+they're not obviously dumb. That's the thing.  You can actually prove
+a lot of things about this algorithm. You can prove that it's the best
+algorithm in terms of balancing fairness against the amount of time
+people actually wait.
+
+Now if you want a little bit of a challenge, there are some extensions
+to this algorithm that you might come up with.  So the first challenge
+is what should you do if there's no button pressed?  Nothing selected,
+no buttons pressed inside the lift, what should the lift do? That's
+still got some freedom, our algorithm doesn't specify what that should
+do.
+
+The second challenge is extend the algorithm so it works efficiently
+to control two lifts rather than just one. Now you've got a little bit
+more complicated problem to optimize. Now I'm not suggesting that
+these are courseworks or anything; you can choose to do them or not if
+you wish.  If you put some time into thinking about how they work
+maybe post some discussion on piazza, and you can have a discussion
+there about how you might extend this algorithm in reasonable ways.
+
+Okay, so that's it for this week. There's the bomber coursework for
+you to actually get started with and so I'll see you next week.

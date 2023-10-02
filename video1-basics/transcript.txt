@@ -1,0 +1,492 @@
+Transcript of Video 1: Basics of Programming
+--------------------------------------------
+
+Welcome back everyone!
+
+Today, I'm going to discuss the basic process of programming and
+software engineering, we'll talk about what programming actually is,
+how we can try and ensure that a program does what it's supposed to
+do, and a little bit about programming languages.  I'll also introduce
+you to some good practices you should try to stick to when you're
+programming.
+
+Now, on this course we're going to be programming in Python. Some of
+you are already really good python programmers and some of you have
+never seen Python before.  I'm not going to spend a huge amount of
+time trying to lecture you into becoming a good Python programmer.
+Learning to be a good programmer is similar to learning how to play
+the piano.  A piano teacher can guide you but really you learn by
+doing lots and lots and lots of practice.  No one ever learned to play
+the piano by listening to lectures and programming is pretty similar,
+but i will cover the basic concepts so you've got plenty of practice
+putting those concepts into practice.  If you've done lots of python
+before feel free to watch those parts of these videos at double speed.
+
+Let's start though with a very basic question: just what is computer
+science?  And what is software engineering?
+
+Computer Science concerns the nature of information, computation, the
+complexity of algorithms and their correctness.  It has deep
+mathematical foundations that you'll study on other courses including
+logic, algebra and probability theory.  Somewhat ironically, computer
+science doesn't really concern itself very much with actual computers.
+It's more about what can and cannot be computed.
+
+Software Engineering, on the other hand is all about how teams of
+people can repeatedly design and build high quality, correct, usable,
+efficient software that actually meets people's needs.  Programming is
+a key part of software engineering.
+
+Computer science and software engineering are closely interlinked.
+Some of the other courses are firmly computer science or firmly part
+of software engineering.  On this course we're going to study computer
+science and software engineering kind of all mixed up together.
+
+Now I keep talking about programming.  What actually is programming?
+And how does it relate to programming languages?
+
+A device is programmable if it allows a programmer to alter its
+behavior.  This is the act of programming.  We usually think of a
+device as programmable when the program itself takes the form of
+information, rather than physically modifying the device.  A microwave
+oven or an alarm clock is programmable, but those are not very
+general.
+
+A computer is kind of the ultimate programmable device, and can
+execute all computations.  It's a pretty strong statement "all
+computations" In fact we can prove that once a computer reaches a
+certain degree of generality, we can say that it's Turing Complete and
+this means that it can emulate any other computer though it might not
+do so very quickly. You'll cover what Turing Complete really means on
+your theory course, but it's enough for now to know that pretty much
+all computers are interchangeable in terms of the expressiveness of
+what they can actually compute.
+
+Programming, then, is the process of specializing a device to solve a
+problem that people have.  So how about programming languages?  The
+information that describes the program is expressed in a programming
+language.  Pressing a couple of buttons to program alarm clock is a
+really trivial programming language.  This is a very very low level of
+programming and it's pretty error prone and inflexible.
+
+We usually program computers in in higher level formal
+languages. These languages allow programmers to express their intent
+directly, build up complex abstractions and compose big programs from
+small fragments of code, often fragments of code that other people
+have written.
+
+Now you might think the role of a programming language is to tell the
+computer what to do, and that would sort of be correct, but
+programming languages are also human languages.  Programmers use them
+to express and communicate their intent, both to other programmers and
+also to yourself when you come back to your code later.
+
+So why are we using python on this course?  First it's a real world
+programming language that's really widely used.  There are lots of
+industrial uses.
+
+Second, it's multi-paradigm. Now that's a pretty complex mouthful.  By
+multi-paradigm I mean that it supports scripting, procedural
+programming, functional programming, object orientation and generic
+programming.  Now by the end of term I hope you'll actually understand
+what those terms mean.
+
+There's an extensive ecosystem of tools and software libraries for you
+to use that other people have written so you can build upon their
+work.  The documentation is really pretty good too.
+
+Python's a high productivity language.  It's perfect for rapid
+prototyping. There is, however, one significant weakness: it doesn't
+force you to adopt good programming practices.  It does support good
+practices, but you're going to have to learn them, so this is a
+weakness that on this course we're going to turn into a strength.
+
+Now there are lots of other programming languages that you might want
+to learn, because different problems require different tools.  Some
+lower level languages are Rust, C++ and C.  You tend to use these
+languages when you really really care about getting high performance,
+or when you need to get up close and personal with the fine details of
+the hardware. Most of the time though we don't actually need to
+program at such a low level.
+
+Python is what's known as a dynamically typed language, which means
+that the Python software tries to figure out what type of data you're
+dealing with: whether something's a integer or text or maybe a space
+invader or sometthing. Python will generally try to figure out what
+type it is and do the right thing.  This is really convenient but if
+you make a mistake, such as trying to multiply 27 by your name, the
+program will come to a screaming halt and tell you, or more likely
+your users, in cryptic terms exactly how stupid you are.
+
+Other languages such as Go, Java and C# are statically typed.  This
+means you have to say exactly what types of data you're dealing with
+at all times and the language will check that you're completely
+consistent all the way through your program.  If you're not, the
+compiler will tell you upfront, while it's trying to compile your
+code, exactly how inconsistent you are, usually in a fairly cryptic
+way again.  Now there's a big advantage of this and that is that once
+you get your code to actually compile, you'll be confident that you've
+got rid of at least this type of errors.
+
+There are other languages such as Javascript which is designed to be
+embedded in web pages and to program your web browser to do cool
+things.  There are also functional languages such as Haskell and
+Scala, which is a slightly different way of thinking about
+programming.  You might say that functional languages are more
+mathematically pure and if you're going to try and formally prove that
+a program is correct, then this is definitely easier for functional
+languages.  It's not necessarily easier to actually get real stuff
+done quickly though.
+
+You'll meet C, Java and Haskell this year on your other courses. At
+the moment I'm programming regularly in C, C#, C++, Tcl, bash, and
+Python.  I'm sort of swapping back and forth between those depending
+on what problem I'm trying to solve, or what particular piece of
+software I'm working with.  Over my career i've worked on pretty
+sizable projects in at least 20 different programming languages.  In
+general all programming languages mix and match a few basic principles
+and once you know those principles, learning a new language is not all
+that hard or something to be at all scared of.
+
+OK, so let's get started. The first thing is you're going to need to
+have Python 3.8, that's the latest version of Python, installed on
+your computer, so if you've not already got that installed, if you
+head over to python.org, you can download the the relevant python
+interpreter from there.  There's also a lot of really great
+information on the python.org website, lots of documentation and
+there's a great getting started thing for beginners. If you've not
+used Python before, this will help you get started on running things
+that you want to run, just how do you run the python interpreter and
+things like that.
+
+The next thing we're going to do is we're going to switch over to
+running a terminal and we're going to run python from a terminal.  Now
+a lot of things that you need to do in computer science actually will
+involve you using the command line in the future, not just using
+everything your graphical interface, so I'd really encourage you to
+get used to using the command line on your computer to actually
+interact with it.
+
+So here we go, here's the terminal and what I'm going to do is just
+run Python.  And there, I'm running the python interpreter on my
+command line.  I can actually interact with it.  It's telling me I've
+got version 3.8.1, and that's a pretty recent version of Python.  So
+what can I do now?
+
+Well I can actually type commands at the Python interpreter. So for
+example, I can type print, well the usual thing we do first is "hello
+world" (except i can't type there we go), "hello world" and it runs my
+little Python program, prints out "Hello World" and that's it.
+
+Now, that's not really very exciting, but one of the great things
+about running things on the Python command line is it lets you, if
+you're not quite sure how some feature of the language works, you can
+just fire up Python and type commands at it and see what it does, and
+you can use that as a way of testing out whether Python behaves the
+way you expect it does or not.
+
+Now the next thing you might want to know is actually how do i get out
+of python?  One of the things you can do is type control-d. Thats "end
+data" on the command line, and that drops me back out of Python and
+we're done.
+
+When we're trying to write larger programs, more complicated things
+than just "hello world", we're not going to type those in on the
+command line every time we want to run them.  We're going to actually
+edit files, we're going to create a series of files that can create a
+program. And to create and edit those files you're going to need to
+have a code editor installed. Now a lot of different code editors
+exist and it really comes down to personal preference.  Lots of people
+like Atom or Sublime, there's Visual Studio Code, there's XCode, or if
+you're a little bit more old school but you want some powerful command
+line type editors there's vim or emacs. I'm a little bit old school in
+this respect and I like emacs but you can use whatever you like.  The
+things it must have are good syntax highlighting, good handling files
+and folders, and in particular for Python it needs to have good
+handling of white space so that it will appropriately align all of the
+text with the right indentation. But as long as it's got those
+features, you can use pretty much whatever you want.
+
+Okay, so let's fire up an editor and write our first python program.
+I'm going to edit helloworld.py in emacs. Now we could just type
+print("Hello World") in here, but actually it's not a really great
+idea just to have raw python commands, so generally you want to build
+things into functions and then call those functions. So we'll define a
+function called hello_world.  "def" allows us to specify a new python
+function. We're going to call it hello_world.  Those little round
+brackets there are later on we're going to take some parameters, but
+this function doesn't take any parameters.
+
+Then we can add our print command "hello world" and there, we've
+defined a function called hello_world which will print out "Hello
+World". That's not really very exciting.
+
+Now if we actually just run this program, it won't do anything and so
+we have to have at least some function called at the end to actually
+be run, and so we're going to call our hello_world function like that,
+so if we do this we've now defined a function in a file, and we're
+going to actually run that function.
+
+If we go back to the command line and type python hello_world.py ---
+for people like me who are bad at typing, if you just hit tab on the
+command line, it will fill things out with whatever matches --- and we
+can run our program.  There we go: "Hello World".
+
+Now if we go back into our hello_world program, the good thing about
+defining a function is we can call that function more than once.  So
+if we do this, it will call the function three times instead of just
+once.  We can go again and run our program and now we get "Hello
+World" printed out three times. That's the nice general thing about
+defining functions.
+
+Here we have our first actual python program. It's not very
+interesting, not very exciting, we're going to go to much more
+interesting places, but it gives you an idea of how to get started.
+
+One of the things that pretty much all programming languages allow you
+to do, and python is no exception, is to add comments to your code.
+Comments are not executed by python, but they do form part of your
+program.  What they do is they communicate your intent when you're
+writing the code.  They communicate your intent to other people, or to
+your future self, so that when you come back to your code later, you
+haven't forgotten what it was you were trying to do, or how your code
+actually works.
+
+Now comments should really be used relatively minimally. You should
+comment things which are not obvious from just looking at the code. If
+the code is just obvious when you look at it, then there's no point in
+adding a comment, but if the if the concept behind the code is not
+obvious, then it's a really good idea to actually put comments in
+there. Now you shouldn't over-comment; you shouldn't duplicate things,
+and you really need to be careful to make sure that when you're
+editing your code, any comments you put in actually stay updated as
+you update your code, because otherwise they're just going to be more
+confusing than actually helpful.
+
+So we didn't add any comments to our hello+world program and the
+reason we didn't add any comments to our hello_world program is
+because it was too simple to really need any comments.  But I'm going
+to make a little bit of an extension to it and then we'll add a
+comment to make it clear what it is we're doing with the extension.
+
+Let's go back to our terminal window and open up hello_world again.
+We don't really need it to print out three times, so let's get rid of
+that.  What I'm going to do here is add a little bit of code: name ==
+__main__ like that.  Then we'll run hello_world.  Now if we actually
+take that code and we run it, we'll see that it didn't really change
+anything, which is a bit of an odd thing to do.  It still just prints
+out "hello world", so why did i do that?
+
+Well the reason i did that is that this line says that only call this
+hello_world function if this hello_world program is being called
+directly as the main thing that's being run.  So if i type python
+helloworld.py, this statement will be true, and then it will run the
+hello_world function.  If I'm including this file into another
+program, so I build up a big program out of multiple files then it
+won't call hello_world and so that's a very useful thing to be able to
+do: to actually build up a program out of many files. If they all have
+their own little test things like this calling hello_world function
+down here, then we'd end up with a total mess, so we put this little
+idiomatic piece of Python in there to avoid that being run
+unnecessarily. But it's not really all that obvious as to why we would
+do that, so we might then add a comment here and say only run
+hello_world if called by python hello_world.py and then we've actually
+preserved the memory of what we were trying to do here.  This was not
+a really obvious piece of code and so it's actually worth adding a
+comment to make sure that next time we come back to this piece of code
+we actually understand why it was added, whereas the other pieces are
+in there are not really necessary to comment.
+
+Now there's one other thing that's important to note in python, which
+is this indentation here.  Python really cares about indentation, so
+in our hello_world function here, we define the function name and this
+colon indicates the end of that definition but then everything within
+that hello_world function must be indented by the right amount.  If
+you get this wrong then python gets really upset with you and I won't
+be very happy.
+
+Similarly we've indented this within this "if" statement here, so if
+this condition is true if name is equal to main, then and only then do
+we run hello_world.  The bit that's within the "if" statement we also
+indent and by the same amount, so that we actually tell python this is
+part of that "if" statement and not something else. One of the things
+you have to be very very careful with in Python is to make sure you
+really do pay attention to that white space and indent things by the
+right amount, unlike other programming languages like C it's just not
+going to do the right thing if you get the indentation wrong.  Now
+this is both a good thing and a bad thing.  It can be annoying if you
+get it wrong, but actually it means that when you finish writing your
+code it all looks nice and pretty and you can actually understand
+which things are within each function, which things are within each
+"if" statement and things like that.
+
+The first challenge when you're programming is to figure out what your
+program should do. The second challenge is to write code to actually
+implement your idea, but once you've done that, you're still not
+actually done.  The third challenge is to figure out if your program
+actually does what it should do.  It turns out that correctness is the
+most important problem in computer science.  It's just really hard to
+produce code does not have any bugs.
+
+So how do we go about ensuring correct code?  The main technique we
+use is testing, and you should test as you're writing code, not leave
+it until afterwards.  There are also other techniques such as formal
+verification.  Now those are more expensive, but sometimes they're
+actually necessary, if you're trying to solve an especially complex
+problem.  Finally there are techniques like periodic code reviews or
+pair programming that also help.  With pair programming, two
+programmers share one computer, so everything is reviewed by a second
+pair of eyes, right from the start.  This avoids you coding the first
+idea that comes into your head, so generally results in better code
+quality.  It might seem like this is a waste of time, but actually it
+takes a lot more time to properly debug code than it does to write it
+in the first place, so in fact two programmers working together can
+often produce more high quality code than if they worked alone.  Today
+though, I'm going to talk about testing. This is the main way that we
+gain confidence that a program actually works.  You should test
+roughly every two to five lines of code that you write.  That may seem
+like way too often; it seems like maybe it's insane to do that much
+testing, but actually it isn't.  At a minimum you should test
+informally by printing out the values of variables and so forth as you
+add code.  Even when I'm just coding throwaway code for myself, I do
+this every few lines of code because I know from really painful
+experience that if I don't I'll end up with multiple interacting bugs,
+and then I'll waste a lot more time trying to figure out what's going
+on.  It's better to be more rigorous about this. It's better to
+actually write formal unit tests as we go, and depending on the code,
+we can write some of those tests before we write the code itself.
+Managing your tests is a bit of a pain, but there are tools that can
+help.  On this course we're going to use pytest so if you go over to
+pytest.org, you can find pitest and install that on your computer.  In
+general there are a range of different testing techniques for code
+correctness, integration, security, performance and user experience.
+Depending on the software you're writing, you'll need to apply
+different ones of these techniques.  Over the years I've worked with
+an awful lot of different programmers and my observation is that
+generally the more experienced the programmer, the more they care
+about really rigorous testing.  They've all spent way too much time
+trying to track down some really subtle bug that should have been
+caught much earlier in the process through better testing.  Now the
+one big shortcoming of testing is always a lack of completeness.  You
+can simply never cover all of the possibilities, but that's no excuse
+not to try.  So what actually is a test? A test is a little snippet of
+code that executes a part of your program, and what it does is it
+checks that that part of your program produces the expected output.
+That sounds all right in principle, but what does it actually look
+like when we run tests on real Python code?  Well why don't we have a
+look.  Let's actually write some tests for our hello_world
+function. It's not really a very interesting function. It's probably
+going to pass the test but let's write some tests and see how that
+process works.  Here's our hello_world function that we wrote before.
+What we're going to do is to write a separate test suite for it.  So
+here's one that I wrote earlier.  What does this do? This is a test
+program called test_hello_world.py and the first line of this program
+up here will load from the file hello_world.py which is our program,
+it will import the function hello_world which we defined, and that
+will do our printing out of "hello world" and so forth.  What this
+lets us do is to pull function definitions from one file into another
+file and actually use them as part of that code.  That's why we have
+the "if" statement in in the hello_world.py program. The "if"
+statement was there so that it shouldn't actually run that function
+unless we were trying to run it as the main program.  In this case I
+don't want it to run until I tell it to.  The second thing i've done
+in here is to define this test function here: test_hello_world. Now
+pytest treats anything that starts in "test_" as being a test, so when
+we run tests it will run these functions and try to figure out whether
+they pass.  Don't worry too much about what's going on with this
+capsys; what you should see here is the first thing the test function
+actually does is to run our hello_world function. It runs that.  That
+should print out hello world to the output of the program, and that's
+all it does. Now this piece of magic here, what this does is to
+capture the output of running our hello_world up here, and it puts
+that output into a variable which we're going to call "out".  That
+means we can then actually see whether the output was what we
+expected.  Finally this last line here is an assertion.  It asserts
+that that output should equal "Hello World!" like that.  This "\n" at
+the end of this is a new line character, and because our hello_world
+printed out not only "Hello World!" but also "Hello World!" and went
+on to a new line, we have to check that it actually matches that too.
+Okay so that's our test. We're going to run hello_world.  I'm going to
+capture its output, and we're going to assert that that output should
+equal this.  hello_world is such a simple dumb program that what can
+possibly go wrong but we should run it and see.  so we run pytest on
+our test suite here: test_hello_world and we run it, and it fails.
+What we're getting here is a failure from the test and it says there's
+an assertion error, and that assertion statement was false.  We
+asserted it was true and it's false.  It tells us actually what's
+going on.  It says that the program produced "Hello World", the test
+suite said it should produce "Hello world" exclamation mark, and so
+the program doesn't actually match the test.  Now of course you have
+to sit back and say which is right? Was it correct that it had an
+exclamation mark?  Was it correct it didn't have an exclamation mark?
+In this case I think our actual hello_world program is wrong.  It
+probably should have an exclamation mark at the end.  So we'll we'll
+go back and correct that.  We'll go back in here and we'll add the
+exclamation mark because we're all enthusiastic today!  There now we
+can run the program again, run the test harness on it again, and now
+all the tests pass.  Okay, so it's a pretty simple piece of code. It's
+not really likely to fail the tests, but yeah, we managed to anyway.
+So that's the general process by which you run tests. You write these
+unit tests that are there to exercise your code, and with known
+inputs, check that the outputs match what they should be.  You should
+be trying to test out all of the features and corner cases of your
+code by writing these unit tests.  Now there's one other way of doing
+this and sometimes it's a little bit more complicated to write these
+individual tests than it needs to be for something as simple as
+hello_world.  So we can actually do this as part of the
+documentation. So here's a different version of hello_world.  It still
+defines a hello_world function.  It still prints out "Hello World!",
+this time with an exclamation mark, but it also has this great big
+piece in the middle and this is just a a big comment. Python, normally
+running this code, will not actually interpret that as anything other
+than a comment and it will ignore it, but this particular comment is
+actually a kind of documentation, and so what you can use is you can
+use documentation tools to extract these kind of comments and build
+documentation for how the functions in your code work.  In this case
+the documentation says that hello_world prints a welcoming message to
+standard output, and I guess that's what it does, but there's
+something more interesting here, which is this piece down here.  What
+this is, is executable documentation.  What this says is if we run
+this hello_world function, it should produce the output "Hello
+World!", and in this particular case it's kind of obvious that it's
+going to do that, but in some cases it'd be a little less obvious as
+to what it should produce, and so this is a way of specifying within
+our actual functions what the test output should be.  We can actually
+use pytest to test this as well. It's a little bit more complicated:
+we need to run pytest with some flags.  I'm going to run
+--doctest_modules, and that's basically saying test the documentation,
+the executable documentation and when we run that, it also passes: it
+says that, yes, that documentation matches what the code actually does
+and lets us assert that the documentation and the code do the same
+thing.  More commonly, you'll actually write explicit test harnesses
+for your code, You'll probably write code that actually tests out all
+the different features of your code and make sure that you cover all
+of the main functionality of your code, make sure it does what you
+want, but this doctest feature is also a useful thing to know about.
+So that's kind of the rhythm of the programming business: you think of
+a problem, you code a feature, something like two to five lines, you
+write a test for that feature, you run the tests, you fix the test or
+you fix the code, until all the tests pass, and then you go back and
+you think of the next problem to solve, and so forth, and you just
+repeat this process.  The idea is that working programmers may run
+tests several times a minute and actually go through this process
+really quite quickly. The goal is to make sure that you're testing
+small chunks at a time and never build up to the point where you have
+something very complex to test.  You're reasonably sure that
+everything you've written so far is actually working, So the point
+about this testing practice is it imposes an incremental approach to
+software building.  It's really important to our professional
+standards here. I mean the goal is to aspire to deliver programs that
+have no bugs.  It's really hard to do a program that has no bugs but
+that's what we aspire to do.  Remember that in the real world, bugs
+may cost millions of pounds or even kill people.  It's really
+important that we actually figure out how to deliver code that has, as
+far as possible, no bugs whatsoever.  Now there's quite a lot of stuff
+we've covered briefly today that I'm going to come back to in a bit
+more detail. I'm going to go back to how you define functions using
+def, I'm going to talk about modules, how you import things from
+different modules, and a lot more Python, so don't worry if you didn't
+catch all of those pieces.  We're going to come back to those in the
+next few videos.  Okay, so now stop, make yourself a cup of tea, go
+and relax for a little while, and then come back and watch the second
+of the videos for this week on algorithms. See you then!
