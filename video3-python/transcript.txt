@@ -1,0 +1,1449 @@
+Welcome back everyone!  Today I'm going to introduce you to another
+algorithm, this time a bit more mathematical than the lift algorithm,
+and I'm going to use that to illustrate the main concepts of Python
+programming.
+
+On this course we're going to cover a number of the most important
+data structures.  Today we'll look at Python's version of lists, which
+are a bit different from lists you'll encounter on your other courses.
+There's quite a lot of detail in this session and if you've not done a
+lot of programming, you probably won't get it all the first time, so
+there's a transcript of this session and there's also a set of
+accompanying slides which summarize the material.  So after you've
+watched this video, go through those slides and check that you
+understand everything.  If there's still material you don't
+understand, please ask a question on piazza.  Don't worry if you're
+not sure how to ask a coherent question - even confused questions are
+fine.  You can ask anonymously if you want, but please use public
+questions instead of private ones so others can see the discussion and
+they can learn from it too.
+
+OK, so we've got quite a bit to get through so let's get started.
+
+Now you might think computer algorithms are a new thing, but our
+algorithm of the week this week is over 2,000 years old and dates back
+to Euclid of Alexandria.
+
+Now, Euclid was interested in the properties of integers and rational
+numbers.  When you're dealing with rational numbers, it's really
+useful to be able to know the the greatest common denominator or GCD,
+because that lets you simplify fractions.  For example how about this
+fraction?
+
+390253 / 228769
+
+Can we simplify this?
+
+Well, we can if we know that the greatest common denominator of 390253
+and 228769 is 13457, because then we can rewrite 390253/228769 as
+(29*13457)/(17*13457), and we can cancel the 13457s, and we end up
+with 29 over 17.
+
+But how can we compute the greatest common
+denominator?
+You could factor the numbers, but that
+turns out to be hard problem for
+larger numbers. Is there a simple way?
+It turns out that there is, and Euclid
+found an algorithm for doing this
+2,300 years ago.
+
+So what is Euclid's algorithm?
+
+ - Consider the two integers for which you want to find the greatest
+   common denominator.
+
+ - Take the smaller one and subtract it
+   from the larger one.
+
+ - Replace the larger one with that result, keep the smaller one, and
+   use those two as your two new numbers.
+
+ - Just repeat this process until the two numbers are equal.  Once
+   they are equal, the resulting number is the greatest common
+   denominator.
+
+Now, we're going to implement this algorithm in Python, but first we
+should convince ourselves that this actually works.
+
+Let's consider the positive integers a and b, where a is greater than
+b.
+
+[Note: it's easier to see the maths for the next part in the slideset]
+
+a is equal to alpha times the greatest common denominator of a and b,
+and b is equal to beta times the greatest common denominator of a and
+a and b. Because of the greatest common denominators, we know the
+greatest common demoninator of alpha and beta must be 1.
+
+OK, so how are we going to prove that Euclid's algorithm always works?
+Well, to do that we're going to have to go through the steps of the
+algorithm and demonstrate that they preserve the greatest common
+denominator.
+
+At each step of the algorithm we take the smaller number and subtract
+it from the larger number, so in this case we subtract b from a to
+produce a'. So a' is also from the definitions on the left, equal to
+alpha minus beta times the greatest common denominator of a and b.
+
+Now to prove the algorithm works, we need to show that the greatest
+common denominator of a' and b is the same as the greatest common
+denominator of a and b.  If that's true if we can show that every step
+of the algorithm will preserve that constant, and when we get to the
+end we will end up with the greatest common denominator of a and b in
+the results.
+
+Now the greatest common denominator of a and b is a factor of both a'
+up here, and b, over here so we know that the greatest common
+demonimators of a' and b must be greater than or equal to the greatest
+common denominator of a and b.  But we need to show that it's equal
+to, not greater than or equal to, and so we've got to rule out that
+possibility.
+
+So how are we're going to do that? Well there's a fairly simple proof
+by contradiction we can apply.  We'll start by assuming that the
+greatest common denominator of a' and b is greater than the greater
+common denominator of a and b.  Now, if that's true, then the greatest
+common denominator of alpha minus beta and b is equal to some constant
+c, which is greater than one.
+
+If c was equal to one, then that would be equals, but if we've got a
+constant that's greater than 1, then that implies this is greater than
+here.
+
+OK, so from that we can infer that beta is equal to that number c
+times some other number r.  We don't really mind what that number is,
+but some other number r.  Also that alpha minus beta is equal to that
+same number c times some other number r'. Now we can take these two
+lines and we can add them together, and what we get is that alpha is
+equal to that same number c times r' plus r.
+
+Now this gives a little bit of a problem, because alpha and beta are
+now both divisible by c.  If alpha and beta are both divisible by c,
+then this:
+
+GCD(alpha, beta) == 1
+
+this cannot be true, the greatest common order of alpha and beta
+cannot be one, and so we end up with a contradiction.
+
+That contradiction means that this assumption that we made, the
+greatest command of a' and b being greater than the greatest
+demoninator of a and b must be untrue.  So that rules out that last
+possibility, and so we can show this way that the greatest common
+denominator of a' and b is equal to the greatest common denominator of
+a and b.
+
+Hence we've shown that every step of Euclid's algorithm preserves the
+greatest common denominator and therefore when the algorithm finally
+finishes, the greatest common denominator is what is left.  And that's
+how we can prove that this algorithm actually works.
+
+
+GCD in Python
+
+Ok, so now we know the algorithm works, let's actually try
+this out in Python and see how we get on.
+
+Here's the terminal window, let's fire up Python.  Now, what we're
+going to do is we're just going to manually run Euclid's algorithm for
+the numbers 42 and 30.
+
+So a is equal to 42, and b is equal to 30.
+
+Now obviously we want to run each step of the algorithm, so at the
+moment the the smaller number is is b so we're going to subtract b
+from a.  And that's now the replacement for a.  So a = v.
+
+We can see how we've got on. We can print out a and b and now a is 12
+and b is 30.
+
+So now we run the next step of the algorithm we're going to subtract b
+from a, so b is going to become b - a
+
+Now a is still less than b, so we're going to repeat that step again:
+b - b - a
+
+and now b is the smaller value, so a = a - b
+
+Now the two numbers have become equal, and according to Euclid's
+algorithm, when they become equal we have reached the greatest common
+denominator and the greatest combinator of a and b, of 42 and 30, is
+indeed 6.
+
+So we've now used Python to implement Euclid's algorithm.  Well we
+sort of have; we've really used Python like a glorified calculator,
+and that's not really what we want to do here. We actually want to
+automate this process and so we need to take a few more steps to
+actually use Python to do this properly.
+
+Before we rush on though, let's actually just take a few moments to
+reflect on what we've seen so far.  So let's go back to this terminal
+window.  What have we seen here? we've seen a lot of these kind of
+Python commands:
+v = a - b
+These
+are our statements in the program, and all the code lines are actually
+statements.
+
+We've also seen certain types of statements.  For example a = 42 is an
+assignment.  It assigns the value of 42 and associates that with the
+name "a". We've assigned various different variables here a, b and v,
+and so forth in the code.  Assignment basically takes whatever is on
+the right hand side, it calculates the value of it, in this case
+there's a value here calculated: a - b, and assigns that to the
+variable v here.
+
+On the right hand side these are expressions. An expression could be
+something really simple like a constant, or it can be some piece of
+maths like a - b, or something more complicated.  The expression
+calculates a value; once it's calculated that value, it will put it in
+to the variable on the assignment on the left hand side here.
+v = a - b
+
+Now one thing that might look a little bit odd to you is a statement
+like this one:
+b = b - a
+Now in this case if you're a mathematician, you either go that's
+broken, or you say that a is zero.  But that's not the case in
+programming.  What we've done here is we've calculated the expression
+here, b - a and that produced the particular value, in this case 18,
+and then it associated the name b with that value. Now we had b on the
+right hand side when it meant 30. So what we've actually done here is
+to calculate a value here b - a which gives the value in this
+particular case of 18, and then reuse the name b for the new value.
+
+You've got to be pretty careful when you reuse names that it's the
+same basic concept, otherwise you'll confuse yourself in a big way.
+Now mathematicians really don't particularly like this sort of
+expression where you can reuse a variable on one side on the other
+because this is not, and I repeat not, an indication of equality.  "="
+in Python is always an assignment.
+
+Now when you're calculating expressions
+the obvious thing to ask is is what is
+the order of precedence of the operators.
+In other words
+if i do something like 2 + 3 * 4, what will it do?
+
+Well Python pretty much does what you expect from your maths
+background.  Python will do the 3 * 4 first and then add the 2 to it,
+so what you're getting there is exactly the same as if you did
+2 + (3 * 4)
+
+Now of course you can force the the operation to be in different order
+if you wish by using brackets. If i could type properly: (2 + 3) * 4
+and that will do the 2 + 3 first, and then multiply by 4.
+
+So if you're not sure what the precedence order is, you've got
+yourself confused, you can always put brackets in there to force
+it. But in general Python will do what you expect when it comes to the
+precedence order of of operations.
+
+Now unlike in some other languages, when you're doing assignments,
+Python can do simultaneous assignments.  So for example, rather than
+writing
+
+a = 42
+b = 30
+
+Python can also cope with doing the two at the same time in a way like
+this:
+a, b = 42, 30
+and that will have exactly the same effect.
+
+Right now this doesn't seem something very useful but it turns out
+that actually it is and we'll come back to this a little bit later on.
+
+
+Type Systems
+============
+
+Now Python is what's known as a "strongly typed" and a "dynamically
+typed" language.  By strongly typed, I mean that every variable and
+expression has a type associated with it. All the expressions in in
+the example we've just seen are of type "int" which means that they
+represent integers. Only operations that are supported by that type an
+be performed on expressions of that type, so if you try to form an
+unsupported operation Python will complain.
+
+By dynamically typed, I mean that Python figures out type things for
+itself while the program runs and operations are checked as the
+program runs to ensure they're permitted. In contrast a statically
+typed language would perform this sort of check before the program
+executes to decide type safety before execution. A statically typed
+language usually requires you to annotate the code to tell the
+language the type of everything.
+
+Type systems are one of the most popular methods to ensure program
+correctness. They ensure that only permissible operations are executed
+and they eliminate a large number of potentially trivial bugs.
+However, type systems aren't really a substitute for testing or
+further verification of correctness.
+
+So back to our primitive Python int type.  "int" is primitive in the
+sense that the Python language itself knows about it out of the box.
+Unlike most programming languages, Python can cope with integers of
+arbitrary size so you never need to worry about whether an integer is
+too big to represent in the computer.
+
+Python's int type supports the usual arithmetic operation so *, - *
+symbol for multiply, ** for raised to the power.
+
+Division is a little more complicated. The // operator is integer
+division. For example 14 // 5 gives 2. It always rounds down.  There's
+also a remainder operation which Python uses the percent '%' symbol
+for.  So 14 % 5 will give 4.
+
+There is a other division operator which is a single slash, /, which
+pretty much does what you expect, but it doesn't return an integer
+type; rather it returns a floating point number, but we'll come back
+to what floating point actually means.  Obviously if you divide three
+by twom you don't really expect to get one. A lot of the time you
+expect to get 1.5. So if you do 3 / 2 to divide three by two you will
+get 1.5 as a floating point number.
+
+Finally there's an expression or rather a function int(x) which
+returns the integer representation of x if it actually exists.
+
+Out of the box Python supports a number of other types in addition to
+int, including complex numbers, real numbers - the type for these is
+called "float" for reasons i'm going to skip for now, truth values
+using the "bool" type, strings of characters using the "str" type, and
+many other data structures. A full list of all the supported
+operations can be found in the documentation for all the standard
+types. It's worth studying this at this point.
+
+Higher level programming languages also allow programmers to define
+their own types and to associate their own data with the permitted
+operations on those types.  This is a really key feature that makes
+programming in such languages expressive, closer to what the intent of
+the programmer actually is.
+
+Freeing the programmer of the need to always think in terms of very
+low level types is one way you can reduce the mistakes in your code.
+For example in the last video I defined a lift type and a person type
+in my little lift simulator, and I defined operations they could do,
+such as waiting for the lift, pressing the button, entering the lift and
+so forth. After i'd done that I could then think about the logic of
+the algorithm in terms of those higher level operations.
+
+Conditional Operation
+=====================
+
+OK, so back to our greatest common denominator algorithm.
+
+When I ran through the commands earlier I compared a and b myself, and
+decided which one to subtract from the other, and I checked each time
+to find out whether the two numbers have become the same, in other
+words when we've finished, and that's really a bit too manual. We
+really want to automate the program doing those kind of tests. What we
+can do is we can get Python to do this for us.
+
+Now commands can be made conditional in Python if you use the
+"if/else" statement. The way this works is you put an "if" statement
+with a condition followed by a colon, and then an "else" statement and
+a colon and the idea is that if the condition is actually true then it
+will run the first block of statements and if the condition is false
+it will run the second block of statement under the else statement. We
+can use this to automate the way we decide which piece of code will be
+run.
+
+So that's good, that lets us decide whether to subtract b from a or a
+from b. Now that's not quite enough though. We need to continue to
+loop around and around and around in the program, until we've actually
+finished when the two values are the same.  Python provides us with
+another control structure which lets us do this, which is a "while"
+loop.  The structure of this is you have a "while" condition statement
+and then a whole block of statements that you might run while the
+condition is true.
+
+The idea is if the condition is is true initially, it will go in and
+it will keep repeating this set of statements until the condition
+becomes false, and then it will fall out at the bottom and do whatever
+comes next.
+
+So we're going to use these two primitives, the if statement and the
+while loop, in order to automate our greatest common denominator
+program.
+
+This time I'm not going to just type commands at the Python
+interpreter, what I'm going to do is use an editor to write my
+greatest common language as a program, and then we'll run the program.
+
+So let's get up a terminal
+and we're going to edit a program called
+gcd.pi.
+Now in here we're going to do the same
+things we did before, we're going to
+set a to 42 and set b to 30.
+But now we're going to actually add our
+while loop:
+
+while a != b:
+
+So we're going to run around this while loop until this condition
+becomes true.  So what are we going to do?
+
+if a > b then we're going to subtract b from a and replace a with that
+so:
+
+a = b - a
+
+else so if a is not greater than b:
+
+b = b - a
+
+and then we're going to finish at the end and we're going to print out
+what a is and that point a should be same as b.
+
+OK, so there's several things to bear in mind here. The first is this
+block of code that's within the while loop here is indicated by the
+fact that these things are all indented. The if statement is indented
+within the while loop.  You've got to be pretty consistent with how
+you do that indentation.  You should generally use spaces rather than
+tabs to do this and you've got to be consistent with how many spaces
+you indent by.
+
+So this if statement for example is indented by four spaces and so is
+this else statement because they're at the same level of the program.
+
+OK, so it's going to go into this while loop.  This particular
+condition here: a is not equal to b. It will keep running around and
+around running this if/else block until a becomes equal to b.  Within
+there, we've got an if statement of a > b, then we'll run this
+statement we'll subtract b from a.  Else b >= a, then we'll go through
+and run this version of the of the code.
+
+We'll run around and round this loop until eventually a becomes
+equal to b, and we'll drop out the bottom and print out a.
+
+That's it, that's our whole program.  We'll save that and let's just
+run it.  And it works; it comes out with six at the end.  We expected
+that because we've tried this algorithm before, but that's for the the
+whole piece of code, for running this program. it's a complete program
+now to calculate the greatest common denominator.  We can use this
+code to calculate greatest common numbers of any two numbers just by
+setting their values of a and b.
+
+While we're here, let's just talk a little bit about these conditions.
+We've got one condition there (a != b) and another condition there (a
+> b).  So what is a condition?
+
+A condition is basically an expression, just like we had before with a
+- b and things like that, except for these ones we're a condition that
+will return true or false. So this while condition must be an
+expression that is of type boolean and the same with this if condition
+it must be an expression that returns type bool.
+
+You can use all the obvious comparison operators, <, >, >= in there.
+You can also use boolean operations as in "and", "or", "not" and
+things like that.
+
+Now one thing to bear in mind is that you've got to be very careful
+with the equals operator, =, so we could equally well have said
+instead of "if a != b" we could have done "if not a == b" but you've
+got to be careful there to use that double equal sign because if you
+remember single equals, =, in Python is always assignment.  If you
+want to compare whether a is equal to b that's two equal signs.  It's
+a very common mistake to make, but you just have to get used to
+it. It's pretty much that way in most programming languages, so make
+sure that whenever you're comparing to come up with a true or false
+value your comparison is always two equal signs; when you're assigning
+it's always a single equal sign.
+
+Python is Lazy
+==============
+
+Now another thing to bear in mind with these conditions is that they
+are what's called "lazily evaluated".  Now what do I mean by that?
+Probably better if I show you with an example.
+
+So let's just
+open another thing. So suppose I wanted
+to have a condition that was true
+when 
+y divided by x is greater than 2
+okay and it doesn't really matter what
+we do
+print hello so that's all very well we
+can do that we can divide
+y by x and compare that with two and it
+produces a nice boolean expression
+and an all is well except
+what happens if x is zero if x is 0
+then y divided by x will cause an error
+and so
+if you're writing code like this you
+might want to protect this as it doesn't
+actually cause an error and so what we
+can do is
+if x is not equal to 0
+and y divided by x is greater than 2
+then print out hello now
+at this point probably what you should
+be thinking is how does this prevent the
+problem
+if it's going to evaluate all of the
+right-hand side here
+then it will still try to divide y by
+x and cause a problem despite the fact
+we've put this condition here
+and that would be true except for this
+property of lazy evaluation
+so what happens is it will evaluate
+these boolean terms that are connected
+by this and statement
+in a lazy manner it will evaluate this
+one
+and if it turns out that
+x is equal to 0
+then this will be false so it knows that
+the and will be false so it won't bother
+to evaluate this part
+and so it simply will disappear past
+here and not print out hello
+whereas if you to try to evaluate this
+and then evaluate this and then add them
+together
+then your program would have still
+crashed at this point and so this is a
+really useful property to know about
+this lazy evaluation of conditions it's
+uh it's very useful to be able to avoid
+this kind of error
+and not have to evaluate part of it if
+the first
+cheap test turns out to be in this case
+false
+[Music]
+now back to our gcd code
+okay so this program works
+and it's complete in in a sense
+um but it's a really good idea to
+actually
+divide our code up into functions rather
+than just put all of this code at the
+top level where it runs immediately
+things are started
+so to do that we can define a new
+function
+and we're going to call it gcd and
+this gcd function is going to take two
+parameters a and b
+and those parameters could be anything
+now because we're defining a new
+function
+using this def to define function
+statement
+everything within the function needs to
+be indented into a block to show this
+within a function so i'll move all this
+lot across like that and so now
+we have a new function called gcd
+and we can actually call that function
+so whereas before
+we had to find these variables a and b
+I'm not going to use those anymore
+we're going to find some new variables
+ax and bx
+just giving them different names so they
+don't get confused with the original
+ones
+now the function at the moment computes
+its value
+and it gets to this point and once it
+finishes that while loop
+a finally equals b um
+now what we want to do is to actually
+return the the value
+to the place where the function is being
+called from
+so we can add that return statement
+there and then down here
+we can do say v equals gcd
+of ax ax
+8x bx
+and so this will call our function and
+put the value into v and then we can
+print out v down here
+and well let's try that and run it
+and again it works now it's not a very
+exciting program but
+this illustrates key point here that
+what we're doing here is to divide our
+code
+up into higher level functions that we
+define ourselves
+so when I actually use the gcd function
+and I can use it as many times in my
+code as I wish to use it
+then I only need to think about what the
+function does
+it calculates the greatest common
+denominator whereas
+inside the gcd function that's where you
+care about
+how it calculates the greatest common
+denominator and
+this makes we lets us think about our
+code in higher level functions so I'm
+only really thinking about gcd as a
+function that now when I use it
+down in the outside code whereas we've
+hidden away
+the definition of it up here
+[Music]
+now what's going on with all these
+variable names and
+why are they different names why am i
+using ax and bx in one place and a and b
+in the other
+well we need to figure out a little bit
+about what the scope of variables
+means in other words where they're
+actually available
+when when I call gcd down here
+um I'm giving it these parameters ax and
+bx
+now that's passing a value into this
+function but when it's in the function
+that particular value here that I passed
+in as ax
+is passed in and is stored temporarily
+in this variable called
+a so long as we're in the gcd function
+so if I go into here and I can
+print this out I can print out a
+equals a
+and we can actually see that when we run
+this
+it will print out a equals 42 and that's
+exactly what we want
+we want the the value being passed in
+here to appear in our function
+now if I try to print out
+what a is out here
+outside of the scope of the the gcd
+function
+Python gives me an error basically a is
+not defined out there
+and it's not defined down here either
+still an error the thing is that these
+variables a
+and b are only defined within the scope
+of this function
+now why is that a good thing well it's a
+good thing because it means that i
+don't I can use these variables in my
+calculations within the gcd function
+without them causing any conflicts with
+any other variables anywhere else in my
+million line program well this isn't
+really a million line program but if i
+did have a million line program
+I could use these funk these variables
+safely within the gcd function
+without them causing any conflict with
+any other variables of the same name
+anywhere else in the program
+that matters when your code gets big it
+doesn't really matter very much for a
+function as small as gcd here
+now Python scope rules are just a little
+bit more complicated than this
+so Python actually has a rule for when
+you're looking
+trying to find a variable name or
+function name something like that
+where will it find it if there's more
+than one of the same name so first of
+all
+it will try the the local scope and if
+you can find the
+the variable or the function name within
+the local scope of the function that you
+happen to be in right now
+then great it will use that one if it
+can't find it there then it will search
+onwards and it will look in the
+enclosing function now
+enclosing functions aren't something
+i've shown you so far but it's possible
+to define one function within
+another function and in that case the
+variable names of the outside function
+are available
+to the inside function in this way it's
+not a really common feature that I use
+but
+it's sometimes useful the the next scope
+that
+might come up is if you can't find it in
+either of those scopes it will fall all
+the way out to global scope
+and in our gcd code the variables ax and
+bx were defined at global scope they're
+available
+all the way through the whole program um
+and finally
+if you can't find the the name anywhere
+there it will look at the
+set of built-in Python names the names
+of
+functions and things like that that are
+just built into the language
+and so those are the the rules it will
+it will try the local scope first if it
+fails to find a variable in the local
+scope
+you will look in the enclosing function
+you can't find it there it'll look for
+global and if you can't find it there
+it'll look at the
+the built-in names of course these rules
+mean that it's possible to redefine the
+built-in names if you wish to do so
+though it's usually a bit confusing to
+do it and I wouldn't really recommend it
+unless you know what you're doing
+okay so now we know how to write a
+function
+but when should you use a function
+in the end this mostly comes down to
+experience but there are a couple of
+guiding principles
+that may help the first of these is
+called the abstraction principle
+and it says each significant piece of
+functionality in program
+should be implemented in just one place
+in the source code
+and it goes on to say that where similar
+functions are carried out by distinct
+pieces of code
+it's generally beneficial to combine
+them into one
+by abstracting out the variable parts
+so why is this a good idea well
+if you've got a piece of functionality
+and you end up using cut and paste and
+putting that piece of functionality into
+different places in the code
+and later on you come along and you
+subtly change
+how you're actually going to solve the
+problem then you've got to make sure
+that you go through and you're
+consistent
+everywhere in the code where you make
+the change and it's really hard to do
+that once code gets big
+whereas if you've abstracted the
+functionality out into a function
+so that piece of functionality is only
+in one place then
+when you come to change things later and
+you will come and change things data
+because that's how coding works
+um then there's only one place you need
+to be to keep consistent you don't end
+up with these different inconsistencies
+going on throughout your source code
+so that's the first principle the second
+principle is sort of similar
+which is called the don't repeat
+yourself principle
+and this doesn't talk much about
+functions but pieces of knowledge
+and it says every piece of knowledge
+must have a single
+unambiguous authoritative representation
+within
+a system and so what this means is when
+you're storing data you need to make
+sure that there's an authoritative
+representation of the data sometimes we
+have data in one form and we convert it
+to another form
+and now it's in two different forms and
+now the problem is which one is the real
+version and which one is the copy of it
+and it's very easy to get yourself into
+a mess doing that so
+the key thing here is if you only have
+one authoritative version of the data
+and then if you need to transfer into a
+different form you do it whenever you
+need to
+then you don't end up with that real
+sort of doubt as to which version is the
+authoritative
+unambiguous version of the code uh or
+rather of the data in this particular
+case
+um and this again helps keep your code
+from from being confused and cluttered
+especially as you evolve the code later
+on
+now one other really good reason to
+write a function
+is it allows us to write unit tests for
+our code
+so once we've got a function we can then
+write a series of tests
+to prove to our satisfaction that our
+function actually works the way we
+expect it to
+and then we can actually build up our
+more complicated code out of pieces that
+we have some confidence in
+rather than having bugs all the way
+scattered through our code
+so let's go back to our gcd code and
+actually write a little test function
+so I can actually just define a new
+function
+test gcd
+and we'll feed it in our usual values 42
+and 30.
+we'll calculate the gcd of 42 and 30 and
+then we'll
+assert that v is is equal to
+6 which is should be the correct answer
+and so that's
+a simple unit test for gcd it will feed
+in the values 42 and 30. it will
+calculate the answer and check that the
+answer actually equals six
+and if the answer doesn't equal six it
+will cause a test failure
+and we can then run that in pi test
+pi and it will run our test and it says
+our test
+passed and that's sort of as we'd expect
+because we've been testing with those
+particular parameters all along
+now this isn't a really good test
+it only tests with those two parameters
+it's definitely not a comprehensive test
+so what sort of things should we be
+testing for
+so first of all it probably good to test
+more than one pair of parameters
+but we can't really possibly test all
+possible parameters
+so we're going to need to focus on
+particular cases
+brian kernighan and rob pike in the
+practice of programming
+provide some advice firstly they say
+you should test for coverage make sure
+that all lines and all
+code paths are tested now in my
+experience
+if a conditional branch in your code has
+never been tested there's at least a 50
+chance that it doesn't work so I agree
+completely that's really good advice
+now the second thing you can do is to
+compare different implementations
+and check refactoring and refinement of
+your code
+so for example you might first of all
+write a
+really simple but inefficient
+implementation of some algorithm
+and then later on go back and rewrite it
+to be much more efficient
+and elegant and so forth but the more
+efficient and elegant version is
+probably harder to write
+and more difficult to get correct so
+then
+the fact you've got the simple version
+and the more complicated elegant version
+means you can test the two against each
+other and you can automate automatically
+test against them for a large number of
+parameters
+it gives you some confidence that your
+your faster more elegant version
+actually does the same
+task the next thing you should do is
+test for
+boundary conditions values and special
+cases
+so in the case of our gcd code
+there are some obvious boundary
+conditions and special cases
+for example it would probably be a good
+idea to test what happens when the code
+starts
+with a and b being the same the greatest
+common denominator of
+6 and 6 is 6 but
+does our code handle that correctly we
+should add a test and be sure that it
+does
+the next useful piece of advice is to
+identify
+and test that pre and post conditions
+hold
+so for our gcd code what do we have in
+terms of pre or post conditions well
+we can go back to our proof in our proof
+we
+assumed that a and b were positive
+integers
+that's a precondition what will our code
+do
+if we call it with negative parameters
+there's a pretty good chance it doesn't
+do the right thing and so we should
+probably actually test for those
+preconditions and be sure that they're
+correct
+in a similar vein if you can identify
+conservation properties that's something
+that should
+always be true then you can add tests to
+make sure
+that something always should be true
+actually is true
+finally you should check error returns
+and exception paths
+lots of code works just fine until an
+error occurs and then does something
+really stupid
+now as programmers we tend to fixate on
+good cases because that's the problem
+we're actually trying to solve
+but handling the error cases correctly
+is just as important
+so you should add tests that check what
+happens when things go wrong
+now you could write a whole book on
+error handling
+one thing that you can be absolutely
+sure of is users of your code
+will find ways to use it in invalid ways
+and that exceptional circumstances will
+occur
+now there are several general principles
+that occur when it comes to
+error handling so for example on
+encountering an error your code
+should fail fast and never fail silently
+you shouldn't hide an error your code
+should
+handle errors and exceptions that are
+the result of any external factors that
+somebody might throw at you
+one external factor is your own future
+self using your own code
+in an unexpected unexpected way
+um when you handle an exception case
+it mustn't obscure the intent of your
+code
+when it's running along on the happy
+path um if your
+error handling code makes the the normal
+code
+case difficult to understand you'll end
+up making a code impossible to maintain
+and then as far as possible you should
+use language facilities to handle errors
+and exceptions
+okay so should we see if we can apply
+some of those lessons to our gcd program
+so the first thing we should do is we
+should check for those special cases
+that we talked about
+so
+let's add a second gcd test
+we'll call it test gcd 2 and we'll test
+for what happens when it starts off
+where ax and bx are equal
+and both equal to 6. now
+if we eyeball the code we would expect
+this test to pass
+because when a and b start off the same
+this condition is not true so it will
+never execute any of the steps in the
+loop
+and it will simply return what we
+started with so we'd expect that to work
+but it's probably a good idea to
+actually test it because it's very easy
+to delude yourself that code works when
+it actually doesn't so we'll run that
+so we're on pi test gcd.pi and
+indeed it says that two tests passed in
+0.01 seconds okay so that's good it
+works in that special case
+now what else should we do well the
+other thing we
+look we talked about was these
+preconditions what should be true before
+your function starts and so what we can
+do
+is we can test maybe the fact that these
+weren't positive integers
+and so we can add
+another test gcd
+3 and let's set
+a to be 42 and b to be
+minus 30. now
+what does it mean to do the greatest
+common denominator of a negative number
+it actually doesn't really make any
+sense so
+we don't really necessarily expect this
+to return the right answer but
+the obvious question is what will it
+actually do well
+let's try it and see i'll run pi test
+and it's still
+running and it's still running
+a little bit of a suspicion here it
+might have gone to an infinite loop if i
+type control c
+it will terminate that and you can see
+it passed two tests
+but it didn't complete the third
+okay so what's going on well
+we started off with in this test um
+bx of being -30 so within the function b
+is minus 30. so they don't start off
+equal so it goes into the loop
+and a is positive and b is negative so
+it'll do the first part of this
+and it will subtract b from a
+but b is negative so
+a will keep getting bigger and so it
+will keep going
+around and around this part of the loop
+and every time round
+a will get bigger and bigger and bigger
+and bigger but it will never reach the
+point where a
+is actually equal to b and so this will
+never terminate
+it really is an infinite loop so that's
+not a good thing
+we really don't want our code to be
+creating infinite loops now we know that
+the gcd isn't actually a meaningful
+function
+for negative numbers but it would be a
+really good idea to protect ourselves
+from our future self
+to actually document that a and b must
+be positive
+so we can put in a comment here that
+says
+a and b must be positive
+but a comment only goes so far a comment
+is a reminder but unless you actually
+look at the implementation you're not
+going to actually see
+so it would be a really good idea for us
+to actually add a test in here
+so if not a
+is greater than zero and b is greater
+than zero
+so if our precondition is that a is
+greater than
+and b is greater than zero so if that is
+not true then we need to do something
+so what are we actually going to do um
+at this point
+there's no saying thing that the code
+can actually do at this point the only
+thing it can do
+is to raise an exception and let
+something else handle it and so that's
+what we're going to do we're going to
+raise an exception here
+so raise and what type of exception is
+this well it's really an
+arithmetic error very
+genetic error
+um and what we're going to do is to
+feed into the arithmetic error what we
+got wrong here
+percent s comma percent s
+must be positive
+sent a
+comma b
+and those need to be a tuple like that
+okay so what's this going to do um this
+percent s percent s will fill in
+in an error message that gets returned
+in this error the values
+of a here and b so we get a nice
+meaningful
+string out when we have the trigger the
+error
+okay so let's run that and see what
+happens
+and we get an arithmetic error so it
+correctly
+raised the exception and this is what we
+got we've got an arithmetic error and it
+returned this string
+42 minus 30 must be positive integer
+so that's a nice meaningful error
+message that at least we can see what it
+was we got wrong
+so that's good so far we're now
+not going to infinite loop we're not
+trying to silently swallow
+the mistake we made but we need to also
+test this and so what we're going to do
+is to test what would happen in the
+exception handler that actually shows
+this goes this is correctly being raised
+as an arithmetic error
+Python's way of handling exceptions is
+to use a try
+accept finally block so what you do is
+if you've got some code that you might
+throw
+an exception you put that code in a
+block
+within a try statement and so that gives
+the Python environment the opportunity
+to catch the exception and handle it if
+that
+exception is raised now the next thing
+you need
+is after that an accept block and the
+accept block
+says accept the exception name as a
+variable so what this does
+is if in the try block an exception is
+raised
+and if that exception has the specific
+name
+that matches exception name then it will
+enter that accept block and run the code
+to handle the exception and within there
+the exception that was raised within
+your try block is available to you as
+this variable name
+and finally there's a finally block at
+the end and the thing about the finally
+block is that that is
+always run it's run irrespective of
+whether an exception is raised or not
+so if your try block finishes without
+any exceptions you will still run the
+finally block
+if your tri block raises an exception
+and ends up in the accept block it will
+still run the finally block
+and the reason for this is sometimes you
+need to clean up states that you've
+created
+no matter whether an exception is raised
+or not and so this provides a way to do
+that provides a way to make sure that
+the
+state is always cleaned up now you can
+have more than one accept block for a
+single try block
+and you might do that if you want to
+have more than one different type of
+exception be raised within the block
+and you want those to be handled
+differently okay so
+now we've got the basic idea let's see
+how we might actually handle
+our arithmetic exception from the gcd
+code
+okay so what we need to do is
+to
+modify this test that we wrote our test
+gcd3 which has the negative value here
+and we need to modify this so that it
+actually
+tests out whether the exception is being
+thrown correctly and we can use that to
+show
+how we actually use try except finally
+so we know that the gcd
+can raise an arithmetic exception so
+what we're going to do is to put that
+into a try block now
+what we want to in our test to be sure
+of is that if we do actually feed it
+a negative number it never actually gets
+to this point
+so what we can do is we can assert false
+here
+and so that will cause the test to fail
+if it ever gets to this point in the
+code and we know it shouldn't get to
+this point in the code because what
+should happen
+is gcd should raise the exception okay
+now we need to handle the exception
+so we need to accept and what type of
+error was it does it through well let's
+go back up and check
+it's an arithmetic error here so
+we'll make sure that we
+we have an exception handler for an
+arithmetic error
+and we want to actually be able to print
+out the values so
+except arithmetic error as e e is now a
+variable which will
+catch that arithmetic error okay
+so now we want to make sure that
+the error that's raised is actually the
+version of the arithmetic error that we
+actually want
+so what we're going to do is assert
+that if we scroll back up our code here
+that this string must be positive int
+it's actually part of our error message
+so we can assert that string
+here must be positive int
+that's what we're looking for is
+in and we can take the arithmetic error
+and force that to be a string
+and this will actually extract the
+particular error message we send and
+just check that that's there
+so we can assert that if an arithmetic
+error is actually raised
+we should catch it here and we'll assert
+that it's the right got the right error
+message
+in there that we were looking for okay
+now that's great that tests
+that the error message we expected is
+being raised
+we should probably also test that no
+other
+exception is being raised so we can put
+another assert
+another accept block in here and this
+should never be hit
+so we're going to assert that that is
+false
+and finally
+we're going to assert that that's always
+run so we can assert that that's true
+okay and we don't need that test because
+it should never get there
+so this hopefully will let us
+check that when we feed in a negative
+number into our gcd function
+that first of all it never gets here
+we need to check that it always gets
+here
+and that the right type fair message is
+shown that it never gets there
+and that it actually finally gets
+through to here and so this
+is a test that will actually hopefully
+make sure that our arithmetic error is
+actually being
+raised in the way we expect it to be
+raised because as we said before
+if you don't actually test your
+exceptions and how they're raised and so
+forth
+you won't really have confidence that
+they work until your code fails in some
+weird
+silent way later okay so let's try it
+out
+hopefully I typed all that correctly pi
+test
+gcd.pi and it runs and it says all three
+tests pass and so
+actually I did manage to type it all
+correctly and it actually works
+okay so so just to recap what's going on
+here the the Python raise mechanism
+will interrupt the flow of your program
+and it will bubble the exception up to
+the outer calling blocks wherever it's
+being called from
+now why is that a good thing well it's
+because
+often the error is detected deep within
+your code at a point at which you can't
+do anything about it
+so if someone actually
+for example tries to open a file and the
+file name does not exist
+there's nothing at the point at which
+you open the file that you can do
+anything about it
+but you might be able to do something
+about it higher up in the program you
+might be able to prompt the user for
+a different file name or you might
+actually know that you were trying a
+whole bunch of different names in case
+they existed and you just want to move
+on to the next one in the list it's not
+there's no one answer to that
+and therefore you want to handle that
+exception at
+the level at which you have enough
+information to do something about it
+now this finally block that's there to
+cope
+with clean up on errors because
+sometimes while you're going through the
+tri-block you're instantiating a whole
+bunch of state
+you may be building up information from
+different places and instantiating some
+state
+and then suddenly you discover that you
+can't go any further and
+the trick there is you want to be able
+to clean up all of that state you want
+to remove that state
+before you throw the exception in order
+to be able to
+have a nice clean error handling back up
+at the higher level
+and so the key thing here is to only
+handle the exceptions
+at the point of which you know how to do
+recovery
+if you don't know how to recover at a
+particular level you should raise the
+exception further up and so
+maybe some higher level knowledge is
+available there in order to handle the
+error correctly
+now the other thing you'll have seen is
+that
+i've been changing this gcd program
+continuously i've added
+tests i've turned it from inline code
+into a function i've added
+additional pieces and this process of
+continually refining and improving code
+that's known as refactoring and
+we do that an awful lot when we're
+programming programs that are not
+something that you you write once and
+you never ever change again that's just
+not how the
+how the business works programs are
+these kind of living things that evolve
+programs it's dynamic activity and
+programs are rewritten and retested
+and rewritten and retested and we add
+functionality bit by bit
+and often you're re-testing certainly
+multiple times an hour maybe even
+multiple times a minute
+now evolving the program in order to
+improve its quality
+that process is refactoring and
+when you do refactoring you want to have
+confidence
+that you don't break things whenever you
+refactor things
+and the main way you make sure you have
+that confidence when you're refactoring
+when you're adding functionality or
+you're changing how you do something
+it's by having a good test suite if
+you've got good tests before you do the
+refactoring
+you change something you run the test
+again hopefully all the tests still pass
+and it gives you confidence that in
+making the change you haven't
+actually broken anything gives you that
+real confidence
+now sometimes when you're refactoring
+and changing the code
+you do break things and you realize you
+got it wrong
+and you made a bunch of changes and
+actually it turned out that was a bad
+idea and we want to actually be able to
+roll back
+what pretty much every programmer will
+discover is you you add a bunch of code
+you change a bunch of things you decide
+that's a bad idea and you unchange them
+you edit it back and you rerun the code
+and it
+no longer works it doesn't work the way
+it did before
+this happens all the time you just
+manage to change something subtly and
+then you waste a whole bunch of time
+trying to figure out what it was you
+change that you haven't managed to
+reverse
+the way professional software engineers
+deal with this is
+through using a version control system
+so you check your code into a version
+control system and every time you get to
+the point where you're you're happy with
+it
+it passes at a test you commit the code
+into the version control system
+and then when you start to refactor you
+change something
+if you want to back out you can simply
+roll back to the previous version
+or version before that or a version
+before that that's committed into the
+version control system so the most
+common version control system that's
+used
+is a system called git and
+we're going to be using git on this
+course as our version control system and
+that gives you
+confidence that when you're making
+changes
+and you decide you've made a mistake you
+can always go back to a previous version
+so in this video i've covered really
+quite a lot of material
+if you've done a lot of Python before
+you probably won't have much problem
+with this material but if you've not
+done any Python programming
+there's probably too much for you to
+take in in one go so
+you might want to go back and review the
+video again
+you might want to read through the
+transcript of the video there's also a
+set of slides that are associated with
+video and I encourage you to go through
+and make sure you
+reasonably comfortable with the material
+that i've covered here
+because we're going to go on and from
+now on we're live you're going to assume
+that you know how to program in Python
+at least you know the basic principles
+um so the next thing we're going to do
+is we're going to move on and look at
+the first
+major data structure that Python
+supports the data structure is lists
+and so that'll be in the next video
+[Music]
+you

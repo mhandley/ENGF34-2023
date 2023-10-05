@@ -1,0 +1,39 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.8.16, pytest-7.2.1, pluggy-1.0.0 -- /opt/local/Library/Frameworks/Python.framework/Versions/3.8/bin/python3.8
+cachedir: .pytest_cache
+rootdir: /Users/mjh/teaching/engf0002/ENGF34-2023/video3-python
+plugins: cov-2.10.1
+collecting ... 6
+6
+World
+6
+here2: division by zero
+here3
+collected 22 items
+
+src/test_gcd.py::test_gcd PASSED
+src/test_gcd.py::test_gcd2 PASSED
+src/test_gcd.py::test_gcd3 PASSED
+src/mod_function_euclid_exc.py::test_euclid PASSED
+src/mod_function_euclid_exc.py::test_euclid_exc PASSED
+src/mod_function_euclid_exc.py::test_euclid_exc_raises[test_inputs0] PASSED
+src/mod_function_euclid_exc.py::test_euclid_exc_raises[test_inputs1] PASSED
+src/mod_function_euclid_exc.py::test_euclid_exc_raises[test_inputs2] PASSED
+src/subtraction_function_euclid_interface.py::test_euclid PASSED
+src/subtraction_function_euclid_interface.py::test_euclid_exc PASSED
+src/subtraction_function_euclid_interface.py::test_euclid_exc_raises[test_inputs0] PASSED
+src/subtraction_function_euclid_interface.py::test_euclid_exc_raises[test_inputs1] PASSED
+src/subtraction_function_euclid_interface.py::test_euclid_exc_raises[test_inputs2] PASSED
+src/subtraction_function_euclid_exc.py::test_euclid PASSED
+src/subtraction_function_euclid_exc.py::test_euclid_exc PASSED
+src/subtraction_function_euclid_exc.py::test_euclid_exc_raises[test_inputs0] PASSED
+src/subtraction_function_euclid_exc.py::test_euclid_exc_raises[test_inputs1] PASSED
+src/subtraction_function_euclid_exc.py::test_euclid_exc_raises[test_inputs2] PASSED
+src/euclid.py::test_euclid PASSED
+src/euclid.py::test_euclid_exc PASSED
+src/subtraction_function_euclid_test.py::test_euclid PASSED
+src/except.py::test here2: division by zero
+here3
+PASSED
+
+============================== 22 passed in 0.08s ==============================
