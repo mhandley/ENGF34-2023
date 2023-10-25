@@ -421,7 +421,7 @@ class Model():
         global speed
         self.framecount = self.framecount + 1
         # only check every ten frames                                                        
-        if self.framecount == 10:
+        if self.framecount == 1:
             now = time.time()
             elapsed = now - self.lastframe
             self.lastframe = now
@@ -435,10 +435,10 @@ class Model():
             if speed == 0:
                 #initial speed value                                                         
 		# At 60fps, 10 frames take 1/6 of a second.                                  
-                speed = 6 * elapsed
+                speed = 60 * elapsed
             else:
                 # use an EWMA to damp speed changes and avoid excessive jitter               
-                speed = speed * 0.9 + 0.1 * 6 * elapsed
+                speed = speed * 0.9 + 0.1 * 60 * elapsed
         
     def update(self):
         if self.game_running and not self.paused:
