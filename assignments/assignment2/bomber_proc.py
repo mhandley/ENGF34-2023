@@ -90,6 +90,7 @@ def redraw_bomb(canvas, pos):
         draw_bomb(canvas, pos)
 
 def move_bomb(pos):
+    print(pos)
     global bomb_falling
     if bomb_falling:
         pos[1] = pos[1] + 8 * speed
