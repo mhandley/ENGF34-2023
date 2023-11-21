@@ -1,0 +1,1248 @@
+welcome back everyone
+in this episode i want to talk about
+storage
+now what do i mean by that well
+specifically when i refer to storage
+i mean where does your program store
+its data
+now what we've looked at so far in
+python is
+that your program stored its data in
+variables and those variables are stored
+in
+the random access memory of your
+computer and
+the computer's random access memory is
+made up of ram chips
+like these ones
+now my particular computer here
+has roughly 137 billion
+bits of storage that's quite a lot now
+i can't actually individually talk to
+those bits each bit can store a one or a
+zero but i can't actually directly talk
+to them
+the the minimum unit i can use to
+actually talk to that random access
+memory
+is a unit of a byte which is eight bits
+now it turns out that's actually quite
+convenient because it means that i can
+now start to think of my computer as
+storing numbers
+rather than storing individual bits now
+the problem with storing things in
+random access memory
+is that random access memory tends to
+not have
+a very good memory it tends to forget
+um specifically the dynamic random
+access memory in my computer
+actually can't really remember anything
+for more than about 100 milliseconds and
+then it kind of charge leaks away and it
+just forgets what it was storing which
+is not very convenient
+so to avoid that problem the hardware
+actually goes through
+and continually refreshes all of the
+memory
+in the background without you knowing
+it's happening and so that means that as
+long as the power is going on
+power is turned on the hardware will
+refresh all those bits of memory
+and they won't forget what they're
+trying to store
+but it also means that as soon as i turn
+the power off that refresh stops
+the charge drains away and the random
+access memory contents are lost
+now in the case of your python program
+it's actually even worse than that
+the program doesn't really own the ram
+the the ram is kind of owned and managed
+by the operating system and it
+loans it to your program while your
+program's running
+but as soon as your program finishes
+your operating system is going to
+reclaim that ram
+and use it for some other program to run
+that's how your computer manages to run
+a lot of things at the same time
+now specifically what this means is that
+as soon as your program finishes
+anything that was stored is going to be
+lost and
+that's not so useful so what we want to
+be able to do is to store stuff
+beyond the lifetime of the program and
+that's what i want to talk about today
+
+for the last 50 years or so the main way
+that computers have stored data when the
+power is turned off
+and actually to be honest most of the
+data when the power is turned on too
+has been on computer hard drives like
+these ones
+this particular one is from samsung and
+on the cover of it it says
+warranty void if removed
+sorry samsung i think we're going to
+have to take a look inside
+now i really wouldn't recommend ever
+taking the top off a hard drive
+if you ever want to use it again but
+this one's quite old so i'm not too
+worried
+the shiny part here is actually where
+all the data is stored
+that's coated in a very very thin layer
+of kind of an iron oxide which
+responds to magnetic fields by changing
+its state
+and then later on you can actually read
+back that state the the disc
+actually here rotates at 7200
+revolutions per minute
+which is pretty fast and the
+arm there is what actually reads the
+data off the disk
+so while this is spinning at high speed
+the arm can move to different places on
+the disc and
+read off the bits that are stored in
+basically in circles around the platter
+and this particular hard drive actually
+has
+more than one disc there's two discs in
+here and each of those discs has two
+sides
+and so the arm here is capable of
+reading multiple sides at the same time
+now despite the nearly completely dust
+free environment
+inside the hard disk drive case the
+surface of the disk is not absolutely
+perfect
+there are little tiny imperfections on
+the surface
+and that means that sometimes when you
+store data on the disk
+some of the bits get stored incorrectly
+now this would be a big problem if it
+wasn't for the fact that
+the disk drive actually doesn't store
+individual bytes of data
+instead it stores a whole block of data
+typically something like 512 bytes
+around a circle on the disk and at the
+end of that block of data
+it adds a bunch more bytes and stores an
+error correcting code in there
+later on when the disk comes to read
+back that data it will read the original
+data
+and then it will read the error
+correcting code and it will use that
+code to correct
+any errors that were in the original
+data before the hard disk drive actually
+returns that data back to your operating
+system
+now you could in principle write
+software that talks directly to the disk
+that would read and write data not in
+bytes because you can't do that on a
+hard drive
+but in units of 512 bytes
+but that would be a bit of a pain to do
+because you'd have to know precisely
+where to move the arm to
+you'd have to know precisely how where
+on the disk the data is
+and that would be different for every
+different type of hard drive you used
+so rather than doing that your operating
+system
+provides an abstraction layer so that
+you don't need to know
+about the actual storage medium itself
+all you need to know
+is you can store files of data in the
+file system
+and your computer operating system
+remembers where those files of data are
+actually stored
+on the surface of the disk and what
+blocks they compose
+although most of the world's data is
+still stored on spinning hard drives
+just because they have such high storage
+densities
+if you've got a more recent laptop
+there's a pretty good chance that it's
+using a solid-state drive instead
+now solid state drives use what's known
+as flash storage
+which basically stores charge in a
+floating gate transistor now
+this process is reasonably quick to read
+and write
+but unlike dram flash storage
+suffers from a problem that it wears out
+pretty fast if you keep writing to the
+same locations
+so what you won't ever see is direct
+access to the individual bits or bytes
+of flash storage
+the solid state drive will do its best
+to hide that from you
+and rotate around where it stores things
+across the different flash cells to
+avoid writing to the same cell too many
+times
+and having your your drive wear out
+as a result of this the solid state
+drive still provides basically the same
+block based interface to your operating
+system and so
+from the point of view of most
+application programs it doesn't really
+matter whether you've got a spinning
+magnetic drive
+or a solid state drive in there they
+behave pretty much the same
+the main difference that you might
+notice
+is that when you want to read random
+blocks of data from a magnetic drive
+it takes a bit longer because the drive
+head has to scan across the disk and the
+disk has to rotate to the right place
+whereas on a solid state drive you can
+usually go and read the data directly
+from that particular block
+which is a bit faster but it's still
+significantly slower than dram
+now beyond just hiding the the nature of
+the hardware from the
+user one of the main roles of an
+operating system is to provide
+a user interface so that you can
+actually name your files
+and to arrange them into a hierarchical
+structure so that you can actually group
+things and find them again
+whether that's through a graphical user
+interface or whether it's through
+a command line doesn't really make much
+difference the
+the key is that the operating system
+provides his naming abstraction
+and lets you navigate through the files
+and the
+folders or directories that you use to
+structure stuff
+so what does all this look like from the
+point of view of the programmer how does
+your code
+interface with the operating system and
+its file system
+well the first thing we have is
+namespace for files
+and this is a hierarchical namespace
+each directory or folder whatever you
+want to call them
+contains other folders and so forth and
+you can traverse these folders to find
+a particular location in the file system
+and then you can find
+a file by its name and you can ask the
+operating system then
+to open that file or create a new file
+in that particular location
+in the file system once you've
+opened a file then the interface to the
+operating system lets you
+read and write from your files but
+what's a file well most modern operating
+systems
+a file is just a sequence of bytes that
+is stored in persistent storage
+there's no other semantics associated
+with those bytes
+by the operating system so it's up to
+your program then
+to figure out how to use those bytes to
+do whatever it wants to do
+now once you've opened a file
+you can then read and write so arbitrary
+positions in the file you can move
+forward in the file back within the file
+you can read chunks of the file you can
+write
+and overwrite places in the file and you
+can append to the end of it
+and so that's basically your interface
+to this persistent storage
+you open files you move forwards and
+backwards in them
+and you can read and write data to the
+file
+
+okay so let's look at that from python's
+point of view
+now what are we going to do first of all
+i'm going to
+actually have a file that we can
+actually look at so i've created this
+file
+um names.txt
+and then it's got a bunch of people's
+names and what we want to do
+is to go into python read in the names
+out of this file
+and get them into a list seems like a
+reasonable thing to do
+okay so let's just fire up python and
+see what we can do the first thing we
+need to do is actually to open
+the file and so we can use the
+open function and we need to give it
+first of all the name of the file in
+this case
+names.txt and
+we also need to give it python a little
+bit more information
+as to what we're trying to do here so
+the first piece of information we want
+to give it is in this particular case
+i don't want to modify the file i just
+want to read from it
+so i'm going to specify r for a
+read-only access to the file
+and the second thing is that python has
+more than one way to interpret the data
+when it pulls it in from the file
+the simplest way is to treat it all as
+binary data and we can just read in the
+data as it's stored in the file
+but python also has the ability to read
+in the data from
+the file and interpret it as a text
+encoding
+and so that's what i want in this
+particular case i'm going to specify t
+to say it's a text encoding
+now there are multiple different text
+encodings that python could use
+but the default is to assume that the
+contents of the file are unicode
+in a utf-8 encoding which is a pretty
+good starting point
+and so i'm not going to bother to
+specify that because python already will
+do that
+okay so now i've got the file open i can
+read in some data
+so i'm going to store data in that and
+what i need to do is call file.read
+to read the entire content to the file
+and store it in this
+variable called data and didn't complain
+we can print that out if we wish and
+there we have
+all of the names that were in the file
+but they're in one great big long string
+and so in this particular case what we
+wanted to do was to get those names into
+a list so we can do something with them
+and so we can do that we can basically
+separate the names out into a list
+data.split
+and now if we print out the list we
+actually have a list consisting of all
+of the names
+that are from the file and split will
+basically go through that large
+string of data that we read in from the
+file it'll look for new lines and it
+will split the file up on those newline
+characters
+okay so we've got our data the one thing
+we mustn't forget to do when we
+when we're done here is to actually
+close the file
+at the end and we're done
+now we know how to read data from a file
+we should probably also
+write data to a file so that we actually
+keep our data
+so let's do that we'll
+write a little program here store.pi
+now what are we going to do first of all
+let's actually just define a function
+test right and what's our function going
+to do
+what we're going to do is going to open
+a file write some stuff to it and close
+the file
+so first of all file is he is
+open what we're going to call a file
+let's call it
+up store.pie so text
+and now we want to write to this file
+and we want it to be a text file so
+we're going to use w for write
+and t for a text file now in place of
+that w there
+i could also view some other letters
+what w will do is if the file name
+already exists
+it will truncate the file back down to
+zero length and then start to write it
+to it so it will lose the data that was
+previously in the file
+if the file didn't exist in the first
+place it would just create it
+now sometimes what we want to do is
+actually to open a file and add on to
+the end of it
+in which case instead of that w there we
+will use an a for append
+okay so we're going to open our file to
+right i'm going to open the text file
+and then we're going to put some data
+into it so what we're going to write
+with file.right and let's do
+hello which isn't very inspiring thing
+to write
+and world okay so what we should get in
+our file is
+hello online and world on another line
+and
+then we mustn't forget to close the file
+okay so that should hopefully
+give us a couple of lines one word in
+each line
+in a new file now we should probably
+also write some code to actually read it
+back and check
+so file two is equal to and we basically
+want the same stuff as here
+but we want to read from the file
+okay now before when we
+read in the whole file at once we just
+called file dot
+read but often we don't want to read the
+whole file in one go
+the file is really really really big we
+might only want to read a part of the
+file
+and so it's probably not best practice
+just to read the whole file unless you
+know it's going to be small
+so what can we do well we can do
+something like this
+for a line in file two
+now that seems a bit odd but what's
+happening here is the
+this variable file 2 is acting like a
+generator
+so each time you go through the for loop
+it will read just one line from the file
+but the next time you go around the for
+loop it'll read the next line from the
+file and so forth and so each time
+through we just get one line from the
+file until we finally ran out of lines
+to read and it'll fall out the bottom of
+the for loop
+so we can print out that line
+and what do we need to do we need to
+remember to close the file
+file2.close
+okay that should work we should write
+hello world to a file and then it should
+read hello world back from the file
+we just need to make sure we call the
+function to test it out
+okay so let's try that and see what
+happens
+and we get hello world now if we wanted
+hello world on separate lines
+we probably should have put new line
+character in here
+like that and that will force them to be
+in separate lines so let's try that
+there we go now we're getting hello
+world
+okay so what next
+well it's pretty common to forget to
+close files
+it's sufficiently common that python
+provides a way to handle this
+automatically
+and what happens if you forget to close
+a file well if your program really only
+opens a small number of files for
+reading and forgets to close them
+it's probably not a big deal when your
+program finishes the files get closed
+anyway
+if you keep reading from files and keep
+opening them keep reading them and never
+get around to closing them
+the operating system will run out of
+resources to hold that many files open
+and then your program will crash which
+is probably not a good thing
+when you've opened a file to write to it
+it's not guaranteed that the data you
+write
+actually gets to the file until you
+close it
+close forces any data that's buffered by
+the operating system to actually get
+pushed to the file
+and so it's really important when you're
+writing to files to actually close them
+so forgetting the close file is probably
+not a good thing to do
+so python has a way to deal with this so
+what we can do is instead of just
+opening it like that we can do
+with and then this
+will return the file we've just opened
+as file 2. so what this basically does
+is the same as before it will
+open this file and call that open file
+file too
+but the thing it does differently is it
+will
+automatically close the file at the end
+so
+anything we've done in terms of
+acquiring this resource will be released
+once we drop out to the bottom of this
+for loop so when we drop out of the
+bottom of this for loop
+it will drop out of the with statement
+and then we're releasing the resource
+file to and that will be closed
+automatically and so this is just a
+slightly nicer way of doing the same
+thing
+it's less vulnerable to you accidentally
+forgetting to close the file and so
+forth
+so let's try that and just check and
+make does the same thing
+and indeed it does so
+we can open files right to files
+read from files that's the basics of
+handling files
+
+now so far we've been storing text
+strings to
+file but a lot of the data we want to
+store is not strings
+for example it might just be numbers and
+so the question is how do we store those
+well let's experiment and see
+so we're going to write a new function
+which is going to do something pretty
+similar to this so i'll base it on that
+one
+we're going to call it test nums
+and we're going to store in nums.text
+now what we're still doing here is we're
+still opening nums.txt
+as a text file not as a binary file
+but if we want to do that then we need
+to write out some numbers so
+what are we going to generate let's
+generate some numbers for i in
+range say a million
+to a million and ten
+and what are we going to do we're going
+to write out those numbers but we can't
+just do that we can't just write a
+number
+into a text file because we can only
+write
+text strings into a text file so we're
+going to have to force this number to be
+a string
+and we can do that by by using calling
+strut on it
+so this will work but it will stuff out
+the numbers back to back in the file
+and we won't be able to tell which
+number is which so we'd better actually
+insert a new line character between each
+of them to put them on separate lines
+and that should let us actually write
+out
+all of our all of our numbers into this
+file numstot text
+so let's try that
+by the store.pi and that seems to have
+done something
+so let's have a look at what's in
+nums.txt
+and there we can see we've actually
+correctly stored all of our numbers
+but what's it really done well what
+we've got here
+is a file which has a bunch of data in
+it but
+how much data we can use wc which is a
+word count utility
+to tell us how many lines words and
+characters that are in the file
+and if we do that we see that there are
+10 lines 10 words and
+80 characters so it's taken 80
+characters
+to store our 10 numbers
+and that's because each of these numbers
+is
+being stored as seven characters plus a
+new line
+now we can actually see this if we
+use another utility od which stands for
+octal dump but
+don't worry too much about that um and
+what we want to do
+is to specify what that is decimal
+and num stop text and so what this is
+doing is going through and showing the
+contents of our file
+as what's really stored in those
+particular bytes of the file
+and so what we see here is the first
+byte of the file has the actual
+binary number 49 stored the second one
+has 48
+a whole bunch of those and then there's
+a 10 over here now what are those
+well those are the encodings for the
+characters that we
+did so if we look at the ascii encoding
+table
+we can see that the character number one
+is stored using number 49 in binary file
+and character number 0 is stored using
+48
+and a newline character is a number 10.
+so what we're seeing actually when we
+look at the file here is
+it's being interpreted as a text file
+but each of these numbers is being
+stored as a series
+of seven numbers plus one at the end for
+new line
+and those numbers are actually the ones
+that are used to encode those particular
+characters
+and so this works but
+it's not very efficient in the sense of
+it's using a lot more bytes in the file
+than we really needed to store those
+numbers
+and it's also going to be more work to
+actually
+generate a file like this because we
+have to convert everything into
+characters first
+and then if we want to read it back in
+we're going to have to convert from the
+characters
+back into a number again later so it's
+inefficient in terms of processing power
+and it's inefficient in terms of storage
+if actually what we want to store is
+numbers so what can we do instead
+
+so how about we just store these numbers
+in a binary file
+seems to make more sense than text
+okay so rather than
+writing this to a text file we're making
+a binary file
+and rather than calling it nums.txt we
+call it nums.bin because that seems
+appropriate for a binary file
+now we don't need all this conversion
+of our integer into strings but
+we still can't quite just write it out
+like this
+and the reason is that python doesn't
+know
+how it wants us to represent this
+particular integer
+as a binary number so
+what i mean i mean that for example we
+could want to represent our integers of
+16-bit integers in the file or 32-bit
+integers or 64-bit integers if we wish
+and not all computers use the same way
+of storing integers in binary format
+my particular computer here uses little
+endian format but some other computers
+use a big ngn format and so we're going
+to need to tell python
+what format to use for the integer 2. so
+what are we going to do we're going to
+call
+i dot two bytes which will convert that
+integer into a specific binary format
+we're going to pick four bytes and the
+reason for that is that a million is too
+big to fit into
+a 16 bit number so we're gonna use a
+32-bit number or four bytes
+and we need to tell it what byte order
+to use
+and in this particular case because my
+computer has an x86 processor which
+uses little engine byte order i'm going
+to use little
+now i'll come back to what i mean by buy
+to order a little bit later on in the
+course
+and we'll look at this in a bit more
+detail make sure we've got the right
+number of brackets there
+and that should do
+okay so let's run that
+okay so we've hopefully successfully
+managed to store
+our 10 numbers in our binary file
+uh nums.bin now if i open this in my
+usual editor what i see is
+basically garbage and that's because
+this is a text editor
+and it doesn't really know what to do
+with a binary file
+so what have we got in this file well
+first of all let's see how big
+the file is we can use wc on it again
+nums.bin
+we can see that there are now 40 bytes
+in the file
+and that makes sense because we stored
+10 integers and we told python to use
+four bytes for each integer
+now what are they actually what's the
+actual representation of this
+so what's the wrong file that's our old
+file
+this is our new file a lot shorter and
+you can see that we've got a whole bunch
+of
+digits that repeat and actually this is
+each of these is representing one byte
+but we used four bytes to store each
+integer
+and so we can basically see some pattern
+here we've got four bytes there
+four bytes there four bytes there
+and our integers count up by one and
+that first byte is counting up by one
+each time as well
+so what i'm doing here is displaying
+these bytes in decimal format
+but we can actually then convert them
+manually if you wish to find out what's
+really going on
+so we'll use a calculator and what we
+want to do we want to calculate
+64. that's this first byte here
+we think that's the least significant
+byte plus
+the next one is 66. now that's the
+second
+byte so that's going to be representing
+numbers that are
+two to the power of eight
+and we're going to add the third number
+which is this 15 and that's going to be
+representing it's in the third byte so
+numbers that are 2 to the power of 16
+and the the fourth byte is zero so we
+don't need to add that in
+and if we work that all out it comes to
+a million and so that's actually what's
+got stored in the file those particular
+values in those bytes
+now we can also ask
+od to just do this directly and convert
+those bytes into decimal integers using
+four bytes at a time and then we'll
+actually see these numbers but the
+problem with this is you can't really
+see what's stored in the file here you
+have to actually go and look at the
+individual bytes to figure out what's
+being stored
+so that is now much more efficient in
+terms of its its use of the storage
+it's not having to convert things into
+strings and back again and it's using
+really just the minimum amount of data
+we need to store this particular type of
+data
+
+now we've successfully stored our binary
+data in the file we should
+probably figure out how to get it back
+into python again
+so i'm going to mirror a little bit what
+we did
+with text but we're going to
+open our nums.bin file now
+as file 2. so nuns.bin and
+it's a binary file okay
+so what are we going to do with file2
+well how about we
+we read in some of the data
+now what i'm going to tell it to do is
+to read four bytes of the data
+in one go and i'm going to store that in
+variable b which is going to be just a
+byte string
+now i can try and print out b
+and what will we get let's run
+python store.pi
+and what we get is well a byte string
+but it's not really very
+understandable and it's not yet an
+integer
+so that's not quite what we want
+so what do we want to do we need to
+actually convert it from a byte string
+back into an integer
+now they're both in binary formats
+that's a pretty efficient conversion but
+we still need to do the conversion
+so we're going to store it in i and what
+we need to do
+is to call the int dot from bytes
+function and that will
+convert from a bunch of byte to an
+integer we need to give it
+our byte string b and we need to tell it
+our byte order as well because
+it might need to do some conversion
+there in this case it doesn't but
+it might have wanted to and
+we can print out i and we can see
+whether we've managed to successfully
+pull back the first integer from our
+file
+run python stored up high again
+and i've got a bracket missing somewhere
+oh there we go
+try again let's do all the pi
+and now we are successfully getting that
+first value a million back from the file
+but one of the things you can do with
+binary files well you do it with text
+files too but with binary files if we've
+restored numbers not as as
+strings but as binary data is we know
+how big they are
+and so we can jump around the file and
+go to particular locations in the file
+so suppose instead of wanting to read
+the first of those numbers out of the
+file we want to read
+the third of the numbers out of the file
+well we can do
+file2.seek and we know how big each
+integer is it's sort of four bytes
+and so if we seek eight bytes into the
+file
+then we're going to then start to read
+at that point and we should be able to
+pull out
+the third integer from the file so let's
+see whether that works
+and that we've managed to pull out a
+million and two which is the third of
+the integers from our file and so forth
+we can even actually ask python to tell
+us where we actually are in the file
+file to tell
+and that will tell us what the current
+reading position
+in the file is because the current
+reading position when we first open the
+file
+right back up here is at byte zero it's
+at the very beginning of the file
+if we see forward eight bytes in the
+file the current reading position will
+be eight bytes into the file
+but then we read four more bytes so the
+current reading position should have
+moved on to byte number 12.
+let's just check that it did
+and yeah it's telling us that the
+current position for reading from that
+file is
+byte number 12 in the file so this
+ability to sort of seek
+backwards and forwards through the file
+now gives us the possibility to
+treat the storage on disk as
+something that we can we can jump around
+in we can actually read in parts of that
+data at a time
+jump somewhere else in the file
+overwrite some bytes of the file and
+things like that
+if you're going to actually build
+something for example like a database
+it's really important to be able to do
+that rather than just
+reading the database entirely into
+memory dealing with it there and then
+writing it back all in one go when you
+finish at the end
+we want to be able to incrementally read
+data in and write data back out and that
+gives us a very flexible interface to
+the file system
+
+sometimes you have to deal with what's
+known as big data
+now big data is when the amount of data
+you need to process
+is much larger than the amount of memory
+you have in your computer
+in that situation there's no possibility
+to read the data
+in from storage process it in memory and
+then write out any changes you just
+can't do it
+so what you have to do is to read in a
+chunk of data
+do whatever processing you want and
+write it back out then read in the next
+chunk of data
+do some processing and write it back out
+and so forth
+in fact if we go back to the early
+computers in the 1960s
+they were dealing with quite a lot of
+data but they had very little memory
+and one of the nice things about the
+merge sort algorithm that we saw a
+little while back
+is that you can implement that on these
+sort of computers
+so suppose you have some
+large amount of data that's stored and
+in that time it will be stored on
+magnetic tape
+what you can do is when you're trying to
+merge two successive chunks of data
+you can read one list to emerge from one
+tape
+and another list to emerge from a second
+tape and
+you compare in memory the first items
+from the two
+and then you write that item out to a
+third tape and you can keep reading in
+the next item from each of those two
+tapes as needed
+merge in memory and write out and so you
+can implement a merge sort algorithm
+for very large amounts of data stored on
+tape with
+very very little ram in the computer to
+do it that was a very useful thing to be
+able to do back in the 1960s
+these days computers have an awful lot
+more ram than that but we've also gained
+a lot more data
+and sometimes we have to use similar
+kind of techniques they're known as
+online algorithms
+because basically we have to be working
+through the data
+online as we go
+
+now it turns out that sorting on very
+large amounts of data
+has become a really big deal these days
+because we all rely on search engines
+for just about everything
+suppose i'm feeling vain and i decide to
+search
+for myself
+there i get a response back now
+what google says is it got around 4
+million results
+and it searched the entire internet in
+0.46 seconds 0.46 seconds that's pretty
+astounding
+how does it do that so the first thing
+you've got to do
+is just to download the whole internet
+and that means basically you've got to
+download something like 30 trillion web
+pages
+and you're probably going to need to
+download them pretty repeatedly maybe
+every few days in order to make sure the
+data is fresh
+now once you've downloaded the whole
+internet you're going to have to sort it
+because when we want to look up a word
+we're going to have to basically be able
+to look up
+and do effectively a binary search to
+very rapidly find the word you want
+amongst that great big index so how big
+is that index
+well according to google it's something
+like
+100 million gigabytes that's
+quite a large quantity and
+there's another problem which is that
+when i search for mark handley
+well there are an awful lot of documents
+in the world that have mark
+in them and quite a lot of that handling
+in them but google doesn't know
+that i'm going to search for that
+combination mark handley
+and so if i take that index and just
+split it up by words across many
+different computers
+then no one computer is going to have
+both the index for mark and the index
+for handly on it
+so somehow google is going to have to
+arrange this
+so that my query for mark handley always
+hits
+computers that have both search terms on
+them
+and so somehow my query is going to have
+to meet
+the whole index 100 million gigabytes
+just how large is that i find people
+have difficulty actually
+comprehending these kind of numbers so
+how about
+we see what would happen if you printed
+it out now of course you'd never be so
+stupid enough to do that
+but if you did how big would it be
+so one printed page is about 400 words
+so that's about 2 400 bytes
+now a book that's about 64 000 words
+380 000 bytes we
+stack of 100 books that's taking us to
+about 38 megabytes now
+12 000 books we're now into the gigabyte
+range about 4.6 gigabytes
+and that's convenient enough just about
+the amount of books you can put into a
+shipping container
+so we're going to ship these the largest
+ships in the world
+take about 18 000 containers
+and therefore looking about about 216
+million books
+or 83 000 gigabytes but we're not really
+getting close yet
+100 million gigabytes if one ships 83
+000 gigabytes
+we're gonna need all the world ships
+now my phone has three gigabytes of ram
+my laptop has 16 gigabytes around
+a really high-end server might have 10
+000 gigabytes of ram that's a lot of ram
+and it's pretty expensive
+we're going to need 10 000 of these
+high-end servers just to hold a single
+copy of the index
+these are the sort of servers we're
+talking about these are rack after rack
+of servers in a large data center
+and here's kind of a moody picture of
+one of google's data centers you can see
+that there's not just one row of servers
+but there's row after row after row or
+surface
+okay so how we're going to make this
+work we've got this
+huge index and we can't fit it all on
+one server at all
+so what we're going to have to do is to
+split that index across many servers
+the only real solution here is to divide
+this index into
+ten thousand shards now each shard must
+have an index for
+all the words so we can't split it up
+by index by alphabetically or anything
+like that
+what we have to do is to have each shard
+index one
+ten thousandths of the internet and then
+we'll allocate one server for each of
+these ten thousand shards
+now how we're going to make this work
+and actually perform
+so what we're going to do is for each of
+those 10 000 servers
+one for each shot we're going to
+replicate those servers across many many
+many more servers
+because we don't just want to be able to
+serve your request we want to be able to
+reserve requests for people from all
+over the world
+so now when your request comes in we're
+going to
+split your request up and send it out to
+one server from every one of those
+shards
+so when you go and search on google your
+query is being served
+by 10 000 these high-end servers
+simultaneously
+each one is going to search the index
+for its part of the web
+for the particular combination of words
+you ask for
+and then they're going to return their
+answers back to the front end
+the front-end server will figure out
+which of these
+are the most likely ones that you care
+about rank them
+and then it will send the response back
+to you so the next time you fire off a
+search to
+search engine like google without giving
+it a second thought
+bear in mind that your search is being
+run on something like 10
+000 high-end servers at the same time
+searching an index of something like 30
+trillion web pages
+and all of that then is returned to a
+front-end server
+that sorts the results and returns it
+back to you in
+something like half a second that's
+pretty impressive
+now it's great to get excited about the
+technology but
+we must never lose sight of the fact
+that data has meaning
+and that can impact people's lives it's
+really crucial
+that we protect people's privacy and
+this is a key part of being a
+professional in computer science
+in fact the uk data protection act
+and general data protection regulations
+actually enshrine an awful lot of this
+in law
+they define personal information as
+being anything related to a living
+person
+this means that if you process personal
+information you must have lawful grounds
+to do so
+you can't just gather up people's
+personal information and use it for any
+purpose whatsoever
+you must either have their consent or
+there must be a contract in place
+related to that
+and there are a bunch of other possible
+reasons but you can't just arbitrarily
+assume that you can
+process personal information now
+once you've gathered personal
+information you can only use it
+for the defined purposes you can't use
+it for any other purpose if you
+gathered it because you sold someone
+something you can't then go
+and use that data for something else and
+you can only keep
+personal data for the defined time frame
+that you need to actually perform that
+original task
+where whatever it was you gathered the
+information for
+data must be secured and there are also
+rights associated with data
+such as rights of access and remedy
+and right to be forgotten so
+what does this mean from a technical
+point of view when we build our systems
+well crucially it means that
+all personal information is actually
+mutable
+it means that you can't store data and
+not have the ability to go in and change
+it later
+because maybe you got it wrong and
+there's actually a right to have it
+fixed
+it means that you must be able to find
+data associated a particular person
+because those people have rights of
+access they need to be able to find out
+what you store about them
+and they have rights to remove the data
+as a right to be forgotten
+and these rights include the indexes
+and backups for all your data too
+it means you need a privacy statement
+associated with your data and what
+you're going to do with it
+and it means that you can't process that
+data
+for any purpose whatsoever beyond what
+was originally stated when you gathered
+the data
+crucially it also means that you need to
+make sure that your data is secured
+and that means secured not only in your
+computer you're processing it
+but also when it's stored when it's on
+backup tapes and when it's in transit
+and usually this will mean that it
+requires encryption and limits to who
+has access to those encryption keys
+we've only just dipped our toe into the
+area of data storage today
+we've looked at a pretty wide range of
+stuff ranging from
+how do you open and write to a file all
+the way through to your legal
+obligations as a professional in
+computer science
+this really is a very broad and deep
+subject area
+and i can't really do justice in one
+video but
+that's about it for today anyway see you
+next time
