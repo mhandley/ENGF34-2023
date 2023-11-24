@@ -13,7 +13,7 @@ LOGTIME = False
 PARTIAL_UPDATE = False
 
 # debugging feature
-DONT_DIE = True
+DONT_DIE = False
 
 # enable sound
 USE_SOUND = True 

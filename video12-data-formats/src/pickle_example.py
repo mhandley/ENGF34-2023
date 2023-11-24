@@ -7,5 +7,5 @@ list3 = [list1, list2, list1, list2]
 print(list3)
 
 with open('data.pickle', 'wb') as outfile:
-    pickle.dump(list3, outfile, 0)
+    pickle.dump(list3, outfile, 1)
     
