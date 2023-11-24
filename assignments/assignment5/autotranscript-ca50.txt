@@ -1,0 +1,551 @@
+welcome back everyone
+in this video i'm going to introduce you
+to the fifth assignment which is the
+pac-man game
+i'm going to show you how to run the
+game i'm going to show you a little bit
+about the command line flags
+and i'm going to show you a couple of
+things about how to modify the game
+to learn a little bit more about how it
+works with respect to the network
+protocol that you're going to have to
+write specification for
+so let's get started okay so let's just
+look at the basics of how you run pacman
+and what you can do with it so on the
+left i'm going to start up pac-man as a
+server hence the minus s flag
+i'll set that up and it will now wait
+for the other player to connect
+on the right i'm going to just connect
+to the pac miners on the left
+so i specify the minus c flag for a
+client
+and the ip address that's given in that
+window
+and we can start that up okay so now
+it's up and running
+i'm going to play the version on the
+right
+and we can go through and i've wandered
+across to the maze on the left
+i can go and eat their power pills i can
+go and chase their ghosts
+probably not a good idea going in there
+and they died
+but i can still explore their maze or i
+can come back to
+my maze and go and explore my maze again
+when i go over onto their screen i
+display as
+pink on their screen oops i died
+okay so that's the general idea now they
+just died
+because they got eaten um five times
+um now the problem when you're actually
+just trying to test out the game against
+yourself
+is that you can only play one of them at
+a time because you only have one
+keyboard
+and so that's not very useful so it's
+much useful if you can actually just
+have them not die
+and so we hit q we can kill these off
+we can actually go and edit some
+settings for for local testing purposes
+you can edit npa settings different
+things you can do in here you can turn
+sound off if that's annoying you and we
+can also for debugging at least
+turn don't die to be true and that's
+very useful for
+being able to figure out how things work
+without having to repeatedly restart the
+game
+okay so if we run that again
+and connect and
+now we have the major advantage at least
+for testing purposes that we can't die
+so i can go and i can go and just go
+straight through the ghosts and they
+they can't get me
+then i can go over onto their screen and
+i can go straight through the ghost over
+there too
+and it doesn't make a very interesting
+game like that but from the point of
+view of testing what happens and so on
+without it repeatedly dying and printing
+out debugging and so forth
+that's um quite a useful feature to have
+now this is the game as it was
+originally intended where you basically
+would would
+your pacman would move over onto your
+your friend's screen and you would
+wander over there now
+that's not so useful if we want to play
+against anybody these days so now
+there's an additional flag you can
+specify
+which is the minus r flag which will
+show you what's on the remote screen
+so if i start up the server pac-man
+it will have a little additional window
+on the right hand side and now we'll be
+able to see what's on the remote screen
+so if i start up the client
+okay now i'm going to leave this over
+the top of there so we can't actually
+see what their screen is anymore
+but if i go through the tunnel to their
+side you can see there's a little yellow
+pac-man over on the far side and that's
+me
+the pink background over there is them
+and i can now go
+and explore their maze and i can
+actually see what's going on on their
+screen as well as on
+what's going on on my half of the screen
+and come back
+so that allows you to play it remotely
+against someone who um
+you can't actually see their screen
+now there's one more way you can run
+pacman which is to actually run
+a background server and so in the pacman
+server directory there's the code for
+that
+we can run that and that's just a little
+server that will listen for incoming
+network connections and once it
+gets them it will plumb them together
+and uh and just relay stuff from one to
+the other and back again
+and so now if we we can start up both
+our pac-man
+as clients and this server is running on
+my machine so it's still on
+10.0.0.41 so i can specify the one on
+the left to be a client
+and access whatever on the right to be a
+client and they will connect together
+and they will they will play
+through the background server the pacman
+server is basically receiving the the
+information from
+one of them and relaying it to the other
+and and back again the other way
+and that's useful if you if you need to
+put the server on a machine that's
+accessible from the public internet
+whereas your your laptop or whatever is
+not available on the public internet and
+so you can't connect to
+to it as incoming network connections
+because it's behind a firewall
+so your challenge is to write a
+specification
+for the network protocol that these two
+pac-man instances used to talk to each
+other
+now that will involve you understanding
+what the
+messages that they need to send actually
+are when they're sent
+how they're encoded and how they're
+responded to
+and so to do that first of all you
+should probably
+understand how the existing version of
+the pac-man protocol works
+and once you understand that then you
+can think about how to redesign it to
+make it better
+so let's have a look at what messages
+are actually being sent between these
+uh these two pacman instances so all the
+networking code is in
+panetwork.pi and so if we want to see
+what's being sent
+if you're just sort of searching this
+file for send you can see that
+right at the start of the connection
+there's the the
+password exchange where we encode the
+password and we get back an
+acknowledgement for it
+but after that everything goes through
+the
+the send function for the for the
+network class
+and if we want to actually see what
+messages are being sent we can print
+stuff out here
+so what's going on this send function is
+taking a message
+um and the message then is encoded for
+transmission
+using python's pickle
+command and dump s basically means take
+this python object that we want to
+actually
+turn into a scene of bytes and basically
+dump it into a series of bytes so we
+convert that into some bytes
+and then we actually send those bytes
+across the network
+but before that we first of all send the
+the length so that we know
+how much data we're actually looking for
+now
+if you want to actually understand the
+individual messages that are being sent
+um we can actually just print them out
+before they're encoded
+but not after they're encoded they won't
+be very easy to understand but we can
+print them out before they're encoded
+and get some idea of the communication
+that goes backwards and forwards between
+these
+two pac-man instances we'll do that and
+we'll just run this
+so we'll run two instances of this
+and we can just look at the messages
+that are being sent
+initially it's sending a maze and then
+now
+as we move around it's sending an awful
+lot of stuff
+i'm sending ghost messages it's sending
+score messages
+it's sending pacman update messages and
+you can dive into here and actually try
+to understand what these different
+messages actually are
+what information they contain and then
+think about
+how they might best be sent in the
+future
+so let's take a quick look at what
+happens when these two pac-man instances
+potentially running on different
+computers
+interact with each other in particular
+what happens with those messages that go
+backwards and forwards
+so the first thing to understand is that
+despite the fact that you can either set
+up one computer as being a client
+on the other computer as being a server
+and connect from the client to the
+server
+or alternatively you can connect both
+computers
+as being clients to a server
+it makes no difference whatsoever
+whether you do
+this or whether you do this in terms of
+the messages that are being sent
+when your computer sends a message such
+as a pacman update message
+it will either go directly from one
+computer to the other or the same
+message would go
+via the server from one computer to the
+other
+makes no difference whatsoever to the
+messages that are being sent
+how they're encoded how they're
+transmitted or anything else because the
+server is just being a simple relay
+it takes a message in and it sends the
+same message out and the same in the
+reverse direction
+so you can think of these two as being
+identical from the point of view as the
+protocol it doesn't make any difference
+to you
+let's just consider things from the
+point of view of the model
+of the game that each side maintains so
+one computer maintains its own model the
+other computer maintains its model of
+the game
+each one controls its own pacman its own
+ghosts and has its own copy of the maze
+now what happens when the computers
+connect
+well the first thing that happens is
+each one tells the other one
+about its maze so one computer will tell
+the other computer
+this is my maze so we'll have to build a
+copy of what the remote maze is in case
+we have a go there but also to display
+on that little window as well
+and then this will happen in the other
+version of direction two
+we'll end up with a copy of the maze so
+each computer then knows what the maze
+looks like knows the layout of the maze
+and everything else
+now after that after initialization we
+actually start to get into the game
+and so each computer will model its own
+pacman and its own ghosts and so forth
+but it has to tell the other one
+what's the going on so i'll only show
+the messages going in this direction
+for now just to get a bit cluttered but
+for example every time this pac-man
+moves
+it's going to have to inform the other
+side
+about that pac-man's position its motion
+its direction and things like that
+and similarly every time one of these
+ghosts move
+it's going to have to inform the other
+side so this side is going to have to
+maintain a copy of all of its local
+ghosts
+local pac-man it's also going to have to
+maintain a copy of the remote
+ghost and the remote pac-man and
+so the same happens in the other
+direction now while this pac-man is
+moving around
+on its own maze then things are all
+fairly simple
+all we get is updates to its position
+updates the ghost position and their
+status and things like that
+things sort of get slightly more
+complicated though when for example
+our pac-man goes over onto their screen
+and so now we're still modeling our
+pac-man but it's no longer interacting
+with these ghosts and this maze
+instead it's interacting with these
+ghosts and this maze
+and so that's fine right up until the
+point when you eat some food
+so what happens there well
+now it becomes a bit more bi-directional
+if this pac-man eats some food on its
+local maize
+it's going to update us that that food
+was eaten so we have a local idea of
+what that food is
+but if our pac-man is on their screen if
+our pac-man eats that food
+then that's processed over here it's not
+processed over there
+and so we have to tell the other side by
+the way
+we ate some food so each one is telling
+the other one
+of any food is eaten irrespective of
+whether it's on the local maze or on the
+remote maze
+similarly if our pac-man manages to
+interact with the ghost
+because that ghost was in frightened
+mode
+then we can then eat the ghost and so we
+will might then have to tell the other
+side by the way your ghost got
+got or got eaten and and so you need to
+return it to the home so there are
+messages that go in both directions
+and it's important to then understand
+which messages go in which directions
+under which circumstances in order to be
+able to actually define this protocol
+there's one more thing we should
+probably understand before we finish and
+that's
+how are the existing messages actually
+encoded to transfer across the network
+now in your version you're not going to
+use the same encoding but it would be
+good to understand what's actually going
+on
+in my version of the code so
+what python is using here is this pickle
+mechanism
+so let's have a little example of what's
+going on
+here i've created list one which has
+some numbers in it
+and list two which has some text strings
+in it
+then i've created list three which is a
+list that contains
+list one then this two then this one
+then this two again
+now suppose we actually want to be able
+to transmit this across a network
+or perhaps even simpler we want to store
+it in a file
+pickle gives us a way of doing this it
+will wrap up python's data structures
+encode them in an appropriate byte
+format
+and then you can actually write them out
+to a file and later on you can read them
+back in again
+so what i'm going to do here is i'm
+going to open the file data.pickle
+for writing and i'm just going to take
+list3
+and i'm going to dump it into the file
+this will use pickle to encode it and
+then destroy it into that file
+and so the question is what am i going
+to get what is it going to look like in
+that file
+okay so let's run this
+okay and what's in the file
+well it's a bunch of binary stuff we can
+see
+hello world is in there but we can't
+really see what's going on
+and actually python's most recent pickle
+encoding
+is reasonably efficient it uses a binary
+encoding so it actually stores things in
+a fairly efficient form
+now python has actually gone through
+quite a lot of different versions
+of pickle over the years and
+we can if we wish persuade it to use an
+older version so if we go back to
+version 0 of pickle exactly the same
+thing we're going to take our our list
+of lists
+and we're going to dump it to a file and
+we'll see what happens
+so what did we get this time well
+what python has done in this time in
+this older version of piccolo encoding
+is to encode everything as ascii text
+strings
+now it's a little difficult to pick
+apart exactly what it's done but i'll
+give you a sort of an essence of it
+what it's saying here is this is
+basically a list which is going to
+actually include
+everything and within that list there's
+another list
+and that has integer one and then
+additional items integer two addition
+item integer three and so forth
+and then there's an additional thing
+which is another list which is
+in our code was list one uh is two
+rather and then that one has
+text for hello world and then right at
+the end it says oh and by the way we're
+going to repeat
+that group one and we're going to repeat
+that group two and so in this way we
+we actually have correctly encoded the
+fact that the python's list of lists
+there was really only one list one and
+one list two they weren't actually
+data was not replicated when it was
+stored in the computer and so this is
+python's way of letting you take
+python data structures wrap them up all
+neat and tidy and then stuff them into a
+file or stuff over a network connection
+and it's convenient to be able to do
+that it's a very useful thing to be able
+to do
+but there are several downsides the
+first is it's
+absolutely pisces specific if you wanted
+to write
+a version of our pac-man game that ran
+in say
+c plus and you want to write a different
+system or you want to write it
+to run on on android or ios
+you probably wouldn't be writing it in
+python but you might still be able to
+make it so it's interoperable with the
+original version
+and therefore python's pickle encoding
+being python specific is not
+really a very good way of doing
+interoperability
+but the second problem which is perhaps
+more serious is that
+pickle tends to assume that
+the encoding where it's stored is not
+going to be malicious
+because what it lets you do is to load
+an arbitrary data structure
+into the python interpreter that
+unpickles this encoding
+so first of all we should just verify
+that we actually are
+getting this loaded if we look at the
+unpickle example here
+all i'm doing here is opening that file
+that we just wrote for reading and to
+load things back in i call pickle.load
+from the file and it will recreate
+hopefully our original list
+which is of course the point i mean
+you're going to store it you want to be
+able to load it back
+and indeed it correctly loads back our
+list of lists and we can actually see
+that everything is as it ought to be
+but this is python assuming that
+this data is not going to be malicious
+if you actually
+modified the the data or sent something
+that wasn't expected
+you can cause unexpected things to
+happen in the receiving software because
+the receiving so we're expecting
+this stuff to be in a particular format
+and if i feed it different pickled data
+who knows what it will do might cause
+your code to do all sorts of things
+including have security vulnerabilities
+so you probably shouldn't trust pickled
+data
+from somebody you don't trust across a
+network
+so there's definite potential security
+vulnerabilities using pickle
+and so for these two reasons because
+it's not interoperable across different
+languages and because
+it actually has potential security
+vulnerabilities using pickle for this
+network protocol
+is almost certainly a bad thing and this
+is of course why
+you have been given the task of doing
+something better
+so that's it for this quick introduction
+there'll be other videos which
+explain what we actually mean by
+specification
+and how to actually go about doing
+networking with the different
+protocol options you have available to
+carry your messages backwards and forth
+and so forth
+so see you next time

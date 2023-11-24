@@ -1,0 +1,968 @@
+[Music]
+welcome back everyone
+in this video i want to talk about
+specifications
+in particular i want to talk about what
+is a specification
+and what you should include in a
+specification particularly with
+reference to
+the the pacman specification assignment
+that you've been given
+so let's get started
+[Music]
+so the first thing we should try and get
+straight is why are we writing a
+specification at all
+after all it's quite a lot of work to
+write a specification and
+if we don't need one then we'll do
+better off spending the time writing
+code or something like that instead
+now there are quite a few different
+types of specification
+there's things like a requirement
+specification
+where you specify what a piece of
+software is supposed to do
+usually before you write the software
+and you'd write one of those for two
+purposes
+the first purpose is that the people
+writing the software
+need to know what they're supposed to
+actually achieve and the second thing is
+that the people
+buying the software need to know what
+it's going to do when it's ready
+in order to know whether it's actually
+done what they required and so
+requirement specification will usually
+be a collaboration between two groups
+the people who are going to produce the
+software
+and the people who are going to use the
+software in order to agree
+what they've agreed on in terms of what
+the software will eventually deliver
+another form of specification is a
+formal specification
+and a form of specification is kind of a
+mathematical expression of what the
+software is actually going to do
+how it will work this is not about the
+requirements anymore this is
+actually what it will do and formal
+specifications are
+extremely useful for pinning down very
+difficult pieces of behavior
+but that's a little bit more detailed
+than we're talking about from the point
+of view of the specification that we
+need to produce for our pac-man code
+the sort of specifications that we're
+talking about are really
+specifications that are intended to
+produce interoperability
+and so there's many cases where we write
+specification because
+different people are going to write code
+and we need the code to actually
+talk to each other one example might be
+the graphics library that's supported on
+your computer
+there'll be a specification for how the
+graphics library works
+and that specification is going to be
+related to the api the programming
+interface that people use to to generate
+graphics
+now specification will be basically a
+type to be a contract that says if you
+do these commands like this
+this will happen it's a description of
+how to use
+the the graphics software
+in in our case we're talking about
+another form of interoperability we're
+talking about interoperability between
+two different pieces of software that
+are communicating across the network
+that the goal with this would be that
+two different people
+can write different versions of the
+pacman game
+maybe written in different programming
+languages maybe running to different
+operating systems and things like that
+but if they actually send messages
+between the two of them
+that conform to a specification then
+they should interoperate
+so you don't necessarily need to know
+how the game is written on one side or
+how the game is written on the other
+side you need to know
+enough to be able to send messages that
+will be interpreted correctly when they
+get there
+so really what we're talking about in
+terms of specification that we're
+writing for this course
+is interoperability that's the key thing
+so what do we need to ensure
+interoperability
+[Music]
+so what exactly do we need to specify
+in order to achieve interoperability
+well in the end it comes down to two
+main things
+and we loosely classify these under
+terms syntax
+and semantics so
+what do we mean by these terms
+semantics is all about what do the
+messages actually
+mean this is sort of what one of the
+how do you interpret those messages when
+they're received
+um to understand what's going on and
+in the case of our particular pac-man
+game
+there are several key parts to the
+semantics
+the first question is when are we
+actually going to send messages
+this is actually part of the semantics i
+think when is it important that we let
+the other person know something has
+happened
+the second part of it is in the messages
+that we send
+what does the information the messages
+actually mean
+now this is two things first of all
+which information is in the messages
+and secondly what does that information
+mean when it's received what does
+the actual individual feels mean um if i
+send
+ghost number three what do you mean by
+ghost number three
+those sort of things and the third part
+is what should the recipient do on
+receipt of the message when they got a
+message
+how should they act on it what's the
+purpose of the message from the point of
+view of the recipient
+those are the three main aspects that we
+need to specify
+the point of view of semantics now
+there's also syntax and the key thing
+about syntax is really
+how is the information encoded if we're
+sending an integer for example
+we have many ways of setting an integer
+we can send it as two bytes we could
+send it as four bytes we can send as big
+endian or little endian
+um we can send it assigned or unsigned
+but all those options if we do a binary
+encoding but we could also do a text
+encoding of it we do a text encoding of
+it
+do we send the insurers decimal or
+hexadecimal
+um do we send it with some limit on the
+number of
+digits that we can encode how do we
+actually let the other side know that
+it's a number in the first place that
+presumably if we need a text encoding
+there's some kind of grammar associated
+with that
+so regardless of whether you do a binary
+encoding or whether you do a text
+encoding
+we still actually have to specify how
+that information is encoded
+in a way that somebody implementing a
+receiver for it
+can actually understand and interpret
+that information and get it back into
+the receiving computer
+in the way that it was intended by the
+sender
+so those are the main pieces that we
+need to think about when we're writing a
+specification
+so we should probably look at all of
+those pieces one by one
+[Music]
+the first thing we need to do when we're
+writing a specification with respect to
+the semantics
+is to understand the context of our
+specification
+there are things that we are not going
+to need to specify
+because either they are already
+specified somewhere else or
+they can be taken as a fixed point and
+all we need to do
+is reference that so
+for example we're quite limited in in
+the part of
+this system that we need to write
+specification for
+although we're transferring measures
+across the internet we don't need to
+specify how the internet works
+we don't even need to specify how the
+main transport protocols that we're
+using
+to convey information across the
+internet that's tcp or udp we don't need
+to specify how they work
+because they already specified in
+existing standards documents
+and they're also already implemented in
+the operating system of pretty much
+every computer on the planet
+so at the bottom of our of our system we
+don't need to specify any lower than
+that we only need to specify
+how we use those to send messages across
+the internet but we don't discuss
+how they work at the top end
+for part of our pac-man game we are not
+writing a specification of the pac-man
+game
+that's already in existence in fact i've
+asked you from this assignment
+to only expect to assume that the game
+itself
+is is basically doesn't need to be
+changed all we need to do is to change
+how we send information between
+instances of the game which means that
+the way the game breaks down the
+interactions between
+pac-man and the remote maze and so forth
+you can assume that those are fixed
+they're they're not fixed in terms of
+there's a nice formal specification for
+it but there is a specification that
+exists which is in the form of code
+and you can assume that that part
+doesn't need to be changed
+so these pieces form the two bounds of
+our specification they form the context
+we don't need to change the game we
+don't need to change how the pac-man
+interacts with the remote ghosts or
+anything like that that's all a fixed
+point
+we don't need to specify anything below
+the
+network interface in terms of how things
+like
+tcp or udp are implemented because
+that's kind of the lower bound what we
+need to specify is the bit in between
+how does one instance of a pac-man game
+running at one place
+communicate with another instance of
+pac-man game running at another place
+using the existing internet transport
+protocols like tcp or udp
+but how does it use those that's the
+piece we need to figure out
+okay so now we have some idea of what we
+don't need to specify
+we should think about what we do need to
+specify
+so let's consider the semantics of the
+pacman game as we know it at the moment
+when my pac-man is moving on my screen
+i need to be able to tell the remote
+computer where the pac-man is
+in order for it to be able to update the
+pacman on their screen
+now it turns out that there's a bunch of
+different ways you could go about doing
+this
+the simplest way is sim is for me to
+every time i update my screen
+i send an update to the remote site to
+say by the way the pacman is now here
+and the remote site then just takes that
+information and directly maps the
+pac-man to the screen
+at that particular point and
+that's the simplest way to go about
+doing this it's a bit chatty in terms of
+the amount of messages it sends it needs
+to send one typically every
+30 frames per second or maybe every 60
+frames per second or something like that
+in order to create a smooth update
+but now we've got to consider the fact
+that the network isn't perfect
+the network will be a bit variable in
+how long it takes
+information to get there we'll talk a
+bit more about the network protocols in
+another video
+but if you use udp then sometimes the
+updates won't get there and if you use
+tcp
+gcp's congestion control mechanism will
+sometimes delay
+sending updates and so they might take a
+little while to get there
+so no matter what choice you do the
+network might not get your updates there
+instantaneously and so you get kind of a
+glitchy motion as the pipeline doesn't
+move smoothly
+so that's one design choice so a
+different semantic design choice
+would be to send the updates a little
+bit less often perhaps
+but in addition you include the
+direction of the pac-man and its speed
+and so
+when the remote side receives an update
+from you it updates the position on the
+screen
+but in between receiving updates from
+you it actually can animate the pack
+line itself
+and move it along in the right direction
+and so it gets a much smoother motion
+now if you look at the existing version
+of the protocol it sort of does both of
+these
+it sends updates as fast as it can and
+it also
+sends the direction and the speed and so
+you might think about whether that's a
+good design or not but
+the it's trying to get the best of both
+worlds but
+it doesn't necessarily need to do both
+of those extremes
+so that gets into the semantics of what
+do we send
+do we send just position information or
+do we send position
+and direction and speed information it
+also gets to another question of
+when do we send updates how often do we
+need to send them
+so that's kind of the semantics of the
+update process
+from one pacman game updating the other
+pac-man game
+about the current location of the
+pac-man
+so these are decisions you're going to
+have to make in your specification as to
+what do you send and when do you send it
+now the question of semantics is not
+just about what information do i need to
+send
+but also there are there are subtleties
+to do with the fact that the network
+itself is not
+actually 100 reliable so
+what you're going to have to consider is
+what happens when the network doesn't
+quite behave itself
+now we'll look in more detail in another
+video as to
+what your options are for network
+protocols and how they behave and so
+forth
+but fundamentally you have two
+choices really you can use a protocol
+called udp
+which will send a message exactly when
+you tell it to
+but if it gets lost in the network it
+just gets lost and never gets there
+or alternatively you have a protocol
+called tcp
+which will when it sends messages
+through the network
+if they get lost it will wait for an
+acknowledgement to come back from the
+other end
+and then do a re-transmission of those
+messages which means that you'll never
+lose a message with tcp
+but some of them might get there late
+and so
+you either have a choice if some
+messages get lost or some messages get
+there late
+but these are your only two choices
+you've got to be able to use one or the
+other of these
+so as a result when you're writing a
+specification you need to think
+about whether you're going to be using
+udp or tcp
+and if you're using udp you need to
+think about
+well what happens with those lost
+messages
+if it's just an update of the pac-man's
+position and direction and speed
+then losing one of those messages is
+probably not a big deal so
+the semantics of the protocol can simply
+say those are unreliable and that's fine
+but there are messages which is not okay
+to lose
+if your pacman dies the other side needs
+to know it died to stop animating it and
+do the little
+death pacman animation and things like
+that and if you lose that message
+it's really important that that message
+is resent
+so that the other side knows that your
+pacman died so some messages
+can be inherently unreliable and some
+need to be reliable and you need to
+think about that and specify
+what do you do in those cases
+now if on the other hand you make the
+choice that you're going to use
+the tcp protocol then you don't have to
+deal with the fact that some messages
+get lost
+they'll all get there but some of them
+might get there late
+and so if you're choosing to update the
+position
+and direction and speed and the other
+side is animating the pac-man moving
+nicely forward smoothly
+and then one of those position update
+let's just get there a bit late
+then what will happen the other side if
+it immediately updates pacman's position
+will cause it to jump backwards
+and then it'll move forward and then
+it'll skip forward again when the
+message arrives on time
+so you'll get some strange jittery
+effects happen that way too
+so in either case the not quite such a
+simple question of just tell the other
+side where your pac-man is
+the other side needs to know how to
+handle messages if there's some
+timing delays happening and the sender
+needs to know whether the reset messages
+if it's using an unreliable protocol
+so you're going to have to consider
+these questions when you're specifying
+the semantics of your messages
+basically what does the sender do if
+it's using an unreliable protocol and
+what does the receiver do
+if information arrives late these are
+things that are in the scope for your
+specification they're part of the
+semantics
+of the exchange of information between
+the two endpoints
+[Music]
+once you've decided what messages are
+actually going to be sent
+when they're going to be sent what
+information they have in them and
+how that information is interpreted at
+the receiver
+then we can get on to the remaining part
+of the specification which is
+how we're going to encode that
+information for transmission across the
+network
+this is the syntax of the specification
+now roughly speaking there are two main
+top level choices for you
+the the first way is to express
+the the messages in a textual encoding
+you're going to have something that
+actually you could in principle
+read and understand if you looked at the
+messages
+the other alternative is to use a binary
+encoding
+where things like numbers are expressed
+in their binary data equivalent and
+you basically pack together a whole
+bunch of the fields that you need to
+send in a message
+into a pretty compact binary encoding
+now
+there's no particular right way to do
+this sort of thing
+either a text encoding or a binary
+encoding would make sense for this kind
+of protocol
+and so you're going to need to figure
+out which of these you prefer and why
+you prefer it
+and then once you've decided on that it
+will dictate a whole bunch of other
+things that happen next
+so we'll talk a little bit then about
+what it might mean to do a textual
+encoding
+and what it might mean to be a binary
+encoding and how you might go about
+specifying these
+[Music]
+so let's take a look at a textual
+encoding
+and how you might express the syntax of
+that texture
+encoding in this particular case we're
+going to look
+at something you're all pretty familiar
+with which is the the syntax of
+a url that's used to find things on the
+internet
+so you're all used to urls there there
+are things that you express on
+on adverts and things like that they
+they're used to express
+email addresses these two express all
+sorts of things basically if you can
+locate something on the internet
+there's a url for how to locate it but
+because it's a textual
+way of expressing the combination of
+location of a computer
+and resources on that computer and
+things like passwords and so forth
+there needs to be a standard for how to
+express that basically to express a
+grammar for these things
+and there's a particular document that
+is the standard for this
+and that's this one this is rfc 3986
+now the rfcs are a series of standard
+documents that are published by an
+organization called the internet
+engineering task force or ietf
+and these documents are freely available
+online you can search for them you can
+download them and you can look up
+basically
+how anything on the internet is
+specified to work because there's always
+an rfc for that
+okay so what about this particular rfc
+this particular rfc is just concerned
+with defining urls
+and particularly the syntax of urls and
+what you can express in a url and how
+that actually behaves
+so first of all the there's a bunch of
+background information in here that
+describes the sort of the generics of
+urls things like that
+and what the problem they're trying to
+solve is but then
+fairly early on they get into there are
+some examples of urls
+and there's the obvious things that
+you're used to from the world wide web
+um http or https urls there's also ones
+for file transfer protocol servers
+but you can also express things like
+email addresses you can express things
+like telephone numbers
+you can express how to remote log into
+machines all of these things are
+expressible through
+urls so it's a pretty flexible mechanism
+but
+the price you pay for that flexibility
+is that there needs to be some
+expressible grammar to be able to tell
+exactly what a particular url means what
+the different parts of it mean in a
+particular context
+now the key thing about urls expressed
+in this document
+is that they're expressed in a sort of
+formal notation
+that allows you to say does the sticky
+url actually a legal url
+from a high-level point of view what
+this specification uses
+is a notation called augmented backhoes
+now form or
+abnf and this is a way that you can
+formally
+specify exactly the hierarchical
+decomposition of the components into
+the different fields and so you can tell
+exactly what splits one field from the
+next field
+and so forth when you're trying to
+decompose the url
+and so this particular specification for
+urls
+references a another specification rsc
+2234
+which describes the abnf form
+and then it inherits from that the
+definitions for things like
+alphanumeric characters for carriage
+return
+and things like that so it doesn't need
+to specify them
+in this specification because it's
+already inheriting those from from the
+abn f specification
+and then the really important part of
+this particular specification is not all
+the english language wordy bits
+but actually the bnf specification for a
+url
+which comes right down near the bottom
+here and
+this particular specification says that
+a url must be of this form if it's not
+of this form
+it isn't a url the first part is the
+scheme
+until you're used to things like http or
+https and so forth
+after that there's a hierarchical part
+and then optionally
+tagged on the render might be a query
+part and optionally there might be a
+fragment part
+but there must be a scheme and then a
+colon and a hierarchical part
+and the hierarchical part can be of four
+different forms
+um the first form starts with slash
+slash like http colon slash
+and then if you do that there's an
+authority and then there's a path
+alternatively it could be a path
+absolute a path rootless and a pass
+empty i'm not going to talk about those
+right now but there are other more
+generic things that you might use for
+things like
+email addresses or things like that
+and then the authority part breaks down
+into optionally
+user information like a username at a
+host if you're going to log into a host
+a host which is basically a computer's
+name or ip address
+and then optionally a colon and then the
+port to connect that computer on
+and the host then we can see decomposes
+into it's either an ip literal
+or an ipv4 address or a registered name
+and if you ever wondered what characters
+can i use
+in a computer's name on the internet
+well this pretty much tells you
+that the registered name must be of the
+form
+somewhere down here um
+where is it gone there it is a register
+name can be
+one or more of these it must be uh from
+the unreserved character set
+or two other ways of encoding things but
+the run reserve character set is what we
+normally use to name computers
+um and then it has to be either an
+alphabetic character
+a digit a minus sign
+a dot or an underscore or a tilde but it
+can't be any other character
+so you can't name your computer anything
+that isn't in that set of characters
+because those are the only things that
+are expressible in a url here
+and so what this does is it provides a
+way that you can actually
+then figure out how to write a parser
+for these things
+you can write something that will go
+through an interpreted character as a
+time
+according to this bnf syntax and then be
+able to break down the message that your
+center or the url in this particular
+case
+into the component pieces and and how
+they're represented
+it doesn't tell you anything about the
+semantics of those pieces but it tells
+you everything you need to know about
+how they can be expressed
+in terms of the the character set they
+are using for a textual encoding
+now one thing to note here is this
+particular url specification
+all the characters are basically us
+ascii
+they're us alphabetic and numeric
+characters only
+and so that leads us to an interesting
+question with regards to
+internationalization
+now of course urls were devised before
+unicode came along and so when later on
+people wanted to be able to
+internationalize urls so that you could
+for example put
+chinese characters into a domain name
+this had to be fitted on top of an
+existing mechanism
+so the basic specification for urls they
+have to be an ascii
+but there's an additional specification
+that says if you want to embed
+unicode names into urls
+as the hostname of the computer name
+then there's a way of doing that which
+takes the unicode expression
+and maps it into us ascii
+in order to be put into a domain name
+and then
+it's entirely up to your browser whether
+it shows you the
+encoded form which is not very human
+readable or as
+most modern browsers do it will go and
+notice the fact that it uses this
+additional standard and it will decode
+that and express those domain names into
+unicode
+which is very useful for other parts of
+the world than
+speaking english
+[Music]
+so there were two great advantages to a
+textual encoding
+the first is that at least your first
+approximation
+it's human readable and the second
+is that you have a great amount of
+flexibility
+you're going to have to express a
+grammar in order to define your textual
+encoding
+and so anything that you can express
+within that grammar
+you can express in a textual encoding so
+that's two big advantages but those
+advantages also
+turn out to be downsides so
+the the fact that it's human readable
+means that
+it's more optimized for humans but then
+it's relatively inefficient for the
+computer
+computer's native form for information
+is not going to be in any kind of ascii
+like encoding
+the computer's native form for
+information is going to be
+in binary form for things like integers
+and so a texture encoding is likely to
+be less compact than a binary encoding
+which means that on the network it's
+going to use
+more network capacity and the second
+thing is that the fact that you have to
+express a grammar
+means that you're going to have to in
+the receiver write a parser that's going
+to
+unpick the textural encoding and turn it
+back into the computer's form
+so that's going to be more complex in
+terms of the receiving software and
+actually in terms of the sending
+software too
+whereas if you use a binary encoding so
+long as
+it doesn't need to be especially
+flexible then it's very easy to write
+something that
+is easy for the computer to understand
+even though it may be harder for a human
+to understand
+so this is trade-off here texture
+encodings flexible
+binary encodings efficient the question
+is where do we want to end up in that
+space
+as an example of a binary encoding let's
+look at the specification
+for the tcp protocol this is specified
+in rfc 793
+and it captures exactly how you encode
+the information that needs to go into
+tcp packet headers
+now tcp is used for majority of the
+packets that go across the internet
+anything that needs to be transferred
+reliably and so every single packet
+needs to have a tcp header and so it's
+really important that these headers
+are compact and small so they don't
+waste much network capacity
+and it's also important that the sender
+and the receiver can
+encode and decode those headers very
+efficiently so tcp uses a binary
+encoding to do this
+and so in the specification we can look
+and see what this encoding actually is
+so this diagram gives you the format of
+a tcp packet header or tcp packet
+headers have this format
+and what it's saying is basically these
+are the the bit numbers within a 32-bit
+word and then the continues down the
+packet
+so the first 16 bits of this
+header are the source port but right
+after that
+the next 16 bits are the destination
+port right after that
+the next 32 bits are the sequence number
+and so forth
+now some of these fields like the data
+offset are smaller than a byte you can
+have just four bits as a quantity here
+and then there are a bunch of fields
+which are individual flags which are
+used to just express
+slightly different semantics for the
+start and the end of the connection
+now tcp gets away with having this
+format where
+the interpretation of which bytes
+comprise which field
+is very inflexible there's just this
+very rigid format for every single
+packet header because tcp
+cares much more about this being very
+efficient than it cares about
+flexibility
+but it's not like there isn't any
+flexibility here tcp
+has the ability to put in options so
+after the packet header but before
+the data that the user wants to carry
+there can be options
+and there's a this data offset field
+four bits says
+how long this option field actually is
+but how do you interpret the options
+well
+there's some flexibility there the
+options
+basically are encoded in kind of a type
+length value
+encoding so the first byte of an option
+that says
+what the option type is and then
+for some options as in a well-defined
+table
+they they're just a single byte option
+but for other options
+the type in this case type number two is
+the maximum segment size
+and then there's a length field which
+says how long the overall option is in
+this case four bytes
+and then the actual contents of that
+particular option
+and then you can have these options
+packed one after another in the tcp
+header as you see fit
+so there is some flexibility in tcp to
+add
+additional information optionally
+but almost all of the fields in the
+header by themselves
+are there in every single tcp packet in
+the same layout in every
+packet this is a binary encoding
+it's not very flexible although there is
+some flexibility in the options but it
+doesn't require the expressiveness of a
+grammar or anything like that
+it's just very efficient compact
+squishing in of the different fields one
+after another always in the same order
+gives us a very simple way to express
+that data in a way that's
+easily interpretable by the computer now
+of course
+if you actually do a binary encoding
+like this and you use 32-bit numbers
+like this
+you would better state what the byte
+order actually is in fact
+rsc 793 does not state whether this is a
+big engine or a little endian buy to
+order and this was an oversight when the
+specification was written
+because the people who wrote this never
+considered that anybody would ever
+possibly use a little endian byte order
+for their computers
+um because all of their computers used a
+big engine byte order
+so the agreement on what byte order to
+use was actually sorted out
+effectively by de facto all the
+computers that implemented this use the
+big engine byte order
+but if you write specification of the
+binary encoding
+you need to express if you do any fields
+that are
+numeric you need to express what the
+byte order is if it's more than one byte
+and if you need to be able to express
+signed or unsigned data you'd better
+express that too
+these are things that need to be in your
+specification so that's about it for
+this video
+hopefully you're starting to get a
+little bit better idea of what i mean by
+a specification there'll be a couple
+more videos that provide you with
+a little bit of extra information and
+then hopefully you'll have enough to be
+able to complete the current assignment
+see you next time
+[Music]
+you

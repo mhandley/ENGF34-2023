@@ -1,0 +1,16 @@
+password exchange
+map exchange
+sync start
+pacman position (when on remote screen/always)
+food interation is local (even when pacman is remote)
+ - same food eaten on both screens
+ each side tells other about food being eaten
+
+ghost interactions are local (even when pacman is remote)
+ - each side tells other side where ghosts are
+ - each side tells other ghost "mode"
+ - tell remote side ghost was eaten
+ tell remote side you died
+pacman screen transitions through tunnel
+update scores
+ 
