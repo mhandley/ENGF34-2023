@@ -1,0 +1,1114 @@
+welcome back everyone
+in this episode we're going to continue
+our exploration of networking
+and specifically we're going to look at
+the options for how you might network
+the very first arcade game so let's get
+started
+
+this is pong released by atari in 1972
+it's a two-player game similar to tennis
+each player controls a batch using an
+analog control knob it's actually based
+on an even earlier system called brown
+box invented by ralph baier in 1967.
+here he is with bill harrison playing in
+1969. my introduction to pong was by one of
+these binatone consoles
+released in 1978 should plug into the
+aerial socket on your tv set
+it claimed to play four different games
+but really they were all just pong at
+heart
+i think it's high time that pong was
+brought into the 21st century
+as a two-player network game how hard
+can that be
+
+so let's think through the problem of
+how we network the game of pong from
+first principles we've got two computers
+and each of them has a player
+now the first question we should ask is
+where are we actually going to do the
+modeling of the game i mean the
+interactions between the bat and the
+ball and how fast the ball moves and
+things like that
+where are we going to do that and it
+turns out there's actually
+not really a terribly simple answer to
+that question i mean we could put the
+model over here
+and that means that both of the games
+are going to be interacting with the
+same model
+and that has a big advantage in that the
+game is always going to be consistent
+but it has a big disadvantage for player
+two
+because they're the other side of the
+network and the network might have a
+couple of hundred milliseconds of
+latency
+and a couple hundred milliseconds of
+latency is going to be the difference
+between you missing the ball and hitting
+the ball
+so that would put player two at a big
+disadvantage so
+this is not going to be the way to do it
+it doesn't work if we try to do that
+so what else can we do well we could
+introduce a server
+and the server runs the model
+and actually quite a few network games
+actually do this
+but there's still a disadvantage to it
+which is that both of the games now have
+to interact with the model running on
+the server so again we've got a
+completely consistent game
+but this only really works if the delay
+from
+each of the player to the server is the
+same if one person has a pretty poor
+network connection the other person has
+a pretty good
+connection then this player is going to
+have a big advantage and we don't really
+want that we'd like it to be an equal
+game
+and there's also the problem that
+actually the server might not be in the
+middle
+the server might turn out to be pretty
+well located for one player
+and not very well located for the other
+player and that gives the same degree of
+unfairness
+so if we can't do any of that well what
+are we going to do we're going to have
+to actually distribute the model
+we're going to have to place part of the
+model
+over here and part of the model over
+here
+and then they're going to have to talk
+to each other so that this stays
+consistent
+and that means that the problem is not
+quite as simple as maybe we first
+thought it was
+so let's break down into pieces what we
+mean by
+distributing the model first of all
+let's consider the two bats
+now the reaction times in terms of
+manipulating a bat need to be pretty
+good so
+you really you want as soon as you move
+the bat
+to see the bat move and that pretty much
+dictates
+that each user has to control their
+position of their local bat
+directly we don't want to have that go
+over the network at all
+and so each user will control their own
+local bat
+they'll be able to see their bat on
+their screen no problem that's very easy
+um now of course we always want the
+users to be able to see each other's
+bats as well
+and so that's fairly easy to do as well
+once he's
+updated his bat position we'll send a
+bat update message
+across the network
+and so that she can see the position of
+his bat
+wrote bat and as she doesn't directly
+interact with the remote bat then that
+doesn't really matter if that's
+fractionally delayed
+and vice versa we'll send
+that update message across the network
+and update
+his concept of the remote bat
+so that's fine this case we've got a
+pretty simple distributed model both of
+the bats are moved locally
+both of them tell the other side where
+the bat currently is so they can be
+displayed remotely
+and there's no problem but that's
+because
+they don't directly interact with each
+other but they do interact with the ball
+so where are we going to model the ball
+now it's pretty clear that when the ball
+is speeding towards your bat
+it's really important that you can see
+exactly where the ball is
+with no delay and so
+what this means is that when the ball is
+speeding to your bat
+it's pretty clear that the balls
+position must be being modeled on
+your computer otherwise if it's being
+modded on the other computer at that
+point
+there'll be too much delay and likely
+you can miss
+the ball and similarly when the ball is
+splitting towards the other person's
+bat you really want to be modeled on
+their computer
+and so this gives us a an idea for how
+we might split the processing
+and we're going to have to distribute
+the processing in some manner if this
+game's going to be fair
+so simple sort of idea for how we might
+make this work
+is that when the ball's on your side of
+the court and it's speeding towards your
+bat
+is modeled on your computer and then
+when it goes on to their side of the
+board
+it starts to be modeled on their
+computer and therefore when it's
+speeding towards their bat
+or missing their bat then it's been
+modeled on their computer and then both
+sides get a low latency interaction with
+the ball
+so that's our first hypothesis to how to
+build this
+so let's think about how that might
+actually work
+well i've implemented this distributed
+ball model
+and let's just say it doesn't quite work
+as expected
+yeah let me show you it's fine and then
+it stops okay let's do that again
+runs fine bounces and stops
+so what's going on here well think about
+it from the point of view of
+the ball when it's in my side the ball's
+in on my side
+i'm modeling the ball i'm modeling its
+motion and i'm telling the other side
+where the ball is now as the ball
+approaches the center line i'm still
+telling the other side where the ball is
+but then the ball crosses the center
+line and now it's not my problem anymore
+so the other side should pick up
+modeling the ball and and deal with it
+but now if you're thinking from the
+point of view of the other side
+they saw the ball approaching the center
+line and
+they saw it just before the center line
+and they didn't get a message they
+crossed the center line
+and of course they didn't get a message
+across central line because i never sent
+one because it wasn't my problem once it
+had crossed the center line
+so from their point of view the ball
+never got there and so it's still my
+problem and from my point of view the
+ball is already left
+and it's their problem and so we've got
+a deadlock here
+can't go any further because each side
+thinks the other side is responsible for
+the ball
+so maybe we need to rethink that
+strategy just a little
+okay so i've made one small change which
+should fix that problem all i do is
+i keep sending the position of the ball
+until it's gone over into the other side
+of the court
+and then i'll send one more message once
+it's in the other side of the court
+and that will be enough that the other
+player
+knows the ball is now their problem and
+we won't have this kind of deadlock
+so let's see how that works
+and it's all working
+so our distributed ball model is all
+working just fine
+so what next
+
+in the previous video we used a protocol
+called tcp
+for our chat application and we use tcp
+because it reliably delivers data across
+the internet
+but how does tcp do that and
+is it still the right choice for our
+pong game
+this is a simulation of two computers
+trying to send to two other computers
+computer number one yellow is trying to
+send to computer number two
+and a little while computer number three
+will try and send to computer number
+four
+now computer number one is sending a
+large file
+and that file is broken up into packets
+of data to be sent across the network
+now the problem that computer number one
+faces is it doesn't know how fast it
+should send
+in this particular case this is the
+slowest link in the network
+so in order to find out how fast to send
+it just keeps increasing the rate that
+it sends
+and eventually this starts to build up a
+queue in the network
+and as it keeps increasing eventually it
+overflows the queue
+and a whole bunch of packets are lost
+so it got it wrong it sent too fast
+now how does it know that it got it
+wrong well
+what we're seeing is data packets that
+are going in this direction
+and we're also seeing these little tiny
+packets that are going in this direction
+and these are acknowledgement packets or
+acts
+so for every data packet that arrives at
+computer number two
+an ack is sent back and so what computer
+number one can do is it can
+see from the fact that some of the
+packets were not acknowledged
+that it sent too fast and some packets
+got lost
+so when that happens it does two things
+the first thing it does is to slow down
+and then it will speed back up again
+slowly
+and when it does that it can roughly
+match the amount of data it has to send
+to the capacity of the network so now
+it's sending a roughly the right rate
+for for the link we've got a bit of a
+queue here but it's not too bad
+and the second thing it can do using
+those acts is to find out
+that data was missing and because tcp is
+a reliable protocol
+once it discovers the data is missing
+because the act didn't arrive
+it will resend that data so computer
+number one will hold on to all of the
+data
+until it just gets back back from
+computer number two
+and then it will resend anything that's
+missing um anything does got that get
+there then it's fine it can discard that
+now computer number three just started
+up here and it got a little bit unlucky
+one of its early packets got lost
+because it unfortunately was sharing the
+network with the yellow traffic
+um that's the nature of the internet
+often you're sharing the network with
+other traffic
+and so now it's going to slowly increase
+the rate that it sends
+and until it starts to actually get some
+fair share of the network but it might
+take a little bit of time because it got
+a bit unlucky at the start
+so this is that the nature of the
+problem that you face when you're
+writing
+networking code you don't have the
+network to yourself
+and you're going to have to cope with
+whatever the other traffic is doing at
+the same time
+and other traffic even if your traffic
+is well behaved may cause
+cues to build up and it may cause packet
+loss
+so tcp then is solving two main problems
+the first problem it's solving is one of
+reliability
+and it does that by by nature of sending
+packets getting acknowledgements back
+and when it fails to get
+acknowledgements it will resend the data
+across the network
+the second problem is solving is
+basically how fast to send
+and it does that by probing by
+increasing the amount of data it sends
+until
+some data gets lost and then it will
+slow down and increase again
+so in solving these two problems we've
+managed to
+get the network to go more or less as
+fast as it's capable of
+and make it reliable but there's a price
+you pay for that
+and the price you pay for that is that
+sometimes
+packets are going to be lost and
+so they won't arrive on the first try
+it'll take a few acknowledgement packets
+coming back across the network to
+computer number one here
+to tell it that packets were lost
+and then it will resend and so there'll
+be a delay before that data gets there
+and because tcp delivers everything in
+the original order
+it will not only delay that packet of
+data but it will delay anything else
+that arrived here
+after the missing one until the hole is
+filled and then it can release the data
+to the application
+so that's one source of delay but the
+second source of delay
+is how fast should we send
+you if tcp concludes that it's sending
+too fast
+so faster than the application has tried
+to send then data will be queued
+at the sending computer here until tcp
+decides it's time for it to be sent
+and so that's a second source of delay
+and between these two sources of delay
+we get quite unpredictable
+delay across the network it's usually
+not too bad if the network's working
+quite well but sometimes it can be not
+negligible
+so that's the the price we pay for using
+tcp
+it's nice and reliable the data will get
+there
+but when it gets there is determined by
+any retransmissions that happen
+and by tcp trying to be nice to the
+network and sending at an appropriate
+rate
+so if tcp might add a bit too much delay
+for our game
+what's the alternative well
+the alternative is udp or the user
+datagram protocol
+and so udp is really simple whereas tcp
+does all of this re-transmission
+and trying to figure out how fast to
+send and things like that udp does none
+of that
+with udp when you call send on a udp
+socket
+it just sends that's it
+nothing else it just sent it doesn't do
+any re-transmission it doesn't do any
+acknowledgements
+doesn't do any rate control stuff it
+just sends
+it means the packet goes out of your
+computer when you say send
+and that means that you've got to think
+carefully about how you use it because
+you've got to build your protocol on top
+of this
+to take advantage of its advantages and
+disadvantages let's say
+now suppose we're modeling the ball and
+it's heading
+off in that sort of direction okay
+so we've got to tell the other side
+where the ball is
+so we're going to send an update message
+so that's message number one and then
+shortly afterwards we're going to send
+another update message
+message number two and shortly after
+that we'll send another update message
+message number three
+now we're probably sending these pretty
+often maybe as often as once for every
+frame of animation so maybe let's say 30
+times a second
+and it can take a little while for those
+messages to get across the network
+but that's okay message number one
+travels across the network
+and when it gets to the other side it's
+going to go
+and update the position of the ball at
+the other side it's there
+okay so what happens next well message
+number two travels across the network
+following shortly behind message number
+one
+but it gets unlucky and it gets lost in
+the middle of the network
+shortly after that message number three
+comes flying across the network
+and arrives at the receiver so what
+happens next
+well that depends on whether we're using
+tcp or udp
+if we're using tcp then message number
+one arrived and message number three
+arrived
+but because tcp has to reliably deliver
+the messages
+in order to your application it can't
+send message number three
+up to the application to update the
+position so
+it's going to get stored in a buffer and
+it's going to sit there waiting
+in the meantime the acknowledgement of
+message number three goes back across
+the network
+and usually a few packets later
+a retransmission of message number two
+will finally arrive
+coming across the network
+message number two arrives and that
+means that we can now
+send message number two's update here to
+update the position of the ball
+and finally we can immediately after
+that send message number three's update
+to update the position of the ball
+but from the application's point of view
+these ones arrive right one after
+another
+and so there really wasn't any need for
+message number two it didn't serve any
+purpose
+because we immediately discarded its
+position and replaced it with message
+number three
+so tcp's re-transmission didn't really
+serve any purpose for us here
+so what would have happened with udp
+so with udp message number one arrives
+and it updates the position of the ball
+as before
+measure number two doesn't arrive but
+message number three arrives
+two thirtieths of a second later and is
+immediately passed up to the application
+where it can update the position of the
+ball to where it was at that position
+and there's no delay on message number
+three it just updates as soon as it can
+so the issue here is that if we
+retransmit message number two
+it serves no purpose because by the time
+it arrives it's too
+late for it to actually be useful we
+might as well just not care
+we only care the fact that there's a
+message right after it
+now this works great so long as we keep
+sending update messages if we're sending
+update messages
+really frequently then losing one of
+them doesn't matter because it will
+immediately be supplanted by the next
+one which provides the next update
+and there's no point in waiting for a
+re-transmission
+where it doesn't work quite so well is
+where you need something that's actually
+reliable
+so in the pond game there isn't really
+anything that needs reliability in here
+we can just continuously update the
+positions of the bats we can continually
+update the position
+of the ball maybe you need reliability
+when the ball goes off of the field
+but in reality we probably don't really
+even need real reliability for that
+so long as the it goes off the field the
+model responsible for it going off the
+field notices and puts the ball back
+into play
+so we don't need any reliability beyond
+just sending messages for the pong game
+not quite the same for the pac-man game
+in the pac-man game there are definitely
+some messages that need to get there
+reliably
+but not all of them and so for that game
+you're going to need to think through
+which things actually need to be
+reliable and which things are more like
+the ball position
+in pong which don't need to be reliable
+we just need to send them often
+so i modified my pond game to use udp
+instead of tcp
+and it was pretty easy and it works just
+fine
+so then i thought well actually
+maybe it's working fine just because i'm
+only using it locally
+i mean if i use it locally just to test
+on my own machine there's pretty much
+never going to be any packet loss
+and so i thought i'd probably better
+test it in a slightly more rigorous
+environment
+and so now i'm testing it over a network
+that emulates 10 packet loss
+and it doesn't quite work fine anymore
+so let's see what happens
+well it's working okay and then it stops
+try again working just fine
+and then it stops and so sometimes it
+crosses the middle
+and sometimes it doesn't
+so what happened there well we were
+transmitting the ball position
+and we kept transmitting the ball
+position and remember our reliability
+mechanism says we
+transmit the ball position once once it
+gets into the other side
+so the other side received those ball
+positions
+but we got unlucky the packet that sent
+that one got lost
+so it was never received over here now
+on this side we think the responsibility
+of modeling the ball
+belongs to the first side and on
+this side we think responsibility
+modeling the ball still is
+on the other side and so we're back in
+the same deadlock that we had before
+so how are we going to resolve this well
+it's actually fairly simple
+what we do is we just keep sending the
+ball position
+until the other side receives the ball
+position over here
+and concludes it's its job to update the
+ball position
+and so it's now going to update the ball
+position and send it back
+and as soon as we receive this one
+from the other side we now know that the
+other side is modeling the ball
+and so we can stop now we don't need to
+keep
+sending because the other side now has
+the ball
+and so what we've got here is
+essentially a handshake
+the this side keeps sending
+the ball position until it gets an
+acknowledgement back that the other side
+has received the ball position
+now this acknowledgement isn't and isn't
+it explicit enlargement
+it's just a ball position message back
+from the other side but that's enough
+to make sure that we know for sure that
+the other side has got the
+information that they needed to get
+that's all we need to do to make this
+reliable
+so i've implemented that idea and this
+is it running
+this is with 50 packet loss we're losing
+half of the packets
+and yeah it's a little bit glitchy when
+you only get half of the messages
+but it's still working and it's working
+reliably so
+i think we solved that problem now what
+next
+well the other effect of networks is not
+just loss but also
+delay and testing it out on my local
+computer here
+i'm not really seeing any significant
+delay so
+i think i'd better test it with some
+emulated network delay
+
+so we can see the effects of latency i'm
+interested in a simple emulation of
+network delay so i'm still going to be
+playing
+my computer against itself but i'm
+emulating
+the same thing that would happen if the
+network path had about 250 milliseconds
+delay going out there so that would be
+around a half second going there and
+back
+now for the internet that's a fairly
+large delay but it's definitely
+something that you could see in the real
+world
+so should we see what effect that has on
+the game
+okay so the yellow bat is his
+local one and the grey bat is the remote
+one and you can see that the ball is
+just fine as it comes from them to us
+because it goes from us to
+be glitched you see from there going
+from us to them
+it goes over and then it glitches back
+to the midline going from them to us no
+problem
+every time from us to them it glitches
+back to the midline
+so why do we get that glitch in the
+ball's position as it crosses the middle
+of the screen
+well it's entirely due to the delay in
+the network
+and so for the sake of illustration i'm
+going to imagine that the delay is
+significantly larger
+and so what happens is the ball is being
+sent from let's say right to left here
+and we send the ball position and we
+send the ball position and we send the
+ball position and we send the ball
+position
+and these messages are all in flight
+they haven't got there yet eventually
+the first message gets there
+but we're at least four messages behind
+just because of the delay
+in getting things across the network so
+now we send the next one
+and that one gets there we send the next
+one
+and that one gets there we send the next
+one
+and that one gets them because of our
+reliability mechanism we're still
+sending because we haven't heard back
+yet
+we sign the next one and that one gets
+there
+we send the next one and that one gets
+there
+okay so now the other side knows that
+they need to send back so they send back
+but it hasn't arrived yet so now
+next one goes through and they send the
+next one
+it hasn't arrived yet next one goes
+through
+send the next one and finally this one
+arrives
+bloop and so the ball went
+all the way over here and then it
+glitched back to there and then started
+moving again
+and so that's the effect of latency in
+this there's always going to be
+some discontinuity somewhere and
+putting that discontinuity right in the
+middle of the screen
+puts it right where it's most visible it
+also means that
+we don't get to actually track the whole
+ball visually all the way towards us
+and that's probably a bad thing too so
+we can't get rid of that latency that's
+just
+inherently part of the problem but what
+can we do can we do something different
+in terms of who models the ball
+well yeah splitting the screen in the
+middle seems like an
+obvious thing to do but actually it's
+probably not the best thing to do
+it might be better if the ball is
+modeled
+when it's heading towards us so
+if the ball is heading towards the
+yellow bat here
+it's modeled by
+the yellow butt all the way from the
+point where it sees it turn around
+and then we're still going to transmit
+after it's turned around because we need
+to do that
+in order to inform the pink side that
+balls but why they find the time they
+finally get the
+message that the ball has turned around
+then
+they're going to think it's back here so
+it will glitch backwards but the glitch
+backwards
+just after it turns around at the bat
+and that's the probably the best place
+to hide any glitch
+and then we can have the pink side model
+the ball
+the whole rest of the way
+so any time the ball is heading towards
+you you model the ball
+anytime the ball is heading away from
+you the other side models the ball
+but you keep modeling it after it
+bounces
+until the other side
+gets a message to you and then you know
+that they know what's going on
+and that way we we do the best job to
+hide any glitches
+right at the point when the ball turns
+around and it shouldn't be terribly
+noticeable there
+but as i say there's always going to be
+some discontinuity between the two sides
+now if you really care to try to hide
+that discontinuity then
+when it glitches you could potentially
+slowly speed the ball up so that it
+actually reaches the correct position
+but that's a little bit beyond what i
+want to do today
+i've implemented those changes too and
+well
+you can see the results this is
+emulating
+10 packet loss and 100 milliseconds of
+network delay so that's actually a
+network
+that's pretty poor 10 packet loss is
+about as high as you're likely to see in
+the real world on a network that still
+functions
+and 100 milliseconds delay is is
+actually
+fairly high for this it's certainly very
+high for playing an interactive game
+like this
+over and well what we see if we watch it
+as
+it comes towards the yellow back towards
+us it's nice and smooth
+as it goes away towards the far side
+it's a bit glitchy
+and of course this is because as it
+comes towards us
+it's being modeled on our machine and as
+it goes towards them
+it's being modeled on their machine and
+of course we only really care about it
+moving smoothly when it's coming towards
+us
+because we're trying to get the hand-eye
+coordination right when it's heading
+towards us
+so this is actually a pretty reasonable
+solution to this problem
+now in general when you're thinking
+about
+designing networked software a classic
+beginner's mistake is to ignore the
+effects of latency
+you really can't ignore it most of the
+time you have to figure out
+what the effects are going to be and and
+also if you're using an unreliable
+protocol like udp you absolutely have to
+consider the effects of packet loss you
+can't ignore that either
+you have to design it into your
+algorithms but with the right algorithms
+actually we can make things work pretty
+well despite this
+fairly broken emulated network that i've
+got here
+
+i think we finally understand our game
+and our protocol well enough that
+we could actually think about writing a
+specification for the protocol
+so the first thing to decide
+realistically is
+whether we're going to use udp or tcp
+for this because this actually
+influences quite a lot of the rest of
+the semantics
+so i'm going to use udp for this
+particular one
+it seems like it's the best fit for the
+particular game
+now the next thing we need to think
+about in terms of semantics is
+what messages are actually sent and to
+decide that
+we need to know what does the receiver
+need what information do they need
+and when do they need it so
+for the main part of the game there's
+really only two pieces of information we
+need to send
+the first piece of information is where
+is our bat and for that
+all we really need to send is a y
+coordinate
+and the second piece of information we
+need to send is a ball
+when we're modeling it and that's going
+to be an x under y coordinate
+okay so that's the what information we
+need to send but when do we send it
+for the bat we're going to send it as
+often as we
+can which is basically going to be every
+frame so
+likely something like 30 frames per
+second for the
+ball we're also going to send it every
+frame
+but we don't actually send it
+every frame we only send it when we're
+modeling the ball
+there's no point of sending it the rest
+of time the message won't be won't be
+used
+so that's the we'll send the ball
+as often as we can every frame of the
+animation
+but only when we are modeling the ball
+now that leads to the question of we
+need to define
+when we should be modeling the ball
+otherwise you can have a deadlock
+so we're going to define that we should
+be modeling the ball
+from the first moment when we see the
+ball heading towards us
+so we'll receive an update message from
+the other side as soon as we see
+the ball heading towards us that's when
+we start to model the ball
+we continue to model the ball all the
+way until it either goes off our side in
+which case
+we'll restart or it bounces off our bat
+and starts to head towards the opponent
+but we won't stop modeling it quite then
+we'll stop modding the ball when the
+ball is heading away from us
+and we receive the first message back
+from the other side
+also saying that it's heading away from
+us at that point
+we know the other side knows okay so
+we've done that handshake we're good
+it's not going to deadlock
+now what else um
+we've said we're sending coordinates are
+we just going to send coordinates we
+need to make a decision on this
+we could just send the x and y positions
+but we could also send a velocity
+and if we choose to put a velocity into
+the protocol it's because what we want
+is for
+the receiver of the messages to be able
+to
+animate in the the motion of the bat or
+the motion of the ball
+for a short period of time if some
+messages get lost
+and so as we're using udp it probably
+makes some sense to put a velocity in
+there in addition to the bare minimum
+which is the positions
+now what do the coordinates actually
+mean we've got x y coordinates but what
+do they mean
+they're not defined yet um so
+there's two parts to this the first part
+is what range are they in
+and so we should just specify that and
+for this particular game it's probably
+reasonable to specify the coordinates
+are in something like
+a range of 0 to 1024 in both directions
+that gives us enough precision and 1024
+neatly fits into 10 bits which is nice
+for a binary encoding
+the second thing we need to determine
+is what the coordinate system is
+now not what the range is but what the
+coordinate system actually is as in
+where is the origin and
+this is slightly complicated by the fact
+that it's pretty natural that when you
+start up the game
+you are always at say the left hand end
+but that means that for one of the two
+players the whole coordinate system has
+to be flipped
+and so in order to decide what the
+coordinate system is we're actually
+going to have to decide who is player
+one and who is player two
+and we will specify that the coordinate
+system the origin of the coordinate
+system
+is at the top left corner of player
+one's screen
+and counts across and down and therefore
+for player two it's all reversed and the
+origin the coordinate system is at the
+bottom right
+of their screen if you don't specify
+these details you know we're going to be
+misunderstandings as to what the numbers
+actually mean
+we have to specify what they mean
+okay um so so that's fine we've got
+range of theoretical 1024 and we know
+where the origin is we know
+which direction things go so that's
+reasonably unambiguous
+um we've still got to decide
+who is player one and who is player two
+so we're going to need
+some form of tie break to decide that it
+doesn't matter which way round they are
+it's absolutely fine
+for either of them to be playing one
+who's running prepared to but we need to
+decide
+um so the second thing we need to do is
+to
+somehow synchronize the start of the
+game especially as we're using udp so
+there isn't really a connection to be
+started up we're just sending packets
+so we'll need some form of
+initialization messages that go
+backwards and forwards
+in order to synchronize the start of the
+game and a pretty simple way to
+choose who is player one and who is
+player two is for
+each side to pick a random number in a
+big range
+say 64 bits and whoever picks the lower
+one is player one
+the chances of them actually colliding
+are effectively zero
+nobody's going to play the game that
+many times for a condition to actually
+happen so that's probably sufficient
+so we'll add some initialization
+messages they'll include a big random
+number
+um and each person sends them to the
+other when
+they keep sending until they get
+initialization back from the other side
+and then that's basically a pretty
+simple way to get the game started
+and include a random number we use that
+to choose who is player one who is
+player two
+so i think that's pretty much all of the
+semantics of this game
+the only things we need to do in terms
+of the protocol anyway
+now in addition to that a specification
+will include the syntax of the messages
+it will include which information goes
+in
+which packets how is that encoded
+is it a binary encoding is it a text
+encoding if it's a binary including how
+big are the fields if it's a text
+encoding what's the grammar
+and we need to specify that information
+too and then there's one final thing is
+that we
+probably don't want the protocol to be
+too chatty
+because for a bat message we're really
+only sending one or maybe two pieces of
+information the y coordinate and the
+velocity
+and so those are like realistically only
+going to take us
+about four bytes but we have to factor
+in the fact that the
+ip header and the udp header are going
+to take 32 bytes so we have a four byte
+payload and quite a big header stick on
+the front
+so if we can put more than one of these
+pieces of information
+into the same packet that would probably
+be a good idea too
+and we can because we're always sending
+back messages we can always make sure
+the ball messages just go into the same
+packet as the back messages and so we
+would specify that that happens too
+and that will give us a slightly more
+efficient protocol
+um it roughly halves the data rate at
+the peak
+and so that's definitely worth doing
+okay
+so that's pretty much all the things we
+need to put into a specification
+i'm going to put some sample
+specifications on the course
+github site so you can look at how those
+might be written
+but the most important thing is not how
+they're written but what actually goes
+in them what's
+needed to be specified in order to
+actually understand the nature of the
+protocol
+so that's just about it for distributed
+pong now
+i have to admit it's not the most
+exciting game in the world but
+it does illustrate a whole bunch of
+points really quite nicely and so
+i think it's actually worthwhile
+thinking about anyway
+see you next time

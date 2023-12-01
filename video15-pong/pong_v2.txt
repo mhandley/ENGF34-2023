@@ -1,0 +1,199 @@
+Pong v2 Protocol Specification
+==============================
+
+Terminology
+===========
+
+This specification uses the terms MUST, SHOULD, and MAY as defined in
+RFC 2119 [rfc2119]
+
+The pong v2 protocol runs over UDP, using a well known port of 5432.
+There are three message types: INIT, BAT_UPDATE and BALL_UPDATE.
+
+Every time a player moves their bat, their computer sends a BAT_UPDATE
+message.  The other computer receives this and used it to update the
+display of the remote bat.
+
+When a computer is controlling the ball, it continually sends
+BALL_UPDATE messages.  The other computer receives these, and uses
+them them to update the display of the ball.  A computer controls the
+ball when it is on its side of the screen.  It MUST however continue
+to send BALL_UPDATE messages when the ball has transitioned from its
+side of the screen to the other side, until it receives a BALL_UPDATE
+message from the other side.
+
+Note that from a protocol point of view, the fact that each player
+sees the screen rotated 180 degrees from what their opponent sees, we
+need to be careful when describing position.  This requires we have
+unambiguous agreement as to which player is which.
+
+
+Determining Player 1 vs Player 2.
+================================
+
+Both scores and the orientation of the playing field depend on each
+computer knowing whether it represents player 1 or player 2.  Once a
+connection has been established, each computer generates a random
+number and sends a INITIALIZE message to the other.  The contents of
+the initialize message are:
+
+  - Type: INITIALIZE
+
+  - Round: An integer in the range 0 to 16383 indicating the round of
+    initialize messages this message is a part of.  Round starts at 0
+    and increments by 1 for each INITIALIZE message sent.
+  
+  - Rand: An integer in the range 0 to (2^32) - 1 drawn uniformly at random.
+
+Each computer compares the Rand values from the initialize message it
+sent with the Rand value sent by the other computer.  The computer
+that chose the lowest value is Player 1, the other is player 2.
+
+If the values are identical, the Round number is increased by one,
+each computer chooses another random number, and the process repeats.
+
+As UDP may lose packets, if a computer has not received any INITIALIZE
+message within 1 second of sending its own INITIALIZE, it should
+resend its INITIALIZE message, keeping the round number unchanged, and
+continue to do so every second until it hears an INITIALIZE message.
+
+[MJH Note: this isn't really a properly reliable protocol]
+
+
+Message Contents
+================
+
+The contents of a BAT_UPDATE message are:
+
+ - Type: BAT_UPDATE
+
+ - Value: Position of bat along the range of its travel.  An integer
+   in the range 0-1023, where 0 indicates the left hand end of the
+   range of travel from the viewpoint of the player, and 1023
+   indicates the right hand end of the range of travel.
+
+The contents of a BALL_UPDATE message are:
+
+ - Type: BALL_UPDATE
+
+ - Value: X, Y position of the ball.  X is distance across the screen
+   from 0 to 1023 as the ball moves from left to right from the point
+   of view of player 1.  Y is the distance along the screen from 0 to
+   1023, where 0 is player 1's end of the screen and 1023 is player
+   2's end of the screen.
+
+
+Message Timing
+==============
+
+While the bat is moving, BAT_UPDATE messages SHOULD be sent every
+20ms, as this is the typical reaction time of a human.  If a computer
+cannot maintain 50 frames per second, BAT_UPDATE messages MAY be sent
+once per frame, as it is unreasonable to update the remote computer
+more often than the local one.
+
+Message Encoding
+================
+
+Messages are fixed format, binary encoded, with all integer fields
+send in network byte order (i.e, big endian order).  As as message
+type is fixed forward, no explicit length field is required.  More
+than one message MAY be send consecutively in a single packet - this
+may be useful to reduce overhead when sending both BAT_UPDATE and
+BALL_UPDATE messages.
+
+INITIALIZE message format
+-------------------------
+
+INITIALIZE messages consist of ten bytes, encoded as follows:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | T |                  sequence number                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | U |         round             |            random             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         random (cont)         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+ - T: 2 bit type field.  Type=INIT has decimal value 0.
+
+ - sequence number: a 30 bit unsigned integer, initialized to zero and
+   incremented by one for every new message sent.  If it reaches
+   (2^30)-1, it wraps back round to zero.
+
+ - round:  14 bit unsigned integer in big-endian byte order
+
+ - random: 32 bit unsigned integer in big-endian byte order
+
+BAT_UPDATE message format
+-------------------------
+
+BAT_UPDATE messages consist of six bytes, encoded as follows:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | T |                  sequence number                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |   unused  |    Bat Position   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+Fields:
+
+ - T: 2 bit type field.  Type=BAT_UPDATE has decimal value 1.
+
+ - sequence number: a 30 bit unsigned integer, incremented by one for
+   every new message sent.  If it reaches (2^30)-1, it wraps back
+   round to zero.
+
+- unused: 4 bits, not used, but needed to maintain byte alignment.
+   MUST be set to zero in this version of the protocol.
+
+ - Bat Position: 10 bits, giving an unsigned integer in big-endian byte order.
+
+
+BALL_UPDATE message format
+--------------------------
+
+BALL_UPDATE messages consist of seven bytes, encodes as follows:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | T |                  sequence number                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |   U   |  Ball X Position  |  Ball X Position  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+Fields:
+
+ - T: 2 bit type field.  Type=BAT_UPDATE has decimal value 1.
+
+ - sequence number: a 30 bit unsigned integer, incremented by one for
+   every new message sent.  If it reaches (2^30)-1, it wraps back
+   round to zero.
+
+ - U: 3 bits, not used, but needed to maintain byte alignment.
+   MUST be set to zero in this version of the protocol.
+
+ - Ball X Position, Ball Y Position: 10 bits, giving an unsigned
+   integer in big-endian byte order.
+
+
+Sequence Numbers
+----------------
+
+Due to the use of UDP, messages may be lost or arrive out of order.
+We do not want to update the screen with out of order data.  The
+receiver therefore keeps track of the seuqence number of the last
+message received of each type.  If it receives a message of a specific
+type with a lower sequence number than the last one received, the
+message MUST be discarded.  When performming this comparison, care
+must be taken to account for the potential for sequence numbers to
+wrap.

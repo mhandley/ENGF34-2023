@@ -1,0 +1,172 @@
+Pong v3 Protocol Specification
+==============================
+
+Terminology
+===========
+
+This specification uses the terms MUST, SHOULD, and MAY as defined in
+RFC 2119 [rfc2119]
+
+The pong v3 protocol runs over TCP, using a well known port of 5432.
+There are three message types: INIT, BAT_UPDATE and BALL_UPDATE.
+
+Every time a player moves their bat, their computer sends a BAT_UPDATE
+message.  The other computer receives this and used it to update the
+display of the remote bat.
+
+When a computer is controlling the ball, it continually sends
+BALL_UPDATE messages.  The other computer receives these, and uses
+them them to update the display of the ball.  A computer controls the
+ball when it is on its side of the screen.  It MUST however send one
+BALL_UPDATE message when the ball has transitioned from its side of
+the screen to the other side, so the other computer knows to take over
+control of the ball.
+
+Note that from a protocol point of view, the fact that each player
+sees the screen rotated 180 degrees from what their opponent sees, we
+need to be careful when describing position.  This requires we have
+unambiguous agreement as to which player is which.
+
+
+Determining Player 1 vs Player 2.
+================================
+
+Both scores and the orientation of the playing field depend on each
+computer knowing whether it represents player 1 or player 2.  Once a
+connection has been established, each computer generates a random
+number and sends a INITIALIZE message to the other.  The contents of
+the initialize message are:
+
+  - Type: INITIALIZE
+
+  - Round: An integer in the range 0 to 16383 indicating the round of
+    initialize messages this message is a part of.  Round starts at 0
+    and increments by 1 for each INITIALIZE message sent.
+  
+  - Rand: An integer in the range 0 to (2^32) - 1 drawn uniformly at random.
+
+Each computer compares the Rand values from the initialize message it
+sent with the Rand value sent by the other computer.  The computer
+that chose the lowest value is Player 1, the other is player 2.
+
+If the values are identical, the Round number is increased by one,
+each computer chooses another random number, and the process repeats.
+Note: it is unlikely this will ever happen.
+
+
+Message Contents
+================
+
+The contents of a BAT_UPDATE message are:
+
+ - Type: BAT_UPDATE
+
+ - Value: Position of bat along the range of its travel.  An integer
+   in the range 0-1023, where 0 indicates the left hand end of the
+   range of travel from the viewpoint of the player, and 1023
+   indicates the right hand end of the range of travel.
+
+The contents of a BALL_UPDATE message are:
+
+ - Type: BALL_UPDATE
+
+ - Value: X, Y position of the ball.  X is distance across the screen
+   from 0 to 1023 as the ball moves from left to right from the point
+   of view of player 1.  Y is the distance along the screen from 0 to
+   1023, where 0 is player 1's end of the screen and 1023 is player
+   2's end of the screen.
+
+
+Message Timing
+==============
+
+While the bat is moving, BAT_UPDATE messages SHOULD be sent every
+20ms, as this is the typical reaction time of a human.  If a computer
+cannot maintain 50 frames per second, BAT_UPDATE messages MAY be sent
+once per frame, as it is unreasonable to update the remote computer
+more often than the local one.
+
+Message Encoding
+================
+
+Messages are fixed format, ASCII encoded and separated by a newline
+character.  CR characters MUST NOT be sent.  More than one
+message MAY be send consecutively in a single packet - this may be
+useful to reduce overhead when sending both BAT_UPDATE and BALL_UPDATE
+messages.
+
+INIT message format
+-------------------
+
+INIT messages are of variable length, encoded as follows:
+
+INIT: round=<roundid> random=<random><newline>
+
+"INIT" MUST be capitalized, and MUST be at the start of the connection
+or immediately follow a newline character.  The fields MUST be
+separated by a single space character.  The fields can be in any
+order, and the protocol MUST ignore any unknown fields.
+
+<roundid> is a decimal encoding of the round number, and MUST be in the range 0 to 16384.
+<random> is a decimal encoding of the chosen random number, and MUST be in the range 0 to 4294967296.  
+
+BAT_UPDATE message format
+-------------------------
+
+BAT_UPDATE messages are variable length, encoded as follows:
+
+BAT: position=<bat_position><newline>
+
+"BAT" MUST be capitalized, and MUST immediately follow a newline
+character.  The fields MUST be separated by a single space character.
+The protocol MUST ignore any unknown fields.
+
+<bat_position> is a decimal ASCII encoding of the bat position, and MUST be in the range 0 to 1023.
+
+
+BALL_UPDATE message format
+--------------------------
+
+BALL_UPDATE messages are variable length, encoded as follows:
+
+BALL: xposition=<ball_x_position> yposition=<ball_y_position><newline>
+
+"BALL" MUST be capitalized, and MUST immediately follow a newline
+character.  The fields MUST be separated by a single space character.
+The protocol MUST ignore any unknown fields.
+
+<ball_x_position> and <ball_y_position> are decimal ASCII encodings of the ball x and y positions, and MUST be in the range 0 to 1023.
+
+
+ABNF Grammar
+------------
+
+connection =          1*(msg newline)
+
+msg =                 init_msg | bat_msg | ball_msg
+
+init_msg =            "INIT:" space init_field 1*(space init_field)
+
+init_field =          "round=" integer | "random=" integer
+
+bat_msg =             "BAT:" space pos_field
+
+pos_field =           "position=" integer
+
+ball_msg =            "BALL:" space xpos_field space ypos_field
+
+xpos_field =          "xposition=" integer
+
+ypos_field =          "yposition=" integer
+
+integer =             POS-DIGIT *(DIGIT)
+
+alpha-numeric =       ALPHA | DIGIT
+
+DIGIT =               "0" | POS-DIGIT
+
+POS-DIGIT =           "1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
+
+space =               %d32
+
+newline =             %d10
