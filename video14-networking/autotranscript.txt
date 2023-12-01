@@ -1,0 +1,1580 @@
+welcome back everyone
+in this video i'm going to talk about my
+favorite subject which is
+networking now what are we going to do
+we're going to
+develop a very simple chat application
+using
+fairly low level network primitives and
+so the idea is that we have two
+computers
+and what you type on one computer will
+come out on screen to the other computer
+and eventually we'll modify it
+sufficiently that what you type on the
+other computer
+first also comes out on the first
+computer which will make it a bit more
+useful as a chat application
+so let's get started
+
+so our goal is to transfer a bunch of
+data from computer 1
+to computer 2 across the network in
+between
+now how are we going to go about doing
+this well
+the first thing we need to do is to
+actually create what's known as a
+network socket
+so somehow we're going to have to create
+a socket
+on this computer i'm going to have to
+create a socket
+on this computer and then once we've
+created those sockets
+we're going to have to connect one
+socket to the other socket
+and then your application can come along
+and it can write data into here
+and if the computer operating system
+does its job properly
+every bit of data you put into here will
+will pop out here
+and you'll receive all of that data that
+you wrote into here
+out of here in the right order nice and
+reliably
+and everything will be good so that's
+our goal now how do we go about doing
+that
+so the first thing we need to do is to
+actually call
+the function socket
+on this computer to create a socket
+i'm going to introduce the same one here
+we're going to create a socket and that
+will create as a socket
+okay that's simple enough now what do we
+do next
+well the first thing we're going to do
+is to have one of these two computers
+act as if it's a server because one is
+going to have to
+listen for incoming connections and the
+other one's going to have to originate
+incoming connections
+so in this particular case i'm going to
+make this one
+the server and then this one is going to
+be the client
+so what does a server need to do
+well the first thing it needs to do is
+to call
+bind and we need to give it a port
+number
+so what does bind do what bind does is
+it associates this socket
+with a particular numbered network
+port and that's because your computer
+can have multiple different incoming
+connections at the same time
+and we need to be able to figure out
+which one's which so when you call
+bind it basically says that this
+particular socket
+is now associated with one two three
+four
+that's kind of the entrance point to
+this computer
+so once we've done that the socket is
+associated with this
+particular port number but it's not
+actually able to accept any income
+connections
+so we need to tell the computer that we
+actually want to listen for incoming
+connections
+so that's the next thing we do we call
+listen
+and that kind of opens up this for
+listening so now it can actually accept
+incoming connections on this particular
+socket
+but we still don't have a connection and
+we need to establish a connection we
+need to tell this computer
+by the way i want to talk to that
+computer
+so the next thing we need to do is to
+call connect
+and there are two pieces of information
+we need to give to connect
+one is the name or the address in this
+particular case is going to be the
+address
+of this computer over here but i'll just
+put in serve here as a placeholder for
+that
+and the second thing we need to do is to
+tell it which entry point which port
+so in this case that's one two three
+four
+and when we call connect that will cause
+our computer operating system to
+establish
+a connection in this case it's going to
+be a tcp connection
+which is a reliable protocol we'll talk
+about that a bit more in a minute
+and so now we've got a connection
+we're almost there but not quite
+this socket is intended only for
+listening so
+we need to actually decide whether we
+want to accept that connection over here
+if we call accept
+on this particular socket what happens
+is that socket gets
+cloned so a new socket will appear
+and this connection is associated with
+that new socket
+the original one can carry on listening
+for any additional connections for any
+other computers
+but this is the one that's now
+associated with the connection not the
+original one the new one
+and then finally we can actually send
+information into here from our
+application we're going to send some
+data
+and how do we send data we call send
+that will send the data squirting across
+this connection
+all over to the new socket and then in
+order to actually get the data out at
+this side
+then we're going to call receive
+and that will receive any data that's
+already arrived here and is sitting
+there waiting to be
+received by the application over there
+so those are all the main
+functions we need to do in order to
+actually
+set up our connection and then transfer
+data across the connection from one side
+to the other
+so let's hear that is in python
+so on the left i'm going to edit the
+code
+for the client and on the right i'm
+going to edit the code for the
+server and we'll write the code for both
+these connect together
+so the first thing we need to do is to
+import
+the socket module because we're going to
+actually need to create some sockets
+and then let's create a socket let's
+just call our socket
+sock and to create a socket i'm
+going to create the caller socket
+function on the socket module
+to actually go about creating a socket
+now we're going to have to give it some
+parameters
+the first parameter we're going to give
+it is the
+um we need to specify that we want to
+use the
+intercept protocol suite for doing this
+because there's other possible options
+so we're going to specify afinet that's
+the address family inet
+for internet and the second thing is we
+need to tell it what kind of
+socket we want do we want a socket that
+gives us a nice reliable stream of
+packets or do we want
+actually individual packets but not the
+reliability and so in this particular
+case we're going to call
+socket.sockstream
+which will give us a stream of data we
+can feed
+bytes in at one side bytes come out the
+other side and in practice that's going
+to be implemented using the tcp protocol
+to give us a nice reliable connection
+okay so so that's created a a socket
+and we've done that on the client we're
+going to need to do exactly the same
+thing on the
+server so we'll copy that across
+and to our server side and
+okay so what happens next well
+the first thing we're going to need to
+do is to connect from the client to the
+server but that's no good unless the
+server is actually
+already up and listening so we're going
+to write some server code first
+so what are we going to do we're going
+to take our
+socket that we've just created and we
+need to bind it to a particular port
+number
+so that an incoming connection to the
+right on the correct port number gets
+fed to our socket
+so it's going to call bind and we're
+going to leave it a port
+and we have to pick a port number so
+what port number i'm going to pick
+um doesn't really matter for this place
+as long as it's not already used
+i'm going to put 0.9876 that will do
+okay so once i've bound the port now
+i've got a
+socket and it's associated with a
+particular port so any incoming
+connection that rises that port
+could potentially be connected to my
+application
+but that won't happen unless i actually
+tell the server to bother to listen for
+incoming connections
+so so next thing we need to do is call
+soc.listen
+and listen takes one parameter too which
+is
+how many outstanding connections can
+have arrived but we haven't
+actually accepted them yet in this case
+i only need one
+so that will do
+okay and once we've got that i've
+actually got a server that's
+bound to the right port and it's up and
+listening and so it's ready for an
+incoming connection to arrive
+so we'd better make that connection
+actually happen
+now we're gonna need that port number on
+the other side so let's
+go over there and
+okay so 0.9876 is what we're going to
+want so now we've got to actually
+connect
+our socket so
+connect and we need to tell
+the operating system where to connect to
+and
+we're going to connect to a pair of an
+ip address
+and a port
+and what ip address are we going to use
+well it has to be the ip address of the
+server
+so if i was connecting to a particular
+computer across the internet i'd have to
+specify its ip address
+but in this particular case i'm just
+going to test it out on my own computer
+here so i'm just going to use its local
+ip address
+all computers on the planet have the
+same local ip address 127.0
+and so that will work over there so
+that's enough to
+actually connect my my socket and so
+now i've got a connection from the
+client to the server we need to accept
+that connection on the server side
+okay now one thing i got wrong here is
+when i bind i don't just bind the
+port i also need to tell it which
+network interface to listen on
+or if i just specify an empty string
+here it will listen on all network
+interfaces which is
+enough for what i want to do here
+okay so we're listening
+and incoming connections arrived what do
+i need to do i need to accept that
+incoming connection
+so we're going to call accept
+and we're going to call that on this
+socket
+and what does that return well because
+accept gives us a clone of the original
+socket it's going to return as a new
+socket
+so i'll just call it new sock and it
+also returns the
+the ip address of the computer that just
+connected the socket in case we want to
+do anything with that
+so i'm just going to store that as well
+okay
+so now we've got a connection we ought
+to be able to feed some data through it
+at least hopefully this will work anyway
+so what are we going to do over here
+well
+we're going to need to actually
+read some data from the user and write
+it onto the other side
+so while while true
+we're going to read some some data from
+the
+uh the user so sorry to text
+whatever you type in and we use the
+input function for that
+and we need to give a little prompt to
+give the user some idea that they need
+to type something
+okay so we've got some text but it's a
+python string and we can't write python
+strings
+into a network connection we have to
+encode them into whatever the relevant
+encoding is to transmit over the wire in
+this particular case by default it's
+going to be
+a utf-8 encoding that's what python does
+by default
+so we need to create some encoded text
+so we're going to call text.encode
+to encode the text and we need to store
+that somewhere so
+encoded text
+and then all we need to do once we've
+encoded it and now it's just a stream of
+bytes
+is to stuff that into that network
+socket so
+sock.send
+and with that encoded text here
+and that should be enough that should
+hopefully pop out on the server side
+so what are we doing over here well it's
+going to be pretty similar we're going
+to have a while loop
+so i'll cut and paste that across from
+the other side
+and now what we need to do is to receive
+the data from the socket
+so we're going to call
+connected sock our new sock
+dot receive i'm going to call receive on
+it we need to tell it
+how much it's acceptable to receive in
+one go so we'll give it a limit
+let's let's say a kilobyte will do
+and that's going to give us some some
+bytes
+so it's going to give some encoded text
+then we're going to need to decode that
+text so
+encoder text
+decode and by default it will decode
+from utf-8 uh
+into utf-8 from the the byte stream and
+then what we're going to do
+we're going to print it out and just so
+we can see exactly what we've got i'm
+just going to print some little
+angle brackets before it and and after
+it
+so we can see if we've got any new lines
+or anything else weird coming through
+okay and that should in principle be
+everything we need
+to be able to make this work assuming i
+didn't type things wrongly
+okay so let's see if we can run this
+okay didn't like that okay i've got the
+way does the parameters to bind wrong
+um it does want that but it needs them
+to be as a pair
+like that hopefully that's better
+well it thinks it's doing something
+and let's transition across to the
+service client side
+let's see if this will work
+and we type hello and will it appear on
+the right hand side
+it does so that's worked we've managed
+to configure ourselves a simple server
+a simple side a client and
+we can send information from one to the
+other so that's the simplest chat server
+we can possibly build
+
+so that seems to work at least
+superficially anyway
+um we haven't really tested any of the
+corner cases or given
+anything strange so maybe we should see
+if we can actually just break it
+um what's the simplest way to break it
+well how about we
+run the client before we run the server
+that can't possibly work um so what will
+happen
+well we get an error it's not too
+surprising we get connection refused
+error which is probably the correct
+thing given that the server's not
+listening
+okay so let's see if we can fix that
+so what are we going to do what we want
+to do is to keep trying
+connect until we succeed so
+what we can do is we can put everything
+in a in a big
+while loop and we'll
+try doing connect
+and if we succeed we're going to break
+out of that while loop
+and and continue
+but if we get the exception raised
+connection refused error then we need to
+clean up all the mess
+get everything back to a reasonable
+state and try again
+so what are we going to do to clean up
+the mess well first of all we should
+probably tell the user
+that things are not ready yet
+let's do that um so that's reasonable
+the user at least knows not to start
+typing
+the next thing we need to do is to get
+rid of that existing socket it's stuck
+now we can't recover it there's no way
+to recover it so we're going to close it
+and now if we're going to try and
+connect again we need to recreate a new
+socket so we'll take this
+and we'll do it again we'll create a new
+socket and
+let's just make it slightly neater i'll
+put that in a new line
+and so that should work except for it'll
+just completely hammer trying to connect
+um all the time so we don't want to do
+that too often so
+we'll put in a sleep one here so that we
+only try doing it once a second
+if we're going to use sleep we've got to
+import it from the time modules
+so import time
+from time import sleep
+okay so we create our socket
+we try to connect if we succeed we break
+out the while loop and everything
+happens before
+if we get a connection refused error
+then we'll print out waiting for server
+we'll close the old socket because it's
+no good to us we'll create another one
+to try on again
+we'll wait a second we'll go around the
+while loop and we'll try and connect
+again
+so we may go around the while loop a
+bunch of times before we succeed in
+connecting
+but hopefully eventually the server will
+turn up and we'll actually manage to
+connect
+so should we try that
+we'll run it and it prints out waiting
+for server and it prints out one to
+second which is what we expect
+now if we run the server does it
+actually work
+okay server's up and running and now on
+the left we've got our prompt
+so we should just type something in
+and that all works nicely so there
+that's much better that's much more
+robust
+so if we handle all of the corner cases
+yet um
+well what happened if the server goes
+away
+let's just kill it
+if we
+keep typing it's not realizing it's keep
+typing and
+oh it just crashed so we got broken pipe
+error now
+and that's because we're trying to write
+data into a
+network connection that was up but has
+now failed
+so we'd probably better add some error
+handling for that too
+let's paste that
+so that failed down in sock.send
+it was trying to send the
+um and it didn't succeed
+because we got a broken pipe error so we
+can put a try around this
+and click on pi power
+now what are we going to do if the
+connection fails well
+probably the best thing to do at this
+point is just to print out an error
+message
+and close things down cleanly instead of
+crashing
+something like that and then all we need
+to do is to
+leave the code in a clean way we've got
+a system exit
+and we also need to import assist if
+we're going to do that
+okay and that should hopefully work from
+the point of view of um
+if the other side disappears we will
+eventually notice
+and so let's run the server
+that's working we'll kill the server off
+and
+notice it takes a little while to notice
+but eventually it does and it shuts down
+cleanly
+so that's somewhat better the main
+reason takes a little while to notice is
+because
+the um we're not actually managing to
+to notice that the other side has failed
+until we fail to get data to it
+and so that's that's the point of which
+we notice that the rent site is
+disconnected
+and that's the point at which we we get
+the
+exception and shut things down okay
+so that's a bit better we're now a bit
+more robust
+what else can go wrong
+so we can run it again um now what
+happens if we shut down
+the client now will the server actually
+notice
+ah well two things here the first is the
+server hasn't noticed
+and the second thing is i shut down the
+client by typing control d
+which is ended data and it gave me an
+error message
+so that's not useful
+so what are we going to do about that
+well first of all on the client side we
+should probably
+trap that error too
+and that's in the case of input
+so we're going to to try and get input
+and we need to handle that exception
+you can see how once you start to add
+all the error handling code around this
+stuff the code no longer looks nearly so
+simple
+so what we're going to do when the user
+types control d
+to end data is we're just going to call
+sys.exit so we exit cleanly
+okay so that's fine on the client side
+will that work
+and then we'll tap control d and yes
+that exits cleanly
+but looks what's happened on the server
+side here it's um
+it's just continuously printing out
+empty data
+and this is one of the reasons why i put
+those little angle brackets in there so
+we can see that something's happening
+so the server is basically receiving but
+receiving is receiving no data
+and so we need to actually handle that
+because the receiver shouldn't
+receive shouldn't continue like that if
+there is no data
+so
+now the problem here is in receive
+if this receive should only return
+if there is data but it will also return
+if the connection has failed
+and so the best bet there is to figure
+out whether there's any data if there's
+no data
+then the connection has failed so we can
+do
+if len encoded text
+equals zero then there isn't any data
+and so
+all we need to do then is to to close
+the connection and be done
+sock.close
+and we can just exit too
+which we will also need to import this
+and we should probably at least tell the
+user that
+something happened so
+print
+disconnected
+okay so hopefully that will trap that
+error and we don't get into this
+silly mess of trying to continuously
+print stuff from a connection that's
+already dead
+so run this
+client
+and it disconnects correctly and we get
+remote side disconnected
+so that appears to work too so now we've
+got something which is
+at least a little bit more robust than
+it was and that's a good thing
+whenever you're dealing with conditions
+where external events can affect your
+code
+it's really important to put in all this
+exception handling so that you handle
+all the different strange things that
+can go on in your code
+otherwise for sure those events are
+going to actually happen and your code
+will just do the wrong thing
+so at the moment we're in the situation
+where if i start the server
+and i start the client and i can
+send text across there and if i now quit
+the client
+the the server side will print out the
+appropriate message
+and exit but that's not
+the most common thing that servers do
+normally a server will tend to stick
+around
+and wait for more connections to come in
+and handle additional connections
+so maybe we can modify our simple chat
+server to do that
+so let's give it a go so here is our
+while loop that handles
+different messages arriving from the
+network socket
+and being printed out
+so what we want to do is instead of when
+we exit here we want to go back
+and accept another connection and then
+handle that connection
+so to do that we're going to have to put
+a while loop around this whole lot
+so we'll go in and we'll just do another
+while loop
+so another while true because we're
+going to just carry on doing it in
+forever really and we'll take all of
+this code
+and put it inside that outer while loop
+need to indent this correctly
+there so now we'll go around we'll
+accept a connection
+we'll handle the connection inside this
+while loop
+and then what we want to do is to drop
+out back out to the outer while loop and
+handle another connection
+so there's just two minor changes we
+need to do to do that the first
+is we need to break
+and the second is rather than closing
+the listening socket we only need to
+close the socket
+that's for this particular connection
+the one that was returned by accept
+so we need to do new sock.close rather
+than closing the listening socket
+because we want the original socket this
+one we opened up here
+to stay around and so
+we need to make sure we only close the
+correct socket to do that
+okay so let's try that out so let's run
+the code
+run the client yes we can send data now
+if i quit the client
+the server prints out remote side
+disconnected but now it doesn't quit
+if i run the client again
+we get another connection that the sac
+the server can accept
+so that's much better that's much more
+server-like behavior it sticks around
+and no matter how many times the client
+disconnects and reconnects
+it's perfectly happy it just keeps
+printing out the data that's coming from
+the client
+so that's definitely a more server-like
+behavior
+
+now let's think a little bit more about
+what's actually happening
+in our while loops here so look at the
+client one first
+is it just rattling around constantly
+racing through running this code again
+and again and again and again
+well no not really because we get as far
+as input
+and the code basically stops and waits
+for input
+and so maybe we can actually just check
+that this is what's really happening
+by just printing some stuff out so we
+can print out before input
+here and right after input will print
+out after input
+and we'll see what's going on now
+on the right hand side we've got the
+same issue does it just
+rattle around this running as fast as it
+can well no it doesn't
+um if it did we'd see these print
+statements constantly and we don't see
+that
+so it must get stuck somewhere it must
+stop and wait for something else to
+happen
+and the point at which it does that is
+when we call receive
+if there isn't any data left to receive
+then
+it will block here it won't run any
+further the code will basically stop
+running and pause
+until data arrives and so here we can
+print
+before receive
+and after receive and we'll run this and
+we'll just verify that
+that is actually what's happening that
+on the input side
+the code blocks on input waiting for the
+user to type something
+and on the receiving side it blocks on
+receive waiting for something from the
+network
+okay so from the server
+we will run the client
+and we can see that on the left it says
+before input
+and on the right it says before receive
+and now if we actually type something
+then as soon as we hit enter then
+we get after input so you can type all
+the characters you want
+but it's only the enter character that
+causes input to finish and then
+after input it actually sends the data
+across the network
+we get hello printed but before that we
+got after received which
+which only got printed as soon as the
+data came across the network it printed
+it out and now it's
+back waiting for more data to come from
+the network blocked again
+so we can see that the
+the server is
+let's try again the server is blocking
+on on receive
+and the the client
+is blocking on input and that's as we
+would want it means that the
+the programs are not busy spinning using
+up lots and lots and lots of cpu cycles
+flattening your battery
+when there's nothing to happen only when
+we get data
+in the client from the keyboard does it
+do anything and only when we get data
+from the network
+on the server does it do anything and
+that's good in the sense that
+it it does what we want it's very
+efficient
+but if we want to extend the code you
+see our current chat program is not very
+useful really because it only lets
+the client talk to the server but it
+doesn't let the server talk
+back to the client and most of the time
+our chats are not quite so one direction
+as that they're pretty boring if they're
+that one directional
+so we'd like to have the the server be
+able to talk back to the client
+so we would like both the server and the
+client
+to be able to input text from the user
+we'd like both the server and the client
+to be able to receive stuff from the
+network
+but we can't do that because we don't
+know which one is going to return data
+first
+if we try to recall input then we're no
+longer listening to the network at that
+instant in time and if we call receive
+then we're no longer listening to the
+keyboard at any point in time
+so somehow we have to have a way that we
+can manage to
+either do input or receive first
+whichever one comes up with data first
+and so that's a little bit tricky for us
+so we need to think a little bit about
+how we might do that
+
+previously when we were just sending
+data from one side
+to the other side the main loop would
+look something like this we would
+read input using input and when we get
+input
+we'll send it and then we'll go back to
+input
+and if there's no data available from
+the keyboard
+then this is where we block
+and on the other side we read data from
+the network using receive
+and we print it then we go back to
+receive again
+and when there's no data available from
+the network
+this is where we block
+so what happens when we try to combine
+both of these
+now we've got the same code at both
+sides so
+we call input then we send the data let
+me see if there any data receive
+we print it and we loop around here
+so now what goes wrong here
+suppose we just start up the programs of
+both the sender and the receiver
+and so where are we in the code we're
+here and we're here initially so both
+sides
+are waiting for input from the user
+so the user over here decides to type
+something they type
+hello and so we move on
+to send we send hello
+that arrives over here
+and everything's fine and the code moves
+on to
+receive and it blocks there
+meanwhile at the other side we're still
+blocked on input
+and the user over here didn't really
+realize the other person was trying to
+communicate so they don't try to talk
+back
+hello is still stuck waiting for receive
+but the code is not running received the
+code is still waiting for input
+so the person over here never realizes
+that the person over there sent anything
+and the person over here sent hello and
+is now wondering
+why the person over here doesn't want to
+talk to them anymore and
+if they even if they get offended and
+decide to try and say
+why aren't you talking to me um they
+can't because we're stuck in receive
+and we can no longer read from the
+keyboard so anything they type there
+is going to be stored in the keyboard
+buffer but it won't be read by the code
+and so now we're stuck in this situation
+where it's not really working
+so we must be able to do better than
+this how we're going to make that work
+rather than using blocking i o calls
+input and receive over here the
+solution to this is to use what we call
+non-blocking i o
+so we're going to replace our call to
+input with
+a non-blocking read from the keyboard
+and
+the idea with a non-blocking read is
+that it will try to read
+information and the
+call will immediately return whether or
+not there was any data typed
+and so if the that means we need to have
+an extra check
+we need to check if there is anything
+typed then send it
+and then we replace the call to receive
+with a non-blocking version of receive
+so we'll try to receive from the network
+and
+if there was data there we'll get it if
+there wasn't any data there the core
+will immediately return
+which means we need to actually check
+whether we got any data and if we did
+then decode it and print it and so now
+we have a
+loop which is similar to this loop but
+first of all we do a non-blocking read
+we check whether we got anything if we
+got anything we send it
+we do a non-blocking receive we check
+whether we got anything if we've got
+anything we print it
+and we go around this loop and we just
+keep going around and around this loop
+and so now we don't end up stuck either
+in input or receive
+there's no blocking calls and things
+should work somewhat better
+so before we can put that idea into
+practice i just want to clean up the
+code a little
+i'm going to take the whole while loop
+that we used to handle the connection
+and put it into a function
+handle connection and what's it going to
+take as a parameter it's going to take
+the the socket as a parameter
+and so that means we just need to indent
+all of this stuff
+get rid of that and get rid of that
+okay so that's our code to handle the
+connection
+um and i might as well move it
+up to the top of the code so we can
+define our functions before we use them
+and back down here after we set up the
+connection we'll call handle connection
+and we'll pass it that socket so
+why am i moving that into a function
+well
+because now we want the client to be
+able to talk to the server and the
+server to be able to talk to the client
+actually the code to handle the
+connection is going to be the same code
+on both the client and on the server
+it's going to be
+symmetrical so what i want to do is to
+move
+all of this code that's over on the
+server side here now for handling the
+connection
+into that while loop that the client has
+so we'll just copy that across
+i can get the right indentation for it
+get rid of the print statements okay
+so so far so good we've got a loop and
+first of all it tries to get input from
+the keyboard and if it succeeds it's
+sending it to the network
+and then it tries to get data from the
+network and if it succeeds it prints it
+out
+now that's great except for we may need
+to make these
+non-blocking in order for this to
+actually work so
+how do we go about doing that there are
+just a few things we need to change to
+make this work
+the first thing we need to do is to
+make sure that we don't block on input
+and so that basically means we're going
+to have to just abandon using the input
+function all together because that's
+always a blocking function
+now i'm going to actually import a
+function called non-blocking readline
+from another module it's not part of the
+tyson standard library but i'll put it
+on github so you can see what source
+code is in there
+but all you really need to know is that
+it behaves like input
+except if you don't have a full line of
+text including the
+the enter key pressed at the end it will
+simply return an empty string
+so non-blocking greed line is what we
+want
+and to do that we need to actually
+import it so
+from non-blocking redline
+import non-blocking redline
+okay and so that will let us use the
+number i can read line in our function
+here
+now if we return text that's no real
+problem
+but if it doesn't return text then we're
+going to actually have to
+actually not try and send to the
+connection
+um because we don't want to send empty
+text strings all the time of the
+waste of network capacity so we need to
+actually um
+add an if statement here so
+if text is not equal to empty stream
+although we got some text from the user
+um then we will encode that text and we
+will send it
+and we will handle the errors
+now our code here is a little bit
+naughty because i cut and paste it
+together in too many places
+we're using text here to mean text that
+we got from the keyboard
+i'm using text down here to mean text
+that we got from the network
+so let's just disambiguate
+so that we're a little less confused
+that's going to be key
+text and
+we need to place that there
+okay and then when the connection
+breaks because the other side goes away
+um rather than
+exiting all we need to do is return the
+from the function because the outside
+world can handle that we don't actually
+want to die from
+deep down inside this function here okay
+so that change of choosing non-blocking
+read line and then checking whether we
+actually got any data before we try to
+encode it and send it
+is all we need to do to make the
+keyboard side of this non-blocking
+and we've still got to deal with receive
+because receive will still block and
+that won't be any good because if we
+block here
+we can no longer get back to the point
+where we call a non-blocking redline
+at least until something happens from
+the network so we need to make that
+non-blocking too
+to do that we need to make the whole
+socket non-blocking
+so sock dot
+set blocking false
+by default sockets are blocking when you
+try to read from there's no data there
+it blocks because that's
+normally the right behavior but what
+we're telling python here is
+i know what i'm doing just don't block
+and i'll handle that myself and
+that's okay if you do know what you're
+doing
+now that means that receive will no
+longer block here
+which means that we will potentially
+drop straight through here
+but what happens if you call receive and
+there is no data available
+well python has to have some way of
+telling you there was no data there
+and if we do that if there's no data
+available from the network at that point
+then we're going to get an error so
+we can actually find out what that error
+is um
+first of all we need to actually extend
+our code to handle the connection
+we've added a handle connection down
+here to call the function
+and so we can just run this and see it
+shouldn't block
+here it should get through as far as
+here
+and we should be good and we should get
+our error and find out what that is
+so i'm just going to run the server
+first
+and then we'll run the client and
+we get new stock is not defined because
+we have a
+these are the wrong socket now we
+actually do want it to be
+this socket we passed it okay let's try
+that
+now that's the arrow we were looking for
+when we try to receive on a non-blocking
+socket
+we get this blocking i o error and we
+are blocking our error we're going to
+need to actually to handle that
+exception
+more gracefully than this so this is
+when we try to receive so we need
+to call try on this
+and we can put this whole block of code
+within a
+try block
+and handle the exception
+and what do we do if we get a
+non-blocking i o error well this is just
+python saying there wasn't any data from
+the network
+we don't want to do anything but we do
+actually want to handle the exception
+and so we can just put pass here which
+is
+really a no-op it doesn't do anything
+but it's necessary to have something in
+the exception
+and so that's what we'll put there so
+we should be ready um we're going to
+call
+non-blocking readline we're going to
+if there's any data from it we'll encode
+it we'll send it to the network
+if there's no data then this bit won't
+be run so we'll try to receive
+and if there's data there then we'll
+decode it and print it out
+if there's no data there we won't do
+anything until we'll rattle round and
+round around this loop
+pretty fast
+okay so that should work
+um let's just run it and see whether it
+works
+if from the forward direction from us to
+the other side
+type hello
+and indeed it sends hello over to the
+other side and it's received over there
+and so at least it works going from the
+client to the server
+now we're not done yet of course we're
+going to need to
+modify the server code to do the same
+thing
+so over on the server side
+we're going to need to take out the
+receive code that we previously had
+we don't need that anymore because we're
+going to use the same handle connection
+function
+because the connection is now the same
+in both directions once it's set up
+and the socket we're going to go to at
+this time is new sock
+which is the one that we got from accept
+[Laughter]
+and given that that is currently defined
+in client we're just going to import it
+there from
+client import
+handle connection
+we don't want to cut and paste if we cut
+and paste then one of them will end up
+different from the other at some point
+in the future and we don't want that to
+happen
+now we've got to be a little bit careful
+doing this import here like this
+we're trying to import our function
+handler connection
+from over in the client library client
+code but the client code isn't a library
+it's not a module it's not
+at the moment set up to be safe to
+import from because if we try and do
+this
+it will indeed manage to import handle
+connection but it will also
+go through and run all this top level
+code and we don't want that to happen
+so in order to make this safe to
+actually use
+an import we're going to have to
+actually
+do a little bit of protection here
+if name is equal to equal to
+underscore underscore it's going to
+main then we will run this so what this
+says
+is that if we're running this as a top
+level program
+by itself we can do all this stuff but
+if instead we're using it
+as part of an import from another module
+we're not going to run this code
+and that just lets us be able to import
+this module this file at least without
+causing that that problem
+be careful that that handle connection
+is not within the while loop
+there we go and so that protects this
+code so it won't be run inadvertently
+when we try and do the import
+okay so hopefully now our handle
+connection function
+can be used by both our client and our
+server and we've
+finally got a chat that works in both
+directions
+well let's see
+okay we need to accept that
+and okay we think we've connected
+and it works in that direction and if i
+type on the right hand side
+it works in the other direction we've
+finally got a bi-directional chat
+session going
+but right now it's a little bit busy um
+so i'm just going to add one little
+print statement
+to this loop on the left so when it's
+going around this glue i want to see how
+quickly it goes around the loop
+so i'm just going to print out let's say
+a dot
+and then we can run the server
+and we can run the client
+and we can see it's rushing around that
+loop as fast as it possibly can
+in fact it's pretty hard to actually uh
+to cope with how fast it's going around
+that loop
+so what can we do well
+it doesn't make sense to keep rushing
+around this loop when there's no work to
+do
+um if we do that then it's going to end
+up using
+all of one cpu core just for the client
+and all of another cpu core just for the
+server
+it's going to make your computer fan run
+really fast and your battery
+runs flat really quickly so we want to
+actually slow things down a bit
+so i can add a sleep statement in here
+i'm going to sleep for 200 milliseconds
+and that will just mean that it will
+only go around this loop
+five times a second rather than going
+around this tube a few million times a
+second which is probably a bit excessive
+okay so let's run that and we should see
+the dots printed a little bit more a
+little bit less frequently
+so let's okay and now we are still
+getting the dots
+but the code is actually working um but
+it's just not using nearly so much cpu
+time
+now let's get rid of those dots and
+just run it again
+now the question is is there really any
+downside from having that sleep in there
+and the answer is yeah there's a little
+bit of lag if you um
+if i type hello and hit enter there's a
+little gap
+of around 200 milliseconds before it
+actually goes to
+sending it over the network or where
+it's receiving it from the network
+whichever side
+and so that has a little bit of delay so
+although this non-blocking solution
+works
+it's still going around around that loop
+five times a second and
+it adds a little bit of latency to the
+connection so although we have a
+bi-directional chat session
+it's maybe not the best bi-directional
+chat session we could have written
+so is there a better solution
+
+so instead of just rattling around this
+loop as fast as possible seeing whether
+any data actually appears when we call
+read or we call receive there's another
+alternative
+which is that we just ask the operating
+system do you have any data for me and
+if we're going to do that we're going to
+have to be able to say do you have any
+data for me
+on either the keyboard or the incoming
+network interface
+i don't really mind which but if you
+have some data for me on either of those
+then let me know
+and so if we do that then we call the
+operating system we say is there any
+data for me and it will block here
+it won't continue beyond here until the
+date on either this one or this one
+when there is data on one of them or the
+other then this will return
+and so we go oh yes there's some data on
+the keyboard
+so then we call read line now read line
+is not going to block
+because we know for sure there's data
+because the operating system told us
+there was
+so then we can call read lines safely we
+get the text we send it on the network
+and then we can go back around
+and see if there's any more data
+available for us
+alternatively if the operating system
+comes back and says
+with the data for you on the network
+then we can safely call receive
+and receive is not going to block
+because we know the data for us
+so we immediately that immediate returns
+with data we call print
+and then we can go back around and so
+this way of doing things we just have to
+ask the operating system in advance
+is the data for me on the keyboard or on
+the network
+whichever it is let me know and so now
+the only place
+in our code where this blocks is here
+there's only one place
+because it can't block in redline it
+can't block and receive because we only
+get to those if there was data available
+and so the mechanism we use to do this
+is called
+select so let's see how that works in
+python
+so i've undone those changes that we
+made to make it non-blocking
+and gone back to the the code that we
+had before
+and now let's see if we can apply select
+and make this actually work efficiently
+so the first thing we're going to need
+to do is actually to import select
+because we don't get it by default so
+now what we need to do
+is to ask the operating system
+what things have data available for us
+and whichever one has data available
+we'll either run this part of the code
+for inputting from the keyboard or we'll
+run this part of the code for getting
+input from the network
+so how do we ask the operating system
+well we're going to call select
+select.select so that's the select
+function from the select
+module and select takes three lists
+for things that we care about whether
+there's data
+available to read the data available to
+write
+in other words is there enough space in
+the buffer to be able to write to the
+thing
+and the last one is for exceptions now
+in our case we only care about things to
+read
+and all we need to do is tell select
+which things we're interested in
+in this case we're interested in the
+socket
+and we're interested in where we're
+going to get data from the keyboard
+and it turns out where we get data from
+the keyboard is the processor's
+standard in input stream that's where
+input reads from and is where our
+non-blocking read line read from
+but we just need to tell select we
+directly are interested in
+the standard input and so that is
+expressed as
+sys.standard in like that
+and so this tells select that we're
+interested in being
+told if either socket sock
+or sister standing have any data
+available for us to read
+now what this returns is a drupal of
+things read file descriptors write file
+descriptors
+and exceptional file descriptors we only
+care about the read ones here
+um that might have data for us
+and so what we're going to do we're
+going to actually figure out
+whether our particular input or our
+particular socket are in this and this
+is basically a set
+so how do we use it
+we say if
+sys.standard in
+turned it in is in id so if it's in the
+set
+then there is data available to read
+from
+the keyboard so indent all of this and
+do all
+of this if we
+actually have some data to read
+okay um now we can't just directly call
+input
+because input will print out that little
+um
+thing to give us user input at that
+point
+so what we're going to need is to
+actually just directly call readline on
+sys.standard in
+and read line will return when there is
+data to be read
+so that's what we need to do to protect
+the
+the read line from being read if there
+isn't any data
+and then equally we need another if
+statement down here
+we need to check whether there is data
+on the network socket if stock in
+rd stock is in the set of
+file descriptors that are ready to be
+read then
+we can do all of this and that should
+allow us to correctly
+read from either the keyboard or
+from the network depending on whether
+there's actually anything available
+needs to be read so
+that's basically it select is pretty
+easy to use you tell it which
+file descriptors basically which sockets
+or stand input we're interested in
+and it will return a set of things which
+are ready
+and then in that set we check whether
+the things that we're looking for
+are in that set and if they are then we
+can actually read
+okay so let's try that out
+works in that direction
+and it works in that direction and we
+should probably just verify that it
+isn't continuously going around
+and around the loop so let's
+add a print statement to our loop here
+let me print out here
+and you can see it only goes around the
+loop once and then it waits for
+something else and if we send some data
+back from the server
+it will go around the loop again but we
+are here printed only once around the
+loop whether we've got something from
+the keyboard
+or something from the network we only
+get that printed out once and
+and that's what we wanted we don't want
+to keep rushing around the loop if
+there's no data available
+so where are we blocking here well we're
+blocking in select
+if we get to select and recall select
+and neither of these has any data
+available then
+it will block in select and it won't go
+any further until the operating system
+says
+oh i've got some data from the network
+or oh there's some characters from the
+keyboard
+and at that point something else will
+happen and we'll actually get some data
+so this is now an efficient way to write
+a server or a client that needs to deal
+with data from multiple places in this
+case from the keyboard and from the
+network and we don't know which one is
+going to have data first
+select is a very efficient way of doing
+that so now finally
+we've got a bi-directional chat session
+that's efficient
+it allows us to send data in both
+directions and both the client and the
+server
+are capable of coping with input from
+more than one source from the keyboard
+and from the network and in whichever
+order it happens to come in
+so finally we're done
+so now we've seen how you can create
+sockets how you can connect those
+sockets to make a connection
+and how you can send data across that
+connection from one side to the other
+side
+and back again without actually causing
+things to block in all the wrong places
+now so far the connection we've used has
+used a protocol called tcp which gives
+us a nice
+reliable byte stream stuff that goes in
+one side will definitely appear
+out the other side in the correct order
+and won't get lost somewhere in the
+network
+but we haven't really talked about how
+tcp does that so
+next time we'll talk a little bit about
+how tcp does that and
+why that might not always be what you
+want and we'll also introduce a simple
+game
+and how we actually can encode data to
+send across the network for use in that
+game with different possible options and
+they have different advantages and
+disadvantages
+so see you next time
+
