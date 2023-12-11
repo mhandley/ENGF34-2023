@@ -1,0 +1,559 @@
+Welcome back everyone!
+In this video I want to look at another
+one of our case studies of
+where things didn't quite go right.
+In this case,
+we have to go back to 1990 in the USA.
+AT&T is by far the largest
+long-distance telephone provider. They
+connect something like 70%
+of all calls and that works out to about
+115 million long distance calls per day.
+Now their network consists of these
+computer controlled
+4ESS switches. These are proper
+circuit switches; an incoming call will
+be switched into an outgoing call
+circuit
+and they're computer controlled via
+software.
+The network consists of something like
+114
+of these 4ESS switches and
+each switch is really a pretty capable
+device it's capable of handling about
+700 000 calls per hour that's a lot of
+calls
+now to understand the importance of the
+long distance telephone network
+in 1990 you have to bear in mind that
+although the internet did exist back
+then
+and I just started to do research on
+video conferencing
+the internet was really the preserve of
+a few geeks like me
+if you were a regular person and you
+needed to do long distance communication
+world web didn't exist yet and so really
+this long distance communication via
+telephone was the only way of doing it
+so it was a crucial importance to the
+country
+and then the 15th of january 1990 rolls
+around
+one telephone switch in manhattan
+suffers a glitch
+now it's not important to us exactly
+what that glitch was
+what we care about is what happened next
+so
+that switch reboots and the reboot times
+on these 486 switches are pretty fast
+it took four seconds then it rebooted
+came back up
+and immediately after that all of the
+neighboring switches crashed
+they rebooted and then all of their
+neighbors crashed
+and there was this cascading failure
+that rippled out across the whole at
+network
+basically each switch was rebooting
+talking to its neighbors crashing and
+rebooting at any one time
+more than half of the telephone switches
+were down
+the remainder couldn't handle the load
+and pretty much the whole network
+crashed and didn't do anything very
+useful so the economic consequences of
+this were quite significant
+something like 60 000 people lost phone
+service altogether
+about 70 million phone calls failed to
+be connected that's about three quarters
+of the phone calls that they attempted
+to make in america that day
+something like 60 million dollars in
+lost revenue for AT&T
+just for the phone calls that weren't
+connected but the economic consequences
+on the broader industry and people
+trying to make phone calls
+were somewhat larger than that more than
+500 airline flights had to be cancelled
+because they couldn't make the
+arrangements for
+fuel or whatever and something like 85
+000 people were affected by that
+and it took nine hours to restore
+network connectivity
+now you might ask why did it take nine
+hours
+but a better question would be how do
+you restore network connectivity
+the whole network is constantly crashing
+and rebooting
+and what they really needed to do was to
+turn the whole
+thing off and on again literally they
+need to turn all of the 114 switches off
+simultaneously
+and then bring them back up so they
+didn't cascade the failure anymore
+but how would you arrange to do that you
+would have to phone engineers
+at all of the places in order to be able
+to coordinate the
+restart but the phone network's down
+so you can't phone the engineers to get
+them to do a coordinated restart
+and so you can't bring the phone network
+back because
+you have not got a phone network to
+phone the engineers to bring the network
+back
+a little bit of a problem there in the
+end
+it took nine hours to restore the
+network because by
+11 30 pm that evening the core volume
+had dropped sufficiently low
+that the switches were no longer
+suffering
+overload and they basically recovered
+all by themselves
+which was kind of fortunate
+
+for us to understand why this particular
+cascading failure happened
+we need to understand a little bit about
+how these 4ESS switches
+handle the process of when they go down
+when they come back up
+in order to make sure that you don't
+send telephone calls
+to a switch which is down so suppose
+we've got two switches
+we've got here switch one and we've got
+switch two
+now if switch two has to go down for any
+reason
+so it needs to make sure that switch one
+doesn't send it any more calls
+so switch 2 will send an out of service
+message
+to switch 1 before it goes down
+and then switch 2 will go down it will
+come back up again and then it will send
+an in-service message
+to switch one and once which one gets
+that in-service message and processes it
+it can now send telephone calls to
+switch to again
+now a t and t realize that it actually
+isn't totally necessary to have this in
+service message
+instead they can just remove that
+message altogether
+and have switched to send a telephone
+call
+to switch one that's which one would
+then root on somewhere else
+and so just because switch one knows
+that switch two without a service
+and then switch to receive the telephone
+call
+from switch to and knows ah switch two
+must have come back up
+because i've got a call from it so I can
+move it back to
+in service state and then I can send
+calls to switch to
+and so att made this optimization they
+simply
+removed the in-service message because
+they realized that it simply wasn't
+necessary
+unfortunately when they did this they
+caused this bug
+so what actually went wrong when a tnt
+made that change
+well this is the pseudo code for
+AT&T's switch software once they'd
+actually made the change
+so there's a great big while loop that
+processes messages and it keeps
+processing messages
+so long as messages either from the ring
+receive buffer or from some other buffer
+called a side buffer
+if it gets a message it will initialize
+a pointer to whatever the first message
+is that it needs to handle make a copy
+of that and it'll do a switch
+depending on whatever the message type
+is
+if it's an incoming message from the
+neighboring switch
+then the first thing the code will do is
+to check if that neighboring switch was
+being
+logged as being out of service if it is
+loggers being out of service then we're
+going to have to
+flip it back to being in service so we
+can send calls to it and so on
+now we'll basically send that in service
+message to the status map this is kind
+of an asynchronous event it will get
+queued it'll get handled in a little bit
+of time
+and so it's just possible that two
+messages arrive from the same switch at
+the same time
+so what the code does is it checks to
+see whether we've already got
+a message in that ring write buffer
+because we've already sent in service
+to that buffer and it hasn't yet been
+processed
+so rather than sending in service to
+start them up twice the second time
+around it'll just call break
+not do anything once it's done that it
+will process the incoming message
+it will set up pointers to any optional
+parameters
+and it'll break from out from this
+switch statement
+drop down here and do all the optional
+parameter work
+so have you seen the bug yet what
+happens when a switch
+neighboring switch reboots and it's busy
+so if the neighboring switch reboots but
+there were a lot of calls happening
+because that switch was suddenly very
+busy then
+the first time through we'll get a
+message from the neighboring switch
+we've got a call from the neighboring
+switch
+and ring right buffer will be empty so
+we'll send in service to the status map
+but immediately after that we may get a
+second call from that switch which will
+happen if that switch was was
+suddenly very busy so the second switch
+we get
+that message is has not yet been
+processed
+so the status mode hasn't changed so the
+ascending switch is still logged
+out of service now that's fine there's
+no problem with that we have a check for
+that to make sure we don't deal with it
+twice
+the ring right buffer is not empty for
+this second time round
+so we hit this break statement so we
+don't actually do anything twice
+now I think whoever wrote this code
+thought that break statement would
+somehow drop them out of this
+if statement but it doesn't
+that break statement drops you out of
+the whole
+switch and so
+you drop through to here now what's the
+consequence of that the consequence that
+was when you hit this break
+you don't do this you don't process the
+incoming message and more importantly
+you don't set up the pointers the
+optional parameters
+so you fall out here to do the optional
+parameter work
+but the pointers aren't set so you'll
+end up hitting either corrupted pointers
+or more likely a null pointer
+and oops trying to actually process
+optional parameters but the pointers are
+null
+the switch will crash and reboot and
+the whole failure will cascade because
+all the switches are very busy at the
+time you did this
+so why didn't AT&T notice this bug
+before
+after all atnt is a very well
+run company with very good technical
+facilities
+big test labs and they never deployed
+anything to production
+without first of all deploying it in
+their test lab and trying things out and
+making sure that there weren't any bugs
+in the code
+but this particular bug obviously wasn't
+triggered in their test lab
+so this leads us to a sort of a bigger
+question of
+if you were doing a lot of tests for
+your code you've got lots and lots and
+lots of tests
+how do you know if you have enough tests
+now unfortunately there's no single good
+answer to that question
+but one thing you can do which is common
+now but wasn't back in 1990
+is to do automated coverage testing
+so what do I mean by that well it's
+possible to instrument your code
+and to figure out when you've run all of
+your tests over your code
+which lines of code are actually been
+run which have not been run
+in the case of AT&T it's pretty clear
+that in their test lab
+they had never run that stray break
+statement if they had that have
+triggered the bug the switch would have
+crashed and they'd have noticed
+but obviously they had never run that if
+they'd
+applied coverage testing and have logged
+which lines of code had been tested
+they would perhaps have realized that
+that line of code had never been run
+and then maybe they'd have tried to add
+some more tests in order to trigger that
+line of code
+and if they had they'd have triggered
+the bug and they would never have
+deployed this to production
+so how would you go about doing coverage
+testing for your python code
+well it turns out that there's a plugin
+for pi test that will actually do this
+for you
+so if we go over to to pipe.org you can
+find all the documentation for
+for pi test curve but the simplest thing
+you need to do is just to
+install pi test curve using pip
+and and then you can actually do
+coverage testing
+so how do we actually use this then
+well let's have a look at the frogger
+code that we wrote
+now in amongst the frogger code
+there's also a test suite that I wrote
+for test model
+and we can actually just run that test
+suite
+and it will go and run a whole bunch of
+tests on the
+model part of the code which is of
+course the most complicated part of the
+python code and the hardest have to get
+right
+in this particular version of frogger
+which has the bugs that you fixed
+also fixed these tests all pass
+now if I want to actually do coverage
+testing on this I need to actually first
+of all have some idea of what my tests
+are doing so
+so let's have a look at that test suite
+now in my test code here it runs
+most of the code from the model in
+isolation so first of all it builds a
+dummy controller here
+um because the model expects to talk to
+a controller and I don't want a
+controller in this case
+and then there's a whole bunch of tests
+for the tests for things like the
+the river object that
+do things like testing how they move it
+just things like testing
+whether a frog is within the log or the
+turtle
+or not um make sure that those pieces of
+the code are correct
+um we test things like the car collision
+and that the cars wrap around the screen
+correctly
+um there's a whole bunch of code for the
+model itself
+that checks that the model updates the
+frog's position correctly and things
+like that
+um there's checks to see whether the
+frog actually moves when it's on a log
+and so forth
+and there are checks to see that the
+frog dies when it goes off the side of
+the screen
+and all sorts of things like that and
+this is a quite a large test suite
+there's 250 lines of python this
+particular test suite
+but I won't make any real claims that
+this is a comprehensive test suite for
+the model
+but I guess we should try and find out
+whether it is or isn't
+so how would we find that out well we
+can run
+pi test with this set of flags so
+minus minus curve says we're going to do
+coverage testing for this and we want to
+do coverage testing in this particular
+case for
+the model file which has what has a
+model in it we want to produce a report
+in html format because that's nice and
+pretty and easy to read
+and what we're going to do we're going
+to actually run test model
+and figure out what parts of the code
+that covers
+and so if I run this it will go and run
+the same test we ran before
+but it's now also doing recovery testing
+it's recording what was run
+and so if we then go and look at the
+output from this it's generated a whole
+directory full of html output
+html cov and so we can go in there and
+we can find out what
+actually is covered by this so
+let's switch over to that browser window
+okay so this is the the output of that
+coverage testing we just ran
+and so all of the lines that are in in
+white on black here
+are lines that were tested by our
+coverage code
+we can see there's a red line here
+that's a line that got missed
+my test suite does not test that line of
+code
+in this particular case it looks like
+it's when we've got
+a river object so a log or a turtle
+and it's when it's moved off the
+right-hand side of the screen
+it gets moved back to the left-hand side
+of the screen
+this isn't tested by my test suite so i
+should probably add a
+line of code to test that it's a pretty
+quick test to add
+what else is not tested there are
+various accessor methods that are not
+tested those are
+not great cause of concern for me
+what else the activate
+method on the model itself is not tested
+that's not a big surprise because i'm
+really testing this in isolation from
+the game and so
+the fact that that's not tested isn't
+probably not a big surprise
+ah a lot more red here
+the frog is home function doesn't look
+like it's tested at all
+so when the frog reaches one of the
+homes at the top it ought to
+basically log that as being uh home and
+ought to move the frog back to the
+bottom and so forth
+and clearly it's not tested here and
+that's definitely a gap
+in my test suite what else is not tested
+ah a whole bunch of the functionality to
+do with
+when you lose the game game over and
+how the levels get reset and things like
+that are not tested
+and so it's entirely possible that there
+are bugs in all of that code to restart
+the game
+and reset all the functionality that are
+simply not tested
+by my test suite so maybe it works maybe
+it doesn't
+but I definitely don't have tests for
+them and so that I should probably add
+to and
+other than that that's the main things
+that appear not to be tested
+so it says that 76 of
+the code in my model function is
+actually run by my test suite
+which is not bad but it's probably not
+enough to give me really good confidence
+that i've got rid of all of the bugs
+there
+now of course coverage testing isn't a
+a total panacea for making sure you've
+got rid of bugs
+you can still run a line of code but not
+check that it did something sensibly or
+it might just do something weird in
+strange circumstances
+but in general if a liner code has not
+been run it's
+pretty likely there's a bug there
+certainly more likely than if it has
+been run
+and so you should definitely endeavor to
+make sure you're testing every single
+line of code every single branch through
+every if statement and things like that
+in your code
+to have confidence that they actually
+work properly
+now it's pretty clear that when AT&T
+made that change to their code
+they hadn't actually ever run that break
+statement because they if they had
+it was a hundred percent crash certainty.
+If they'd run this sort of testing then
+they wouldn't have ever experienced that
+in the real world because it would have
+crashed in their test lab first
+okay so coverage testing I think is a
+really
+useful way of trying to make sure that
+all of the tests you write for your code
+actually cover all of the code or at
+least as much of the code as possible
+i also find sometimes that when I try to
+write tests
+i discover that I haven't got some code
+covered by my test suite
+and I tried to write tests to cover it
+and I discovered that actually that
+particular branch of the if statement is
+never possible to be hit
+and that means I had an assumption that
+was wrong when I wrote the code and
+sometimes that's
+an indication that I should probably go
+in there and actually modify the code
+so that branch is not there anymore
+because if it can't be hit
+and we can be sure it can't be hit which
+is not always so easy to tell
+then you shouldn't have dead code in
+your code to cause you problems in
+future
+so that's about it for this episode see
+you next time
+you

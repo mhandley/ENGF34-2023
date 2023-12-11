@@ -1,0 +1,960 @@
+welcome back everyone
+in this episode i want to talk about how
+you scale up your software development
+it's all very well writing software by
+yourself but there's a limit to what you
+can do with just one person
+to devise big pieces of software
+requires a team
+and our industry has a terrible record
+for failed software projects with large
+teams
+so what can we do to improve the chance
+of success
+and delivering software that actually
+works and delivers what our users want
+we have to organize a team of people to
+do so
+
+so just how do we design and build large
+software systems
+well one approach we could take is to
+take a lesson from
+other areas of engineering after all
+engineering is a pretty mature field
+and maybe they've got some good ideas as
+to how to do this
+so what does engineering do well first
+of all
+they gather the requirements they figure
+out what the system is supposed to do
+when they write requirements documents
+and those requirements documents then
+cascade down to the people who have to
+figure out how to build the system
+so the next stage is to do systems
+design and specification you write
+appropriate documentation for that
+and then the output of that stage
+cascades down to the people who actually
+have to build the system an
+implementation
+if we finish building it and the output
+of that cascades down to the people who
+have to test it and validate it
+and finally we've got a fully working
+system and we deploy it
+out to the users and it goes into
+maintenance mode
+now in computing terms this is known as
+the waterfall model
+and it's widely regarded as not being a
+good way to do things
+the problem with the waterfall model is
+that it just doesn't work well for
+software
+software has different requirements from
+systems that you actually manufacture
+the requirements for example are much
+harder to pin down
+because software isn't really
+constrained by physical limits
+software you can pretty much do anything
+and that tends to mean that
+as a system gets developed and deployed
+the users realized they could do other
+things with it beyond what they thought
+and so the requirements are constantly
+changing
+and then there's the fact that the
+software because it can do anything
+the intrinsic complexity the interaction
+between the components
+can be much higher than it can be with
+normal manufactured systems
+and finally there's this very tight
+integration between the requirements
+the specification the implementation and
+the operation
+and that's because there isn't a
+separate manufacturing stage which is
+with a physical system will separate the
+requirements and implementation from the
+operation but
+we don't have that problem with software
+and that means that
+it's much easier to further operations
+then influence the requirements to
+influence specifications to influence
+the implementation
+and if you have this waterfall model
+where things cascade from one stage to
+the next
+at some point you realize that the
+previous stage got it wrong
+and now you need to start all over again
+so
+this separate stages really doesn't work
+it looks harmless enough but therein
+lies the danger
+this is tar crude oil at its stickiest
+this viscous concoction oozes up from
+the deep
+it has ended the lives of countless
+victims
+
+large or small the mo is always the same
+tar preys on the victim's ignorance
+the first victim may be a random killing
+but now it's dead it would have started
+to attract
+other animals
+and something as large as a mammoth
+would have attracted animals from a wide
+area
+whether superb hunters or full-time
+scavengers
+few carnivores turn down the chance of
+an apparently easy meal
+but the same dangers that trapped the
+mammoth would still be present
+once mired these animals would simply
+have added to the bait
+and attracted even more predators
+
+what started with a single accidental
+death
+ended with the deaths of many others
+in his classic book the mythical man
+month essays on software engineering
+by frederick brooks it draws the analogy
+between a tarpit
+and a software project that starts to
+get into trouble as soon as the projects
+observe to have difficulties
+management poor resources in they'll add
+extra people to the project
+but bringing the new people up to speed
+takes time from the existing people
+making the project even later the
+project's in even more difficulty now
+and sucks in even more resources and the
+more resources you put in
+the more difficult it gets to manage the
+more communication channels there are
+between people
+the slower it goes and eventually the
+project dies
+so if the waterfall model doesn't work
+what does work
+well typically an approach that works
+pretty well
+is what's known as a spiral development
+you start off with
+a prototype very simple mock-up of your
+system that has very few of the features
+but at least gives your users some idea
+of what the system is going to be like
+and then you consult the users and what
+will pretty much always happen at that
+point is they'll say oh
+that's really cool but it's not quite
+what we want we want something with
+this slightly different set of features
+and often only seeing the prototype will
+be what causes them to realize what
+features they want
+once you've built that first prototype
+you often throw it away
+and you start again building the real
+system and you build a minimum working
+real system
+and then you deliver that to your users
+you build it you test it you deliver it
+to your users and find out
+does that satisfy your requirements and
+again what will typically happen is the
+requirements will change a little bit
+and so you'll go back and you'll iterate
+on it and you'll revise the system and
+deliver another working system
+and so there's this intuitive process of
+figure out what feature set you want to
+build implement it
+deliver it to the users test it
+technically with the users and then
+identify the next features that you need
+to build
+and you go round and round each time
+identifying objectives
+figuring out what features you need to
+add design build
+test now identify the next objectives
+and progressively step by step
+you figure out exactly what your system
+is supposed to do
+and exactly how it's supposed to do it
+and that way you're going from having a
+working system
+to having a working system each time you
+go around the spiral
+and the goal is for those iterations
+around the spiral to be as short as
+possible
+so you're not designing and building
+huge amounts of stuff that's never been
+tested that you never know whether it
+actually satisfies what the users want
+and that you know it's actually
+technically possible to build if you
+take this iterative spiral approach to
+development
+it's pretty likely that not only will
+your software work but it will actually
+satisfy what your users want
+
+one way to implement spiral development
+is
+to use a technique called agile
+programming
+and agile program is guided by a
+document called the agile manifesto
+which in 12 points
+sets out what they're trying to achieve
+first point is our highest priority is
+to satisfy the customer
+through early and continuous delivery of
+valuable software
+welcome changing requirements even late
+in development
+deliver working software frequently from
+a couple of weeks to a couple of months
+with a preference on a shorter time
+scale
+business people and developers must work
+together daily
+throughout the project build projects
+around motivated
+individuals give them the support they
+need and trust them to get on with the
+job
+the most efficient and effective method
+of conveying information to
+and within a development team is
+face-to-face communication
+so key thing there is that they're not
+interested in putting massive amounts of
+documents for communication
+because that creates misunderstandings
+working software is the primary measure
+of progress
+agile processes promote sustainable
+development the sponsors developers and
+users
+should be able to maintain a constant
+pace indefinitely
+and the alternative that is you tend to
+have to be deadline driven and you have
+these massive pushes for deadlines which
+burn people out
+which obviously isn't a good thing
+continuous attention to technical
+excellence and good
+design enhances agility
+simplicity the art of maximizing the
+amount of work
+not done is essential
+the best architectures requirements and
+designs emerge from self-organizing
+teams
+you trust the team to actually do the
+job you don't have those top-down
+management of exactly how they do the
+architectural design and development
+and finally at regular intervals the
+team reflects on how to become more
+effective
+and then tunes and adjusts its behavior
+accordingly and the key thing there is
+that
+no team actually behaves as well as they
+could possibly do
+and if you reflect on it you figure out
+what you could improve each time
+and that will depend on what you're
+working on and the resources you have
+available
+not as not a constant it's all about
+trying to adapt
+to the circumstances the people the
+environment and the project
+to keep improving the process how agile
+divides
+people into teams is also slightly
+unusual
+there are four components to an agile
+team the first component
+is the project leader and their job is
+to keep
+the big picture straight in their head
+they must have the vision of what the
+system is meant to do
+if there's not one person that has the
+complete vision there'll be no cohesion
+to the end product
+the second component of an agile team is
+on-site customers
+now these are people who are part of the
+development team
+but their role is to represent the
+customers
+there's always a tension between what
+the programmers would like to develop
+and what the customers actually want
+and so the on-site customer makes sure
+that in all of the design decisions the
+customers views are taken into priority
+and so we end up building a system that
+the customers actually want
+the third component of an agile team is
+actually programmers
+typically programmers will be divided
+into small teams maybe one person but
+usually a team of
+four to maybe nine people the bigger the
+team
+the more internal communication you need
+to keep things actually
+in step and without misunderstanding so
+typically small teams are much more
+effective than big teams
+and finally the fourth component is
+domain experts
+and the key thing here is that no one
+person
+actually has enough knowledge so domain
+experts might be someone who's a
+specialism is security or user
+interfaces
+or things like that and you'll bring
+them in when you need to consult on
+something which
+the actual individual programmers and
+potentially the project leader don't
+have sufficient expertise
+and if you get all of these four groups
+of people working together
+then you can actually build systems that
+work
+and satisfy the users and that's what
+it's all about
+so the idea with agile programming is
+that your whole development process
+is split up into what are known as code
+sprints
+and each code sprint is typically
+something like two weeks long
+and within a code sprint you go through
+all of the the phases of software
+development
+you figure out the requirements for that
+sprint you do the design
+you do the implementation and you test
+it and at the end of the sprint
+you're hopefully delivering software
+back
+that has gained the feature you were
+trying to implement and is potentially
+at the stage where you could actually
+release it to your users
+so how do you decide what to work on in
+your sprint
+well the way to do this typically is to
+maintain a large task board
+and on the task board you put a post-it
+note
+for each possible user story you might
+want to work on
+a user story is something that will
+develop a new feature for a user
+and on your taskbar you'll have lots of
+possible user stories
+including many that you'll probably
+never get around to working on
+but the idea is that you brainstorm when
+you put as many
+potentially useful stories on your task
+board as possible
+and then maybe someday you'll get around
+to working on them
+when you come to think about rolling a
+new release you go to your task board
+and you figure out which of those tasks
+you're actually going to work on for
+this release
+and you move those tasks from the main
+taskboard to the backlog board
+and on the backlog board you then have
+all of the features that you want to
+have rolled up into this particular
+release
+when you come to decide what to work on
+for your sprint you go to the backlog
+board
+and you figure out which is probably the
+most important feature to have in this
+release
+and that's what you work on first
+and note that you don't necessarily have
+just one sprint happening at a time if
+you've got a large enough
+team of people then you can have
+multiple sprints from the backward board
+all happening simultaneously and this is
+a good way to get
+quite a lot of parallelism into your
+development process
+now there are lots of software tools you
+can use to help you with this
+development process
+including automated versions of the task
+board and things like that
+but the single most important tool is a
+distributed version control system and
+the best of these
+is git and this lets you branch off
+different branches in your revision
+control system for each of your sprints
+so they can work in parallel on software
+and they can merge things back together
+again afterwards
+
+so how do we use git to help us manage the
+software development process well the
+idea is that
+we have a main development branch in git
+and that's keeping track of all of the
+current changes that we've accumulated
+and whenever you make some changes you
+get to the point where you've developed
+some code you've compiled it you've
+tested it you've added the unit test for
+it
+it's only a fairly small chunk of
+code
+changed before but even so we'll make
+that a new commit
+and then you make a few more changes to
+the code you
+add the lines of code you test it you
+add the unit test
+and that makes another commit so each of
+these commits
+is a pretty small change of code from
+where we were before
+but the great thing about committing
+once you get
+to the point where anything works is
+that
+if you make some mistake and you go down
+a direction that you actually decide you
+don't want
+you can always roll back to a previous
+commit or commit before that
+and be sure you can get back to the
+point where you had things working
+if you don't do that then there's a
+pretty good chance that you can't undo
+the changes you made
+and you can't get back to the working
+code very easily
+now this is our development branch this
+branch is not the branch that the
+customers see we have a separate release
+branch for that
+and so the release branch every now and
+then we will decide
+this is our release and we'll roll a
+release that goes out to the customers
+and so that's the version 1.0
+and then we'll continue making changes
+on our development branch
+with the idea that they will hopefully
+go into release
+1.1 and eventually at some point we'll
+decide we've made enough changes
+we're going to push this one to release
+and that's going to be released 1.1
+and so online release branch we only end
+up
+with the resources to go to the
+customers whereas these are all
+perspective changes but they may
+actually in the end not go to the
+customer
+which is why they're on a separate
+branch we may decide actually this is a
+direction we don't want to go
+we're going to go off and go a different
+direction and so these shouldn't be on
+the release branch
+okay so what else can we do well
+we can develop features off of the main
+branch
+and so we can we can make a feature
+branch
+and what do we do on our feature branch
+well we start from a particular point
+maybe we start from that 1.0 release
+and we know we're going to develop a
+feature but we don't want
+our development of our small teams
+feature when we've got it
+partially working to be disrupting other
+people
+so the idea is hopefully the main
+development branch
+always works and always passes all of
+the unit tests
+whereas on our feature branch we can be
+working
+quietly on our own making commits on the
+feature branch
+and some of these commits that we make
+on our feature branch
+may not pass all of the unit tests
+because we're not finished yet
+and if we made them on the main
+development branch we would disrupt
+other people who are working on the same
+software base
+but we can make them on our own separate
+feature branch not a problem
+we get to the point where we've got all
+of the tests for the whole piece of
+software working again
+and if we commit it back to the main
+development branch we're not going to
+cause anybody any problems
+and then we can push those changes back
+so being able to create separate feature
+branches is a really useful
+capability because it lets people work
+in parallel
+and actually there can be more than one
+feature branch working at the same time
+we can have another small team of people
+or maybe individual
+start up a separate feature branch they
+may have branch
+one further back and they're making
+their own changes
+their own commits and
+now they've got uh eventually they're
+going to have to push this back to the
+main development branch but
+these two teams are working in parallel
+now if they're working in parallel
+you'd actually like them to have some
+coordination that they're not changing
+the same
+parts of the code because they're
+changing the same parts of the code
+then these guys are going to be fighting
+with each other but if they're working
+on
+distinct parts of the code they can work
+completely in parallel
+and then they can push their changes
+back to the development branch as well
+and hopefully there's no conflicts there
+git is pretty good at coping with
+mergers of branches so long as they
+don't touch the same parts of the code
+if they did touch the same parts of the
+code then what we would have to do
+instead of doing this
+is we would have to pull from
+the main code into our feature branch
+and then we would have to do the fixes
+that we need to do
+in order to to make everything merge
+properly and
+then we can push it back to the main
+branch
+and now we have the combination of both
+sets of features
+all in our main development branch all
+ready to go out into a rolled release
+now the great thing about developing
+user stories on a feature branch
+is that first of all your developers
+don't interfere with each other when
+they're working in parallel
+and secondly when you've actually
+finished
+the the user story you've implemented
+the feature
+and you've actually got it so it's
+properly done when you integrate it back
+onto the develop branch
+pretty much everything that hits the
+main develop branch is actually finished
+and so in principle your main
+development branch could actually become
+a release at any moment
+although normally you'd want to actually
+make sure you've got the right set of
+additional features
+but all of the features that made it
+back onto the development branch are
+actually
+finished features and that's a really
+nice situation to be in
+but there is a downside in that if you
+branch off
+to develop a feature and you stay
+diverged for a long time
+the main development branch will
+separate it will diverge from your
+feature branch
+and eventually you'll get to the point
+where it's actually really pretty hard
+to merge the two back because they've
+diverged too far from each other
+so this is one of the key things about
+agile code sprint being
+short is that you limit the divergence
+of the main development branch
+from your feature branch and so you
+don't end up with
+unexpected feature interactions when you
+try to merge things back
+as far as possible you've limited the
+divergence and that's actually a really
+quite important property
+of the code sprint style of development
+is your different developers have not
+diverged from each other
+too far and so the merge process is
+actually possible
+without introducing new bugs
+another thing we can use branches for is
+to make it easier to handle the whole
+release
+process so suppose we released version
+1.0 a little while ago
+and we've continued making changes on
+the development branch
+it's now time for us to make our 1.1
+release
+do we just push the development branch
+straight to release
+well that's probably a bad idea because
+what we really want to do
+is to go into a feature freeze stop
+making changes
+other than critical bug fixes and
+test it out we're going to put it out to
+beta release with some users and find
+out what problems they find so
+if we want to go into code freeze one we
+could do is just basically lock our
+development branch
+and only make critical bug fixes on a
+development branch
+and that works okay for very small
+projects but for bigger projects
+if we lock our development branch it
+means we can no longer add new features
+to our development branch until we've
+rolled the release and it might take a
+while to roll the release
+so that would be unfortunate it would
+mean that we
+can't keep our developers well
+synchronized within the organization
+so another option is to form a 1.1
+release
+branch just to handle that release
+and so what we do is we we start that
+1.1 release branch off
+from wherever our development branch is
+and we say
+this branch is in feature freeze
+this branch is not going to have any new
+features added
+now our developers can keep adding
+features on our development branch and
+keep making changes there
+that's not a problem we're not blocking
+them from doing that
+and now our 1.1 release candidate goes
+out to our beta testers we find some
+bugs
+so what we do is we apply those bug
+fixes
+we find some more bugs on the second
+beta release
+eventually we come to the conclusion
+that there are no bugs that are critical
+bugs
+and we can actually go and make the
+release and so we'll push that out to
+our release branch
+that now becomes our 1.1 release
+it goes out to the users and then of
+course the other thing we have to do
+is to make sure that these bug fixes
+don't get lost
+and so we have to pull back from this
+branch into our main development branch
+and then those bug fixes stay in our
+system
+and after we've done that we can
+actually just erase the whole 1.1
+release branch
+we don't need it anymore but actually
+there's no particular reason to do that
+holds these things perfectly adequately
+without using much storage
+but we don't need to pay any attention
+to that 1.1 release branch anymore it's
+not going to accumulate any more changes
+now suppose we made our release a little
+while ago
+and we've continued developing on our
+development branch
+and all of a sudden somebody out there
+discovers that there's a
+security vulnerability in our 1.0
+release
+what do we do i mean we're not ready to
+push
+our development branch about here this
+is still unstable code
+so what we can do is we can spin up a
+hotfix branch
+and this branch its only purpose is to
+fix the security vulnerability and so
+what we can do is we can make our
+changes on here
+until we get to the point where we're
+pretty certain that we've got the right
+security fix and then we can push that
+back
+to the release branch as release 1.0.1
+or something like that and this is our
+security fixed release
+we're happy with that that's
+solved our problem of not having to push
+the development branch back we certainly
+don't want the development branch
+or unstable code getting pushed out into
+release
+but we now need to also take this
+hotfix and bring it back into our
+development branch
+so that we don't lose the security fix
+this is something that an industry
+happens quite often you'll you'll patch
+the release version but you'll fail to
+integrate it back
+into your main development branch and
+you'll end up with the bug getting
+reverted in a later release
+but if you do this if you carefully use
+branches in this way
+we can make sure that our hotfix
+actually made it right back into our
+development branch and therefore it
+stays fixed
+and that's a really good thing
+one really nice feature of the agile
+style of development
+where user stories that have been
+developed are
+really completely tested before they're
+pushed back to the development branch
+is hopefully bugs don't make it as far
+as the development branch
+and this means that we can set up what's
+known as a continuous integration
+framework
+what this is is we take all of our unit
+tests very integration tests any other
+test that we can run automatically
+and we build a framework that is
+triggered to run all of those tests
+on every single platform that we support
+different operating systems and so forth
+every time a commit is made to the
+develop branch
+and so should we accidentally then make
+a mistake
+not test something quite well enough it
+gets pushed the development branch
+the continuous integration framework
+will trigger a test failure
+it'll raise an automated alert and we
+can go back and fix that bug
+right now and this has the the nice
+property that first of all
+your bug is not going to trip up any
+other developers you're not going to
+have
+your bug make other people's life hard
+and you're also going to fix the bug as
+early as possible
+and that is actually just much easier to
+fix bugs shortly after you wrote the
+code
+because the code will still be fresh in
+your head and you'll figure out what you
+were trying to do
+so you're less likely to introduce other
+bugs while fixing the first bug
+so that's the process of continuous
+integration nothing should ever hit
+the development branch unless it's
+already bug fixed
+so hopefully the continuous integration
+test
+never get triggered of course if you're
+the person
+who didn't test your feature well enough
+and you push it to the development
+branch
+and it causes a failure in the
+continuous integration test
+then for sure you're the one buying the
+beers in the pub on friday
+so i've only really scratched the
+surface of
+agile software development in this video
+there's a whole bunch of other
+techniques
+which all greatly assist the process to
+develop
+good high quality software in reasonable
+amount of time
+a key one for example is refactoring
+if we're constantly developing software
+in these small
+incremental features there's a downside
+which is
+eventually you get to the point where
+the code structure is probably no longer
+what you want
+for adding features to it that's the
+sort of the nature of when we make
+incremental changes to something is that
+sometimes you actually want to change
+the big picture
+so when we come to do that that's known
+as refactoring
+and a key thing that enables refactoring
+to be done
+without it being a terrifying experience
+is
+having this whole continuous integration
+framework if you've got a large number
+of unit tests integration tests and so
+forth
+then when we take our code apart
+and put it back together in a different
+structure and feed it through our tests
+again
+those tests will hopefully highlight the
+things that we missed the things that we
+got wrong
+normally taking your software apart and
+putting it back together in a different
+shape is a terrifying experience
+because you're never convinced you're
+going to get it working again
+but having all of these unit tests
+actually make that possible
+otherwise it's just a really difficult
+thing to come back to the point where
+you ever
+have any confidence in your code again a
+lot of other techniques as well
+that are also really useful another one
+is pair programming
+where two pronouns actually sit down
+side by side
+at the same computer and one of them
+types and the other one
+thinks and they change roles
+periodically and again this is one of
+those techniques where
+it seems like it's a strange waste of
+time at first
+but actually it works and it works
+because
+when two people sit down to work
+together they're much more likely to
+actually code something that is
+of high quality because they have to
+explain it to each other
+rather than the first thing that came
+into their head where you can just
+rush ahead code something and it isn't
+necessarily the best thing you could
+have coded
+so let's say there's a lot of these
+different techniques and it's worth
+learning about all of them
+but you'll get a lot more of that on
+your software engineering course later
+in your degree
+despite all this talk of effective
+mechanisms and tools and processes
+and so forth in order to be able to
+actually scale up software development
+one thing that's really important to
+bear in mind is actually just developing
+software is really
+hard there's no single mechanism
+or process or anything else there's
+going to be a magic bullet that's going
+to make it easy
+in fact if you look at the success of
+software projects across the industry
+the majority of software products are
+not completely successful
+this table comes from the the standish
+group which is a industry software
+engineering group
+and they looked at over 10 000 different
+software projects between
+2011 and 2015 and as you can see
+only 39 of those developed using agile
+were really completely successful
+however that compares to only 11 that
+were developed using waterfall so agile
+clearly
+works much better than waterfall but
+the still this is not a great success
+rate and
+that applies no matter whether the
+project is large medium or small
+small projects tend to be more
+successful because the inherent
+complexity is somewhat less
+but even so the success rate as an
+industry for developing software is not
+really high
+if you don't apply these sort of
+mechanisms effectively
+the chances of your software project
+being successful are really quite small
+but even if you do apply them
+successfully a lot of projects will not
+succeed
+on that rather cheerful note i think
+that just about wraps it up for this
+episode
+see you next time
+

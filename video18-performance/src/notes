@@ -1,0 +1,4 @@
+To compile primes.c for inclusion in python primes3.py:
+
+gcc -c -fPIC primes.c -o primes.o
+gcc primes.o -shared -o libprimes.so

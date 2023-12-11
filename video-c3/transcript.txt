@@ -1,0 +1,177 @@
+Boeing 787
+----------
+
+Boeing's 787 Dreamliner pioneered new frontiers in aircraft design; not
+only was it the first airliner to have a carbon fibre fuselage, but
+to increase efficiency it also uses electricity for many more
+functions than normal, including hydraulic pumps, cabin air pressure,
+and the wheel brakes.
+
+All this electricity comes from four generators mounted on the engines,
+backed up by a large lithium battery.
+
+The 787's introduction into passenger service didn't go smoothly, as
+all 787s were grounded for four months due to the battery having a
+tendency to catch fire.  This design flaw was eventually fixed, and
+it's not this problem we're interested in.
+
+In 2015, the US Federal Aviation Administration released this
+airworthyness directive to 787 operators.  It states that a 787 that
+has been powered continuously for 248 days can lose all AC electrical
+power.  This is caused by a software counter internal to the
+generators overflowing after 248 days of continuous power.
+
+Yes, that's right, the FAA required airlines to reboot their 787s at
+least once every 247 days or the generators will stop working.  With
+so many electrically powered systems, that would not be good.
+
+So why 248 days? Boeing aren't telling us, but we can work this one
+out for ourselves.
+
+Lots of computers have clocks that tick every 10ms.
+
+2**31 = 2,147,483,648
+
+2**31 ticks then is 21,474,836 seconds
+21,474,836 seconds is 248.6 days
+
+So the largest positive value you can store in a 32-bit signed integer
+is 2**31 -1 = 2,147,483,648
+
+And that's where we get the 248 days from.  The largest number you can
+store in 10ms ticks in a 32-bit signed integer is 248.6 days.  After
+that it's going to wrap, time is going to go negative, and all sorts
+of strange things will happen, including your engines shutting down.
+
+Mars Climate Orbiter
+--------------------
+
+In January 1999, NASA launched the Mars Climate Orbiter, destined for
+the red planet to measure the martian atmosphere.  Nine months later
+the spacecraft arrived at Mars.  To go into orbit, it would need to
+skim about 200km above the surface and fire it's braking engine - the
+nature of orbital mechanics means that the lower this burn is
+performed, the less fuel you need for the manoever.  But Mars has an
+atmosphere, so you cannot go too low.
+
+This braking burn needed to be performed on the far side of Mars from
+Earth.  On September 23rd, shortly before the burn was due to start,
+MCO was observed to pass behind Mars 49 seconds early.  Clearly
+something was wrong.  The spacecraft was never heard from again.
+
+So what went wrong?  This story is famous enough you may have heard of
+it, but the details often get lost in the telling.
+
+Unusually for a spacecraft, MCO had a single large solar panel.  Over
+time, the pressure of photos from sunlight on the solar panel would
+cause the spacecraft to rotate.  MCO had reaction wheels to counter
+this rotation, but these wheels would eventually approach their
+maximum speed, and then the spacecraft would need to use its small
+rocket thrusters to desaturate the wheels.
+
+When you're aiming to miss Mars by 200 km after a flight of 400
+million km or so, you need to be quite accurate in your trajectory.
+This means every correction manoeuver must be taken into account,
+including the desaturation burns.  MCO would measuure exactly how much
+thrust its engine performed, and report this back to earth.  NASA
+would then use this information to correct their model of the
+spacecraft's trajectory.  Four times on the way, MCO performed a
+course correction burn, based on this model and measurements taken
+from Earth.
+
+While it's fairly easy to measure speed and distance away from Earth
+using radio signals, it's much harder to measure any deviation
+orthogonal to this path, and for this NASA relied on the modelled
+trajectory.
+
+Unfortunately, although the spacecraft correctly reported all the
+desaturation burns in units of newton-seconds, the software used to
+calculate the effects of the burns expected its inputs to be in units
+of pounds-seconds, with the result that the software thought the
+effects were 4.45 times what they actually were.  Even though these
+burns were very tiny, over 400 million miles, they can add up.
+
+When MCO performed its final course correction, it was not where NASA
+thought it was.  In the end, instead of passing 200km above Mars, it
+dipped down to 57km, and the Martian atmosphere, thin though it is,
+reaches higher than that.
+
+The contractor that supplied the software, Lockheed Martin, got the
+blame.  NASA's contract stated that all software must be in SI units.
+But NASA also shares some blame - they clearly hadn't verified that
+the software did what it was intended to do.  Finally it came out that
+Lockheed built the software on top of another package from NASA, and
+that package always used pounds-seconds.  No-one along the path had
+spotted the discrepency.  In the end, there's plenty of blame to share
+around.
+
+In general, units mix-ups are a common source of software bugs.
+Whenever you're passing data between components, it's crucial to
+specify and document the units. For example, in my network simulation
+code, I end up needing to deal with time in seconds, milliseconds or
+even picoseconds for different purposes.  I've made the mistake too
+many times of losing track of whether a quantity is kept in
+milliseconds or microseconds, and I know I'm not the only one.  I try
+to always keep time in a single canonical form such as picoseconds,
+and use self-explanatory helper functions to convert into and out of
+that form whenever I need to.  Maybe it's slightly less efficient, but
+it's much more likely to work.
+
+Mars Polar Lander
+-----------------
+
+1999 was not a good year for NASA's mars programme.  After losing the
+Mars Climate Orbiter in September, all hopes were for a successful
+arrival of the Mars Polar Lander in December.
+
+Here's what was supposed to happen.  MPL separates from the cruise
+stage, and begins it's descent towards the Martian surface.  It enters
+the upper atmosphere at around 25000 km/h, protected by a large heat
+shield.
+
+Drag from the thin atmosphere slows the spacecraft to 1700 km/h,
+before the parachute deploys at around 8800m altitude.
+
+At 7500m altitude, now travelling 900 km/h, the head shield is
+jettisoned, exposing the descent radar which is used to measure
+altitude and speed.
+
+The parachute continues to slow the lander; at 1300m now travelling
+300 km/h, the parachute is released and the rest of the descent is
+performed using rockets.
+
+Finally the lander is travelling at only 9 km/h when it touches down.
+
+At least that was what was supposed to happen.
+
+Unfortunately the Polar Lander was never heard from again.  Mars is
+unforgiving.  As you might expect when you've just spent 165 million
+dollars for no results, NASA conducted a thorough investigation which
+turned up a bug in the lander's software.  Here's the most likely
+explanation.
+
+The lander needs to know when to switch	off the	rockets, so it has
+hall-effect switches in	 the legs to detect landing.  These switches
+can be a little noisy, so it requires multiple consecutive switch
+readings landing to latch the leg state as showing landed.  This
+guards against turning the engine off prematurely.  In addition, the
+lander disables reading the landing leg state until the radar says it's 40m
+above ground, as it's pretty bumpy when the parachutes release, and
+this might otherwise cause a false leg reading and turn off the engine
+early.
+
+Unfortunately, it appears that it was bumpy enough under the
+parachutes that the software latched the leg state as being landed.
+It should have cleared this state when it reached 40m and started
+reading the landing leg state, but the step to clear the state was
+missed.  The lander thought it had landed when it was 40m above
+ground, switched off the engines, and fell the rest of the way to the
+surface.  Ooops.
+
+Mode confusion like this is a common source	of bugs.  In this case,
+the software needed to have multiple modes, but the developers had not
+been careful about which state needed to be carried forwards from one
+mode to the next.  If pre-conditions had been exhaustively identified
+for entering each mode, then it would have been more likely that the
+developers would have noticed that the landing state was not
+guaranteed to clear, and then added code to clear it, just to be safe.~

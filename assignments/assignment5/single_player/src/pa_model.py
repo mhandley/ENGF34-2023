@@ -857,6 +857,7 @@ class Model():
         self.lastframe = time.time()
         
     def update(self, now):
+        print("-----")
         if self.__game_mode == GameMode.CHASE or self.__game_mode == GameMode.FRIGHTEN:
             self.move_objects()
             self.controller.update_score(self.score)

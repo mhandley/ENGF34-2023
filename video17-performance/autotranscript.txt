@@ -1,0 +1,1374 @@
+welcome back everyone
+in this episode i'm going to deal with
+the difficult question of
+software performance we've all been
+there
+we write software and it
+just doesn't go fast enough it's too
+slow for the
+job that we needed to do what do we do
+now
+so that's what i'm going to talk about
+but i'm also going to talk about
+how you scale up software and how you
+scale out software
+to work at much larger scales than
+perhaps just a single computer
+so let's get so why is our code going
+slow
+what can we do to fix it well the
+problem is there's
+many possible causes and this can be
+quite subtle and and difficult to
+diagnose
+maybe your implementation is just
+inefficient
+and that's all there is to it maybe
+you're using an inefficient language
+python for example is not
+known for being the highest performing
+programming language in the world but
+for many tasks it's absolutely adequate
+maybe
+your algorithm has poor complexity
+and no matter how good your
+implementation is if you use that
+algorithm it's never going to perform
+well
+maybe you're spending too much time
+waiting on data
+maybe your code is just fine but the
+code depends on data that comes from the
+disk or from the network
+and those are just too slow and so
+fixing your code is not going to fix the
+problem
+maybe your code is spending too much
+time waiting on locks
+this tends to be a problem when you're
+using multiple processors or multiple
+threads
+and they end up waiting on each other so
+we can talk a bit more about what that
+means later on
+but it's often a problem when you're
+using multiple threads
+or another possible causes you've just
+got too much data
+and we're going to have to figure out
+how to handle when we just have too much
+data to run on one computer
+so these are all possible causes now
+what do you do about it pretty much the
+worst thing you can do when your code
+runs too slowly is to actually jump in
+and
+just try and fix things probably just
+jumping in and trying and fixing things
+before you're really sure where the
+problem is
+is you'll make your code maybe more
+efficient in some particular place but
+it won't matter because your code was
+not bottlenecked on that particular
+place
+and at the same time you'll make your
+code more difficult to read more
+difficult to understand
+and most likely introduce some bugs
+along the way donald knuth the
+king of algorithms is is often misquoted
+as saying
+premature optimization is the root of
+all evil it's a good quote but
+he was a little more nuanced in what he
+actually said
+what he said was the real problem is
+that programmers have spent
+too much time worrying about efficiency
+in the wrong places and at the wrong
+times
+premature optimization is the root of
+all evil or at least most of it
+in programming and so what he's getting
+out there is that it's not about the
+optimization that's the problem it's
+about
+not understanding where or when you
+should optimize that's actually a big
+problem
+so how do we figure out what we should
+do and what we should improve in our
+code
+
+way back in video 5 we looked at the
+performance of python lists
+and in particular we looked at what
+happens when you pop an element from the
+front of a python list versus from the
+back of a python list
+and what we saw was that it was very
+slow to pop from the front of a python
+list
+but it was pretty fast popping from the
+back of a python list
+and in order to understand why i ran the
+code through a profiler
+which measures where the code spends its
+time and produce flame graphs like this
+and what we could see from that was when
+we pop from the back of a python list
+there isn't any particular place in the
+code where it's spending all of its time
+whereas if we pop from the front of a
+python list like this
+we saw that the code spent all of its
+time in move
+and so this is clearly a bottleneck this
+is where the code spent its time and so
+this is where we need to focus on
+solving the problem
+now you can also do the same thing with
+your python code by running it through a
+python level profiler
+and get an idea of where your python
+code is spending its time
+so this is my version of the tetris auto
+player
+and it's currently looking two blocks
+ahead to decide on each move
+now when i first wrote this it played
+pretty well but when i uploaded it to
+grader
+it didn't manage to get terribly good
+scores and the reason was that
+rather than using all of the 400 blocks
+it simply ran out of time
+so judging by the scores it was
+running out of time with about two
+thirds of the way through the blocks so
+it's too slow
+but not too slow by a lot
+but the question is how do you fix that
+so what i did was i used the python
+package called c profile
+to profile the code and see if there's
+things i could improve
+to run c profile the first thing you're
+going to need to do is to actually pip
+install
+c profile so you've got it installed in
+your python packages
+and then it's actually pretty easy to
+use so
+we can just go into the game we want to
+profile in this case i'm
+going to profile the visual pie game
+version and i put
+import c profile here and i'm also
+importing
+p stats because i want to actually do a
+statistical analysis of it
+and then instead of just calling
+run down here to run the game before
+that
+i instantiate a profiler
+switch it on then i run the game
+then i switch it off again there
+and then that means i've got all the
+statistics gathered at that point
+and we just need to actually do
+something with them so we're going to
+use p stats to actually print them out
+in
+a sensible form i'm going to get the
+stats out of the profiler
+i'm going to use some clean up on them
+because otherwise it's hard to read
+then i'm going to sort the statistics
+and i'm going to sort them in the order
+of
+cumulative cpu time so if
+function a calls function b
+then any time that's spent in function b
+will be counted but it will also be
+scored against function a so we can
+figure out
+where all the time is spent but then
+also go and look down at the sub
+functions
+that are called and see how they use the
+time and so on
+and finally i'm going to print out the
+stats at the end now it takes a little
+bit of a while to
+to play this game for 400 blocks so
+let's just make it play for
+a short enough amount of time that we
+get some useful statistics but not so
+long that it's
+um boring okay so that will play for 10
+blocks
+so let's just play the game
+now it's going to generate a lot of data
+so i'm going to dump that to a file i'll
+just call it
+stats and this is just redirecting the
+the output of the program
+into the file stats so we can actually
+see what's going on
+okay so it's running it should only play
+ten blocks which doesn't take very long
+to top
+yeah finally finished
+okay and let's look at the stats okay so
+what are we seeing here we're seeing a
+whole bunch of
+columns here and it's sorted by the
+cumulative amount of cpu time
+so we can see that the total amount of
+time it spent in run
+was almost 12 seconds
+and so the question then is where does
+it spend its time
+within that and and actually i'm not
+really interested in
+spending its time in the things that are
+in board because i can't do anything
+about that in here
+i'm really interested in spending its
+time in the things that are in my code
+in
+in player.pie
+type that better there we go so we can
+see that
+the first thing in play. is choose
+action which is not too surprising
+that's actually what's called do all the
+work
+and we can see that it spent 10 seconds
+in total
+in choose action and from there we can
+see it spent
+most of that time almost all of that
+time in test move which is again not too
+surprising test movie is my code to
+actually try out a particular move
+and then from that most of its time was
+in a
+function called try move which tries a
+specific move
+which is again makes sense and the next
+thing we can see is
+actually it spent most of its time in
+board.pi's move function so obviously
+my try move function calls the
+board's move function to actually move
+things and
+what we can see from this is that the
+vast majority of the time that my try
+move
+function spends is actually within move
+and so in the end there's not a lot more
+to improve in this code from the point
+of view of my code
+the remaining amount of time it spends
+is mostly within the actual game itself
+within board move
+and there's not a lot to improve
+but that's because i've already done
+some optimization of this code
+when i first did this what i discovered
+was that it spent a lot of time
+in in score position now right now it's
+only spending 1.1 seconds in score
+position
+but it was spending a lot more than that
+in score position
+and so i i looked at that and i delved
+down further and realized that actually
+one of the things it was doing
+was it was initializing a fair number of
+data structures
+every single time i tried to score the
+position on the board
+and it simply wasn't necessary i could
+initialize those data structures just
+once at the start of choose action or
+right at the start of initializing the
+class in in general
+and once i'd done that all i needed to
+do was make a copy of it every time i
+went to score position which was much
+more efficient
+so i made that change and that reduced
+the
+cpu time that the whole thing spent by
+about 25
+which was definitely worth doing and you
+can see now it's not really spending
+very long time very long time scoring
+the position
+we can also see what it spends its time
+in score position doing and the
+main thing it does in score position at
+the moment is calculating where the
+holes are that's the most expensive part
+of that
+but it doesn't dominate my overall time
+so i'm not worried about it anymore
+but after i had improved the score
+position function it was still
+just about not quite fast enough and at
+that point i had to go back
+and rethink the algorithm slightly and
+the main change i made there was to
+realize that i didn't need to explore
+for each position all 40 positions
+was not all the positions are possible
+for each of the blocks the ones that are
+two blocks wide can't get to the last
+column
+which saves me at least 10 percent of
+the work and then
+most of the blocks actually don't have
+four different rotations they can do you
+know the long thin one can only really
+be in two rotations
+and so by reducing the complexity of the
+algorithm not by
+changing the algorithm but by changing n
+the number of things it had to actually
+evaluate
+i managed to improve the the performance
+by about another factor of two to the
+point where
+now it's way fast enough but the key
+thing was
+let's figure out what the problem is
+first is it spending a lot of time in
+one place
+and it was spending too much time in
+score position so i went and fixed that
+and once i fixed that there wasn't any
+other low-hanging fruit to fix
+there was no point in my trying to
+rewrite how i did the scoring or
+anything else because it simply wasn't
+spending time there
+and the only way i can get confidence of
+that is to run a profiler and look at
+the data
+staring at columns of numbers is not
+necessarily the easiest way to figure
+out what's going on in your code
+very easy to misinterpret those sort of
+things so how about the nice flame
+graphs we looked at
+they make it much easier to see what's
+going on how do we generate those in
+python
+well first of all we're going to need to
+actually dump the statistics in
+a machine readable form rather than just
+in a printable form
+so we can go back in here and what i've
+done is instead of printing out the
+statistics
+i'm going to just call dump stats and
+we'll dump them to a file which we'll
+call
+raw stats okay so this is
+pretty much the same as before and
+gathering the stats we're just going to
+dump them to a file instead
+and then we need to actually play the
+game
+so we have to wait for it to drop 10
+blocks and
+gather some nice new statistics and put
+them in that raw stats file
+there we go and if we look at raw stats
+that's not the most easily read file
+but that's fine because this is a
+machine readable file and that's what we
+wanted
+so how are we going to visualize these
+well there's a nice
+python package called snakevis which can
+generate various different forms of
+visualization
+so to run it we can do python minus m
+snakeviz
+says run the python module snakeviz and
+we need to feed it the file that we want
+which is
+raw stats we'll run that
+and there we go so what are we seeing
+here well we're seeing the same thing we
+saw in the numbers
+but we're seeing it visually so we can
+see eleven point four spec
+seconds spent in run that um
+cause board got run which calls run
+player which causes choose action which
+is where my code takes over
+and almost all of the time from choose
+action is spent in test move
+most of that is spent in try move but
+we've also got
+score position and tri-rotate
+but most of the time is in try move and
+we can see
+that of the code in try move most of the
+time is in the board move
+so there's not much i can do about it
+other than try fewer moves
+and similarly if we look in try rotate
+it shows the name on the left
+we can see if i click on this it will
+just show me try rotate
+and we can see that almost all of the
+time this bends in board rotate
+and only this little bit at the
+edge is in my code so i can't really
+improve this very much
+so this is already showing that the
+the main things i can do to improve this
+code
+are just to avoid calling
+the board move as many times as possible
+but i actually need to call that this
+many times
+in order to play the game so we're
+pretty close to
+the best i can actually do for for this
+there's not a lot more i can improve
+this um here is score position
+it's spending about 1.1 seconds in score
+position of which most of it is in
+my function calc holes maybe i could
+shave another half second off this
+if i wanted to change my my algorithm
+for calculating the scores
+but probably not much more so in terms
+of actual
+things i can get from out of the
+profiler i'm about done here
+there's not much i can do to improve
+from point of view of just making my
+python code more efficient
+
+okay so you've done all that you've
+profiled your code you've improved your
+code it's definitely got better
+but you're now stuck you can't make it
+go any faster
+is it time to throw away python and
+rewrite everything in
+c or something like that which will
+definitely go faster
+well we should probably ask the question
+first of
+how much slower are we than we need to
+be are we too slow by a factor of 2
+or are we too slow by a factor of 100 or
+are we too slow by a factor of a million
+if we do slow by a factor of a million
+then
+rewriting it in c is not going to solve
+that problem
+if you want to solve that problem you're
+going to have to think about changing
+your algorithm to something that
+actually has lower computational
+complexity
+if we're too slow by a factor of 100
+then maybe just
+maybe you can get that performance win
+from rewriting it in a language like c
+but not always but there's a price
+you'll pay for doing that and we'll come
+to that in a minute
+if you're too slow by a factor of two
+then we still have some tricks in our
+book
+so let's try those first so
+the obvious question we should ask
+ourselves is why is python slower than a
+language like c
+well there's more than one answer to
+this question
+one of the reasons python's slow is
+because it's an interpreted language
+the python program reads in your code
+and it goes through
+interpreting your code line by line
+trying to figure out what it is that you
+want python to do
+and it's always in this interpreted mode
+so it's never actually
+directly compiling the code down to
+machine instructions
+if we compiled python into instructions
+that your processor directly understood
+then we could make it go faster and the
+second reason python is slow is that it
+actually does quite a lot for you
+if you're for example working with
+integers
+if you're working in something like c
+you always have to be concerned with how
+big can your integers get
+is it possible they might overflow they
+overflow
+bad stuff happens as we saw
+but python you don't have to worry about
+that
+the python environment because it's
+protecting you from this sort of stuff
+can cope with any size of integer
+and there's lots of other things where
+python will protect you from messing up
+if you try to index off the end of a
+python list
+it will tell you well c won't your code
+will just do something strange
+and so it's much more likely that python
+will tell you that you got something
+wrong
+whereas c will just give you the wrong
+answer and if you're trying to develop
+code that's correct
+then python can help you with that
+whereas see
+you've really got to be on your a-game
+okay but let's come back to this
+question of being interpreted
+is it inherent that we have to interpret
+python
+well no because there's a package called
+pi pi
+and pi pi is basically a python compiler
+it will take
+exactly the same code that you would
+normally run in the python interpreter
+and compile it as the disadvantage it
+won't run all python programs
+because sometimes python programs
+include packages that are compiled up
+from c
+but for the python programs it will run
+it will generally give a reasonable
+speed improvement
+so let's have a look at that
+so let's just see how fast my tetris
+program is
+so i'm going to use the time utility
+which will just tell me how long it
+takes something to run
+and i'm going to run the command line
+version of my tetris code
+for 40 blocks and we'll see how long
+that takes it's
+reasonably quick and once it's done that
+we'll get a an elapsed time for running
+40 blocks in this
+now this is using the interpreted
+version of python
+and it's joking along there we go 13
+seconds
+to run the interpreted version
+now my alternative is to actually
+compile it using pi pi
+and we'll try that now
+i'm running this with the command line
+version of
+tetris game oh look at that
+13 seconds for the
+interpreted version and 4.4 seconds for
+the compiled version
+so there you can see that more than a
+factor of two speed up
+from running exactly the same piece of
+python code
+when i've compiled it so that's the
+performance cost
+of having an interpreted environment the
+fact that i can sit down there and
+actually type python commands
+to the interpreter gives me some
+flexibility
+but if you care about performance you
+might try compiling your python
+now as i was saying i'm running the
+command line version here
+rather than the pi game version and the
+reason for that is that
+pie pie doesn't support pie game because
+pie game actually consists mostly of
+compiled c
+code to do the graphics and
+pi pi doesn't know what to do with that
+compile c code so it works fine
+for stuff that is pure python and would
+have some difficulty
+with importing python packages that are
+compiled up from c
+now at this point if you're still paying
+attention you're probably jumping up and
+down and saying wait a moment
+pie games in c can you compile
+c code and just call it from python how
+does that work
+and the answer is yeah if you've got a
+piece of your code which is
+really sort of self-contained and needs
+to be really efficient
+like for example code for drawing
+graphics on the screen
+then you could write that code in c on
+just that piece of code in c
+and then compile it up and link it in as
+a python package so
+almost all of your complicated code can
+then be in python and
+just this small bit that needs to be
+efficient can be written in c
+and there you go you've got the
+performance you need and that's how
+packages like pygame and tk inter and
+things like that that do
+graphics which is a very intensive
+operation and needs to be fast
+actually gain their speed in the end
+though
+if you really care about performance you
+probably will have to admit defeat with
+python
+and move to a programming language that
+actually
+is more optimized around speed probably
+if you really care about performance
+something like c maybe c plus plus or
+rust
+
+okay so you've done all that you've
+rewritten your code in an efficient
+language
+you've profiled it and you've removed
+any bottlenecks
+and the code is still running slowly
+then we probably need to get into how
+the hardware actually executes your code
+so if it's running too slowly there's
+roughly speaking two possibilities
+one is you're just trying to execute too
+many instructions in the time you have
+available
+the other possibility is perhaps more
+interesting which is that
+your number of instructions is okay but
+the instructions themselves are
+operating slowly
+and so why might that be
+well a primary cause of this is actually
+memory latency or
+how long it takes you to get data
+into your cpu from memory so
+in order to understand the issues of
+performance related to memory we have to
+understand how
+the memory hierarchy and cpu works so
+let's have a look at that
+okay so here's a very simplified diagram
+of how your computer works
+in your computer there's a central
+processor unit or cpu
+if it's a server it might have more than
+one cpu but typically your laptop or
+your phone will have a single cpu
+and within the cpu there may be one one
+or more
+cpu cores i've just drawn one of them on
+here for now
+cpu cores are what actually do the maths
+and everything else that your computer
+wants to do
+and then in addition to cpus there's
+memory and so how does
+the computer actually use memory well
+let's suppose that
+it comes to an instruction in your
+program and the instruction says
+it wants to add x plus y
+okay so that's fine where are x and y
+well x and y will typically be stored
+somewhere
+in ram over here
+now in order to do the addition the
+things it needs to add need to actually
+be
+in registers in the cpu a register is
+kind of like a
+hardware variable but it's implemented
+right within the cpu core
+so that's the only thing the cpu can
+actually directly operate on
+now the data it needs is over here
+it knows where the data is because it
+has the address for them in memory as to
+where they're located but it has to
+actually get them
+and so the first thing it will do is it
+will try to
+load x now it's not just a question of
+go out cross to memory find right memory
+location read it and pull it back in
+if it did that then it will be extremely
+slow and we'll look at some numbers in a
+minute as to how slow
+instead what there is is a whole bunch
+of layers of
+memory hierarchy and so in order to be
+able to load
+x into here first of all it
+sees if x is in the level one cache now
+the level one cache
+is a little pool of really really fast
+memory it's small it's only about 32
+kilobytes on a modern cpu
+but it's really close to the cpu core
+and so it's very quick to check there
+and if it finds it there
+then great it can just return that over
+here and be done but unfortunately in
+our example
+it isn't there so
+what does it do next it checks whether
+it's in the level two cache
+is it there the level two cache is
+somewhat bigger
+but the memory is implemented somewhat
+slower
+it's very difficult to implement really
+fast memory
+there's lots of things that influence it
+including simply the speed of light
+across the chips
+anyway level 2 cache may be a megabyte
+if it's not there then it will go to the
+level three cache which is typically
+much bigger this is 16 megabytes on this
+modern cpu
+but it's also shared with any other cpu
+cores you have
+so we'll check whether x is there if
+it's not
+there then finally we're going to have
+to go all the way across to memory
+and find x over here and then x ends up
+in all of these caches as it comes back
+through with the answer
+and then we've got x over here and then
+finally the question is well okay we
+need to add y and we've got to go
+through the whole process again
+and what happens next depends on where y
+is located in memory if y is located
+right next to x then when we loaded x in
+here we also
+loaded a whole bunch of bytes and memory
+that were right next to it and so that
+are loaded into these caches as well so
+quite possibly when we try to load y
+it finds it here great we got it there
+we load it into here we don't spend any
+extra delay
+and now we can do the addition and so on
+but if x was not close to y
+in memory then we will miss here we'll
+miss here
+we'll miss here and then we have to go
+all the way out to main memory
+and back again and so this
+process of having a series of caches
+basically main memory dram can be very
+large
+maybe 16 gigabytes or something like
+that but it's quite a long way away from
+your cpu and it's implemented using a
+technology that's actually pretty slow
+so to try and hide that we have a layer
+3 cache which is implemented typically
+using static ram which is faster and
+it's also closer to the cpu
+and so hopefully a lot of the time your
+code is going around and around and
+around in some fairly tight loop
+and all of the memory that your program
+needs actually ends up in the l3 cache
+and we never have to go across to
+to main memory and then some of that
+will also get copied into the level 2
+cache which is faster still
+and some of that will end up in the
+level one cache and your program will go
+fast if when it's trying to find data it
+finds it in one of these caches
+your program will go slow if when it
+tries to find data it always misses
+finding it in these caches and has to go
+out to ram
+and whether it goes fast or slow will
+then depend on
+how your code is laid out the order in
+which it actually
+accesses items of data in memory if it's
+accessing items data that are randomly
+scattered all over memory all the time
+then there's a pretty good chance that
+these data gets flushed out of these
+caches and
+really quite often you have to go across
+to main memory which is slow
+on the other hand if it's accessing data
+that is
+really located close together so if it
+accesses data
+say a b c d e here that are all close
+together
+then at least when it goes to axis a
+then maybe b c d and e
+also got loaded into the cache and
+things go quickly
+and so you can see that very much the
+order in which you access data even if
+you're accessing the same amount of data
+the order in which you access it can
+affect whether it's in the cache
+and that can make at least an order of
+magnitude difference to
+how quickly your program can get that
+data and therefore how quickly your
+program runs
+when i say that memory is slow it's not
+that memory is
+really slow it's actually pretty fast
+it's just your cpu is an awful lot
+faster
+so let's look at some numbers to get
+some idea of how much faster
+if we look at something like a core i7
+xeon cpu a pretty good modern cpu
+then it's got a three gigahertz clock
+rate which means that it can execute a
+single instruction in about
+0.3 nanoseconds it actually can maybe
+execute more than one instruction in the
+same clock cycle
+but for the sake of this discussion
+let's just assume it's executing a
+single instruction
+and see what happens depending on where
+it data is so
+if the data is in registers it can do
+that instruction in a single clock cycle
+if we have to go out to the l1 cache
+then it's going to take us something
+like four clock cycles
+to get the data if it's in the l1 cache
+but if it's not in the l1 cache then
+it's going to take longer
+if data is in the l2 cache then
+it's going to take us something like 10
+clock cycles and if we have to go as far
+as the l3 cache
+then it's going to be something like 40
+clock cycles
+but if we have to go all the way to dram
+then it's going to take us somewhat
+longer
+if we have to go to dram it's going to
+take us something like 200 to 300 clock
+cycles
+so that means that depending on whether
+your data is
+already in the register or already in
+the l1 cache
+compared to going all the way to dram it
+can be maybe a factor of 100 difference
+in terms of how fast that instruction
+executes
+just depending on where the data happens
+to be located
+this means that if you're designing data
+structures in a low level language like
+c
+where you actually get to choose where
+in memory things end up
+then you can make a big difference to
+how your code performs if you arrange
+things that are going to be accessed one
+after another in time
+so they're close together in memory you
+can make things work
+much better than if you randomly scatter
+them throughout memory
+no locality of reference unlikely to
+have good cash hit rates
+and the performance is going to be much
+lower so you can make quite a lot of
+difference just because of
+how you lay things out in memory
+assuming you're programming the low
+enough level language to be able to have
+control over that
+at this point i should probably admit to
+having been taught this lesson in a
+rather painful way
+by my good friend luigi ritso who is
+certainly a better systems programmer
+than i am
+many years ago we were both working on a
+router project to design
+a complete software stack for an
+internet router and
+my task was to design a try
+data structure this is a little bit like
+a binary tree except it's not doing
+exact matches it's doing overlapping
+matches of different lengths of prefixes
+and i wrote my implementation wrote it
+in c
+plus plus good fast language thought
+yeah that'll work now the algorithm was
+fine and it passed all of the test
+but it really wasn't fast enough and i
+went and chatted with luigi
+and he said oh let me have a look and
+he went away decided he didn't like my
+code and rewrote it all from scratch
+he happened to prefer writing that piece
+in c so he did
+but the algorithm was largely the same
+what was just different was how the code
+laid out data in memory
+and how it accessed it and his code had
+much better cache locality than mine
+in fact it was sufficiently better that
+it ran 50 times faster than mine
+and at the time i was astounded but it
+took me a long time to really learn the
+lessons of how do you actually
+write software to go really fast when
+you need that really tight piece of core
+code to work really really well
+recently i got to apply these lessons
+again together with some very smart
+colleagues at cambridge
+we designed a video server that serves
+the same role as a netflix server so it
+serves
+video from storage out to users across
+the network
+and we managed to pay sufficiently good
+attention to cash locality
+that we could stream data from the solid
+state drive
+out across the network with it only ever
+touching the l3 cache it never made it
+into dram
+and this substantially improves the
+server's performance
+to the point where we could do better
+than a 12 core netflix server using only
+four cpu cores
+now this is good enough that netflix
+actually took some of the lessons from
+this as to how to make this work
+and applied it to their own servers and
+so when you watch netflix
+the performance is partly due to real
+attention to cache locality
+in their server software
+now i've spent a lot of time talking
+about efficiency improvements in your
+code
+well those are efficiency improvements
+due to things like choice of programming
+language
+or due to paying careful attention to
+cash locality and so forth
+but in the end all the efficiency
+improvements in the world
+aren't going to help you if you didn't
+pay proper attention
+to the computational complexity of your
+code
+and you have a large amount of data to
+process or a large number of events to
+process
+if your code is too slow once you scale
+it up to the scale it needs to run out
+by five or six orders of magnitude then
+there's no efficiency improvement in the
+world are going to solve that problem
+so generally speaking you want to pay
+attention to complexity
+first and then attention to efficiency
+once you've got your code implemented
+and demonstrated that
+it's no longer fast enough for the job
+but
+suppose you've done that suppose you
+paid good attention to computational
+complexity
+then you paid attention to efficiency
+and you're still running a little bit
+too slow
+are there things you can do there well
+often there are
+often you can still get some additional
+complexity gains by thinking about the
+problem a little bit more carefully
+let me give you an example from my own
+research
+when you're processing data in a large
+data center
+common thing that you need to do is to
+take a problem and farm out the work
+to a thousand different servers each of
+them will
+crunch a part of the problem and they'll
+come back with their partial answers
+to the computer that gave them the
+problem
+and that's great it just combines those
+answers into
+a final result from a computational
+point of view
+it's great we can get the efforts from a
+thousand different computers all working
+at the same time
+but from a networking point of view it's
+a real problem because all of these
+answers arrive
+pretty much simultaneously at the origin
+computer an implosion of data can cause
+a real problem
+so we've done a lot of research in
+trying to actually improve how data
+center networks can handle this
+to do this research we have to simulate
+a very large data center
+running at very high speeds so that is a
+really
+stressful job for the network simulator
+we wrote our own simulator in order to
+study this because none of the existing
+simulators were anywhere near fast
+enough
+one of the key things this simulator
+does is to pay a lot of attention to
+this issue of computational complexity
+and the main issue in a simulated like
+this is that every packet that's flying
+across a link every packet that's in a
+queue every packet that's
+waiting for transmission somewhere is
+associated with a timer event that must
+happen sometime in simulated time
+and the big complexity question is how
+do you
+store all of these timer events so that
+they happen in the right order
+to do this we use a data structure
+called a binary heap which is very
+similar to a binary tree
+storing all of the events that are going
+to happen in
+execution orders at the time that the
+event should go off
+and a binary heap has order log n
+insertion time in order to log in
+removal time for the first event that
+should happen
+but the big question in this kind of
+simulation is
+what is n an n is typically very big
+maybe a hundred thousand
+but by doing some interesting tricks we
+can actually reduce
+n a little uh for example all the
+packets that are flying down a link one
+behind another
+only the first one needs to be on the
+main binary heap
+the ones behind inherently happen behind
+the first one
+and so we can store those separately in
+a separate linked list
+and when the first one arrives we just
+take the next one off that list and
+insert it into the binary heap
+i'm going to do a similar thing for
+queues and so forth and by doing these
+sort of tricks
+we can maybe reduce that hundred
+thousand events
+down to something like ten thousand now
+we didn't actually change the complexity
+principle that's probably not gonna make
+a big difference i mean log of
+a hundred thousand is five and log of
+ten thousand is four
+so maybe we improve the performance by
+maybe twenty percent
+but actually this is where it combines
+with this question of cash locality
+by reducing the size of this data
+structure by a factor of 10
+a lot more of it will fit in the layer 3
+cache of the processor
+and so actually what we end up with is
+not a 20
+improvement in speed but maybe a rough
+doubling in performance
+for this kind of algorithm in that kind
+of scale
+so the complexity sometimes ties
+innately
+with the caching mechanisms and other
+factors
+so sometimes it's not just the pure
+numbers you might expect from the
+complexity that actually
+influence the performance another really
+good example of getting the
+computational complexity exactly right
+is the very popular tech news website
+hacker news
+this was written by one of the y
+combinator founders paul graham
+and was written in a variant of the lisp
+programming language
+now hacking news latest 2015 was getting
+something like
+300 000 unique visitors per day three
+million page views per day
+and yet it ran on a single server
+128 gigabytes of ram two three gigahertz
+cpus
+but the really interesting thing is that
+it ran as a
+single thread on a single cpu core
+serving all of those users with very
+good response time despite all the
+content being dynamic
+so that's an example of really getting
+everything right in terms of the
+complexity of your algorithms to produce
+really good performance
+in contrast there are loads of examples
+of
+big websites being put together they
+work just fine under test
+and as soon as you scale them up to
+really significant amounts of usage
+they just fall over and the main reason
+for this again
+is not paying attention to the
+complexity of the lookup operations and
+things like that that are needed to
+generate your data
+
+now if you're really serious about
+performance at some stage
+you're going to reach the point where
+there's no alternative
+but to throw some more silicon at the
+problem
+now you've probably heard of moore's law
+this was the
+prediction by gordon moore and he made
+this prediction back in the 1970s
+that the number of transistors we could
+fit on a chip would double
+about every 18 months or so and
+remarkably this has held true
+for about 50 years what this used to
+mean
+was that as the transistors got smaller
+they got closer together the capacitance
+got less
+and so we could run these ships at
+higher and higher clock frequencies
+which meant that every year your chips
+just got faster
+without really having to particularly
+smart about how they got faster
+but something happened around 2000
+which was that we kind of started to hit
+the limit
+on how fast we could clock the chips we
+were hitting capacitance limits and
+thermal limits
+and so clock rate increased until about
+2000 when it
+topped out at a little bit over three
+gigahertz and has largely remained there
+ever since
+so we've been able to fit more
+transistors on the chips
+that's continued for the last 20 years
+but the chips are not clocked at a
+higher frequency
+so what are we doing with all those
+extra transistors how do our chips get
+faster and how can we
+take advantage of that as programmers
+so there are four main ways that cpu
+manufacturers
+have used those transistors the first
+way
+is they've added more cpu cache
+for each cpu core and that's a pretty
+good way to make
+things go faster the second way is that
+they've
+made their cpu cores able to execute
+more instructions for each cpu clock
+cycle the third way is to add more cpu
+cores
+and the fourth way is to add special
+purpose hardware
+so we'll look at each of these in turn
+and then we'll think about how we can
+actually make use of them
+let's look at the cpu cache size first
+the cpu cache is there to hide the fact
+that dram
+is very slow and so if we increase the
+cpu cache size
+then more of dram can be kept in the
+cache
+and therefore more likely that when your
+program goes to get data it'll find it
+in the cache rather than having to go
+all the way out to dram which is slow
+so if you increase cpu cache size a lot
+of software will just run faster and
+that's great
+so if we look at the graph of cpu cache
+size versus time from about 2000 to
+about 2010
+we can see that the size of a typical
+cpu cache was growing exponentially
+this is a pretty good indication that
+cpu vendors had decided that a good
+thing to spend all those extra
+transistors on
+was bigger caches but if we look at the
+last decade
+it's not quite true although we do
+see bigger cpu caches the amount of cpu
+cache for each
+individual cpu call has not gone up very
+much
+and this means that the cpu vendors had
+realized that
+actually the cpu cache were already big
+enough
+that most of the data that your program
+needed was likely to come from the cache
+and making the cache bigger wasn't
+likely to help that
+now that's just for a typical program it
+doesn't mean that for your program is
+necessarily true if your program touches
+a lot of data
+then you still need to pay a lot of
+attention to whether it's likely to have
+good cash locality
+so this doesn't absorb you of the
+requirement to think about this question
+but it means that a lot of the time
+actually it's not such a big issue
+so if our cpu vendors are no longer
+pouring a lot of extra transistors
+into larger caches what are they doing
+so the second way our cpu vendors have
+improved performance
+is to increase the number of
+instructions they manage to execute for
+each clock cycle
+now to do this they they employ a whole
+bunch of tricks ranging from
+pipelining to super scalar operation
+but the general idea is you have a whole
+stream of instructions that are coming
+into your cpu
+and the cpu internally will not just
+execute them all in that order
+it will figure out which things depend
+on which other things and
+it can execute them out of order if
+necessary it can execute more than one
+arithmetic operation at the same time
+because it has more than one arithmetic
+unit in the cpu
+and all of these tricks can actually
+improve the performance of the software
+way beyond what you might get if you
+just executed those instructions one at
+a time
+the one catch though is that if
+some instructions depend on the output
+of other instructions
+this makes it much harder for the cpu to
+do its task and in particular
+if the execution flow of your code
+depends on conditionals like
+ifs and things like that then the cpu
+can't actually tell what to do next and
+it reduces the amount of
+parallelism that they can actually use
+internally so
+one way to improve the performance of
+code
+is to try and write it so that there are
+fewer conditional statements that the
+code depends on one after another
+if your code is going through a tight
+loop sometimes you can use a technique
+called loop unrolling
+which will actually improve the
+performance of that loop there are a
+bunch of these tricks that
+you can apply they're quite an advanced
+topic though so i'm not going to go into
+them in much more detail right now
+the third and perhaps the most important
+way we can
+improve performance of our software once
+we've done all the other things we've
+talked about in this video
+is to introduce parallelism to the code
+the idea is that we will instead of
+running your program just on a single
+cpu core
+we'll run it on more than one cpu core
+and perhaps on more than one computer at
+the same time
+this obviously produces a potential for
+increasing the performance significantly
+we now got the resources of more than
+one cpu
+we ought to be able to make things go
+faster but this is not a simple topic
+so i'm going to devote the whole of part
+two of this video
+to this issue of parallelism and
+multi-core operation see you next time
+
